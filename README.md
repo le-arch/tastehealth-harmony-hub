@@ -1,18 +1,9 @@
-# Welcome to your Lovable project
 
-## Project info
-
-**URL**: https://lovable.dev/projects/2f3b03da-bbc0-4f6f-bab7-522911cca4e8
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/2f3b03da-bbc0-4f6f-bab7-522911cca4e8) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
@@ -24,10 +15,10 @@ Follow these steps:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone https://github.com/le-arch/tastehealth-application.git
 
 # Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+cd tastehealth-application
 
 # Step 3: Install the necessary dependencies.
 npm i
@@ -62,12 +53,60 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/2f3b03da-bbc0-4f6f-bab7-522911cca4e8) and click on Share -> Publish.
+✅ 1. Prepare Your React App
+Make sure your app is production-ready:
 
-## Can I connect a custom domain to my Lovable project?
+Build works: npm run build or yarn build
 
-Yes, you can!
+package.json has a valid build script:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+json
+```sh
+"scripts": {
+  "start": "react-scripts start",
+  "build": "react-scripts build"
+}
+```
+✅ 2. Push Your Code to GitHub (or GitLab/Bitbucket)
+If it's not already version-controlled:
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+bash
+```sh
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/your-username/your-repo.git
+git push -u origin main
+```
+✅ 3. Sign in to Vercel
+Go to [https://vercel.com]
+
+Sign in with GitHub/GitLab/Bitbucket
+
+Click "New Project"
+
+✅ 4. Import Your Repository
+Select the repository containing your React app
+
+Vercel auto-detects React and sets:
+```
+Framework: Create React App
+
+Build Command: npm run build (or yarn build)
+
+Output Directory: build/
+
+Click Deploy.
+```
+
+✅ 5. Done! 🎉
+Your app will be deployed and live at a vercel.app domain, like:
+
+arduino
+```
+https://your-app-name.vercel.app
+```
+You can set a custom domain in the project settings.
+
+
+

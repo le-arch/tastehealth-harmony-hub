@@ -1,0 +1,189 @@
+.notification-dropdown {
+    position: relative;
+  }
+  
+  .notification-bell {
+    position: relative;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .notification-bell:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--danger-color);
+    color: white;
+    font-size: 0.7rem;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .dropdown-content {
+    position: absolute;
+    bottom: 0;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 320px;
+    max-height: 400px;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .dropdown-content h3 {
+    padding: 15px;
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1rem;
+  }
+  
+  .dropdown-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    max-height: 300px;
+  }
+  
+  .dropdown-content li {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+    transition: background-color 0.2s;
+  }
+  
+  .dropdown-content li:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+  
+  .dropdown-content li.unread {
+    background-color: rgba(76, 175, 80, 0.05);
+  }
+  
+  .notification-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(76, 175, 80, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .notification-content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .notification-content h4 {
+    margin: 0 0 5px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  .notification-content p {
+    margin: 0 0 5px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .notification-content small {
+    font-size: 0.75rem;
+    color: var(--text-light);
+  }
+  
+  .view-all {
+    padding: 12px 15px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    border-top: 1px solid var(--border-color);
+    text-decoration: none;
+  }
+  
+  .view-all:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    text-decoration: none;
+  }
+  
+  .no-notifications {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.9rem;
+  }
+  
+  /* Icon styles for different notification types */
+  .icon-meal {
+    background-color: var(--primary-color);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .icon-water {
+    background-color: var(--secondary-color);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .icon-exercise {
+    background-color: var(--accent-color);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .icon-sleep {
+    background-color: #9c27b0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .icon-achievement {
+    background-color: #ffc107;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .icon-reminder {
+    background-color: #2196f3;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
