@@ -11,12 +11,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ChallengeCreator from '../components/ChallengeCreator'; // Import the ChallengeCreator component
+import TasteHealthLoader from "../components/TastehealthLoader";
 
 const DashboardPage = () => {
   const { language } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedTab, setSelectedTab] = useState("dashboard");
-
+   const [loading, setLoading] = useState(true);
   const translations = {
     en: {
       title: "Health Dashboard",
@@ -54,7 +55,16 @@ const DashboardPage = () => {
   const checkAuthStatus = async () => {
     const { data } = await supabase.auth.getSession();
     setIsAuthenticated(!!data.session);
+    setLoading(false);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <TasteHealthLoader />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-auto align-stretch">

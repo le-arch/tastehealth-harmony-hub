@@ -8,7 +8,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { NutritionProvider } from "../src/contexts/NutritionContext";
 import Layout from "./components/Layout";
-import TasteHealthLoader from "../src/components/TastehealthLoader"
+//import TasteHealthLoader from "../src/components/TastehealthLoader"
 // Import viewport height utility
 //import { useViewportHeight } from "./hooks/use-mobile";
 
@@ -63,7 +63,7 @@ function App() {
               <Sonner />
               <Router>
                 <Layout>
-                  <Suspense fallback={<TasteHealthLoader />}>
+                  <Suspense fallback={""}>
                     <Routes>
                       {/* Redirect root path to WelcomePage */}
                       <Route path="/" element={<WelcomePage />} />

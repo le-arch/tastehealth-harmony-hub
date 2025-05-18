@@ -29,7 +29,7 @@ import HealthGoalsSelect from '@/components/profile/HealthGoalsSelect';
 import DietaryRestrictionsSelect from '@/components/profile/DietaryRestrictionsSelect';
 import { getCurrentUser } from '@/services/authService';
 import { fetchUserProfile, updateUserProfile, UserProfile } from '@/services/profileService';
-import TasteHealthLoader from '@/components/TastehealthLoader';
+//import TasteHealthLoader from '@/components/TastehealthLoader';
 
 const formSchema = z.object({
   age: z.string().min(1, "Age is required"),
@@ -47,7 +47,7 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  //const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,7 +67,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const loadUserProfile = async () => {
       try {
-        setIsLoading(true);
+        //setIsLoading(true);
         const user = await getCurrentUser();
         
         if (!user) {
@@ -98,7 +98,7 @@ const ProfilePage = () => {
         console.error("Error loading user data:", error);
         toast.error("Error loading profile data");
       } finally {
-        setIsLoading(false);
+        //setIsLoading(false);
       }
     };
     
@@ -107,7 +107,7 @@ const ProfilePage = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      setIsLoading(true);
+      //setIsLoading(true);
       
       console.log("Saving profile data:", values);
       
@@ -141,7 +141,7 @@ const ProfilePage = () => {
       console.error("Error saving profile:", error);
       toast.error("Failed to update profile");
     } finally {
-      setIsLoading(false);
+     // setIsLoading(false);
     }
   };
   
@@ -149,9 +149,9 @@ const ProfilePage = () => {
     navigate('/dashboard');
   };
   
-  if (isLoading && !userProfile) {
-    return <TasteHealthLoader />;
-  }
+  // if (isLoading && !userProfile) {
+  //   return <TasteHealthLoader />;
+  // }
 
   const formatActivityLevel = (level: string) => {
     if (!level) return "Not set";
@@ -490,10 +490,10 @@ const ProfilePage = () => {
                     <Button 
                       type="submit" 
                       className="w-full sm:w-auto"
-                      disabled={isLoading}
+                      // disabled={isLoading}
                     >
                       <Save className="mr-1 h-4 w-4" />
-                      {isLoading ? "Saving..." : "Save Profile"}
+                      {/* {isLoading ? "Saving..." : "Save Profile"} */}
                     </Button>
                   </form>
                 </Form>
