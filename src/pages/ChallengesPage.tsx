@@ -1,6 +1,5 @@
 
 import type React from "react";
-import { useEffect, useState } from "react";
 import ProfileSidebar from "../components/profile/ProfileSidebar";
 import ChallengeCreator from "@/components/ChallengeCreator";
 import { useScreenSize } from "@/utils/mobile";
