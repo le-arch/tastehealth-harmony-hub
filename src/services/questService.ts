@@ -1,3 +1,4 @@
+
 import { supabase } from "@/lib/SupabaseClient";
 
 export interface QuestStep {
@@ -34,6 +35,11 @@ export interface UserQuest {
   started_at: string;
   completed_at: string | null;
   quest?: Quest;
+  progress?: {
+    current: number;
+    target: number;
+    percentage: number;
+  };
 }
 
 export const getNutritionQuests = async () => {
@@ -106,6 +112,31 @@ const questService = {
     }
 
     return data || [];
+  },
+
+  async getUserActiveQuests(userId: string): Promise<UserQuest[]> {
+    if (!userId) return [];
+
+    const { data, error } = await supabase
+      .from("user_quests")
+      .select("*, quest:quest_id(*)")
+      .eq("user_id", userId)
+      .eq("completed", false);
+
+    if (error) {
+      console.error("Error fetching active user quests:", error);
+      return [];
+    }
+
+    // Add progress info to each quest
+    return data?.map(quest => ({
+      ...quest,
+      progress: {
+        current: quest.current_step,
+        target: quest.quest?.steps?.length || 1,
+        percentage: quest.quest?.steps?.length ? (quest.current_step / quest.quest.steps.length) * 100 : 0
+      }
+    })) || [];
   },
 
   async startQuest(userId: string, questId: string): Promise<UserQuest | null> {
@@ -295,6 +326,34 @@ const questService = {
     }
 
     return data || [];
+  },
+
+  async generateDailyQuestsForUser(userId: string): Promise<boolean> {
+    if (!userId) return false;
+
+    try {
+      // Get available daily quests
+      const dailyQuests = await this.getDailyQuests();
+      if (dailyQuests.length === 0) return false;
+
+      // Select 3 random quests
+      const shuffled = [...dailyQuests].sort(() => 0.5 - Math.random());
+      const selectedQuests = shuffled.slice(0, 3);
+
+      // Start each quest for the user
+      for (const quest of selectedQuests) {
+        await this.startQuest(userId, quest.id);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error generating daily quests:", error);
+      return false;
+    }
+  },
+
+  async acceptQuest(userId: string, questId: string): Promise<UserQuest | null> {
+    return this.startQuest(userId, questId);
   },
 
   getNutritionQuests,
