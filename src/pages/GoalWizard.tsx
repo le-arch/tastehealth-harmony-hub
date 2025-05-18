@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNutrition } from "../contexts/NutritionContext";
@@ -15,8 +14,6 @@ import CalorieGoalStep from "@/components/goal-wizard/CalorieGoalStep";
 import MacroStep from "@/components/goal-wizard/MacroStep";
 import ReviewGoalsStep from "@/components/goal-wizard/ReviewGoalsStep";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
-import { useScreenSize } from "@/utils/mobile";
-
 const steps = [
   { id: 1, title: "Basic Information" },
   { id: 2, title: "Calorie Goals" },
@@ -46,7 +43,6 @@ const GoalWizard = () => {
   const { nutritionGoal, saveNutritionGoal } = useNutrition();
   const [currentStep, setCurrentStep] = useState(1);
   const [showConfetti, setShowConfetti] = useState(false);
-  const { isMobile, isTablet } = useScreenSize();
 
   const [formData, setFormData] = useState<FormData>({
     age: 20,
@@ -196,79 +192,74 @@ const GoalWizard = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900">
+    <div className=" mx-auto space-y-8 flex">
       <ProfileSidebar activePage="goals" />
       <Confetti active={showConfetti} />
-      
-      <div className={`flex-1 p-3 sm:p-6 ${isMobile ? 'mt-14' : isTablet ? 'sm:ml-16' : 'sm:ml-64'}`}>
-        <div className="max-w-3xl mx-auto space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-xl sm:text-3xl font-bold">
-              Personalized Nutrition Goal Wizard
-            </h1>
-            <p className="text-muted-foreground text-sm sm:text-base">
-              Set your nutrition goals in just a few steps to get personalized
-              recommendations.
-            </p>
+      <div className="settings-page ml-16 md:ml-64 w-full transition-all duration-300 ease-in-out">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold">
+            Personalized Nutrition Goal Wizard
+          </h1>
+          <p className="text-muted-foreground">
+            Set your nutrition goals in just a few steps to get personalized
+            recommendations.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>
+              Step {currentStep} of {steps.length}
+            </span>
+            <span>{steps[currentStep - 1].title}</span>
           </div>
+          <Progress
+            value={(currentStep / steps.length) * 100}
+            className="h-2"
+          />
+        </div>
 
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs sm:text-sm">
-              <span>
-                Step {currentStep} of {steps.length}
-              </span>
-              <span className="hidden sm:block">{steps[currentStep - 1].title}</span>
-            </div>
-            <Progress
-              value={(currentStep / steps.length) * 100}
-              className="h-2"
-            />
-          </div>
-
-          <Card className="nutrition-card animate-fade-in">
-            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
-              {currentStep === 1 && (
-                <NutritionGoalForm formData={formData} onChange={handleChange} />
-              )}
-              {currentStep === 2 && (
-                <CalorieGoalStep
-                  formData={formData}
-                  calculateCalories={calculateCalories}
-                  onChange={handleChange}
-                />
-              )}
-              {currentStep === 3 && (
-                <MacroStep
-                  formData={formData}
-                  onMacroChange={handleMacroChange}
-                />
-              )}
-              {currentStep === 4 && <ReviewGoalsStep formData={formData} />}
-            </CardContent>
-          </Card>
-
-          <div className="flex justify-between pt-2">
-            <Button
-              variant="outline"
-              onClick={handlePrevious}
-              disabled={currentStep === 1}
-              size={isMobile ? "sm" : "default"}
-            >
-              Previous
-            </Button>
-
-            {currentStep < steps.length ? (
-              <Button onClick={handleNext} size={isMobile ? "sm" : "default"}>Continue</Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                className="bg-primary hover:bg-primary/90"
-                size={isMobile ? "sm" : "default"}
-              >
-                Save Goals
-              </Button>
+        <Card className="nutrition-card animate-fade-in">
+          <CardContent className="pt-6">
+            {currentStep === 1 && (
+              <NutritionGoalForm formData={formData} onChange={handleChange} />
             )}
-          </div>
+            {currentStep === 2 && (
+              <CalorieGoalStep
+                formData={formData}
+                calculateCalories={calculateCalories}
+                onChange={handleChange}
+              />
+            )}
+            {currentStep === 3 && (
+              <MacroStep
+                formData={formData}
+                onMacroChange={handleMacroChange}
+              />
+            )}
+            {currentStep === 4 && <ReviewGoalsStep formData={formData} />}
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-between">
+          <Button
+            variant="outline"
+            onClick={handlePrevious}
+            disabled={currentStep === 1}
+          >
+            Previous
+          </Button>
+
+          {currentStep < steps.length ? (
+            <Button onClick={handleNext}>Continue</Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              className="bg-primary hover:bg-primary/90"
+            >
+              Save Goals
+            </Button>
+          )}
         </div>
       </div>
     </div>

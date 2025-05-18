@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchUserProfile } from "../../services/profileService";
+import { fetchUserProfile, UserProfile } from "../../services/profileService";
 import {
   LayoutDashboard,
   User,
@@ -25,12 +24,12 @@ import {
   Star,
   Mountain,
   Gift,
+  Inspect,
   Pencil,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import NotificationDropdown from "@/components/notifications/NotificationDropdown";
-import { useScreenSize } from "@/utils/mobile";
-
+import NutritionGamificationSystem from "../gamification/NutritionGamificationSystem";
 interface ProfileSidebarProps {
   activePage?: string;
 }
@@ -43,7 +42,6 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
   const location = useLocation();
   const { language, setLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
-  const { isMobile, isTablet } = useScreenSize();
 
   const translations = {
     en: {
@@ -55,6 +53,8 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
       notifications: "Notifications",
       signOut: "Sign Out",
       mealplan: "Create Plans",
+      //mealplanid: "View plans",
+      //mealBuilder: "Meal Builder",
       favorites: "Favorites",
       goals: "Goal Wizard",
       games: "Nutrition Game",
@@ -73,6 +73,8 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
       notifications: "Notifications",
       signOut: "Déconnexion",
       mealplan: "Creer des Plans",
+     // mealplanid: "Voir les plans",
+      //mealBuilder: "Créateur de Repas",
       favorites: "Favoris",
       goals: "Assistant de but",
       games: "Jeu de Nutrition",
@@ -88,6 +90,7 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
     translations[language as keyof typeof translations] || translations.en;
 
   const navItems = [
+    // { path: '/notifications', icon: <Bell className="h-5 w-5" />, label: t.notifications },
     {
       path: "/dashboard",
       icon: <LayoutDashboard className="h-5 w-5" />,
@@ -115,7 +118,13 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
       label: t.favorites,
     },
     { path: "/goals", icon: <Trophy className="h-5 w-5" />, label: t.goals },
-    { path: "/games", icon: <Gamepad className="h-5 w-5" />, label: t.games },
+    // GoalWizard
+    { path: "/games", icon: <Gamepad className="h-5 w-5" />, label: t.games }, // Nutrition Game
+    // {
+    //   path: "/meal-builder",
+    //   icon: <HouseIcon className="h-5 w-5" />,
+    //   label: t.mealBuilder,
+    //}, // Added Meal Builder
     {
       path: "/points",
       icon: <Star className="h-5 w-5" />,
@@ -150,6 +159,7 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
           if (profile) {
             setUserName(profile.first_name || profile.username || "User");
             setUserEmail(session.user.email || "");
+            // setUserAvatar(profile.avatar_url || '');
           }
         }
       } catch (error) {
@@ -159,13 +169,6 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
 
     loadUserProfile();
   }, []);
-
-  // Close sidebar on route change for mobile
-  useEffect(() => {
-    if (isMobile && isOpen) {
-      setIsOpen(false);
-    }
-  }, [location.pathname, isMobile, isOpen]);
 
   const handleSignOut = async () => {
     try {
@@ -184,11 +187,6 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
     setIsOpen(false);
   };
 
-  const sidebarWidth = isTablet && !isOpen ? "w-16" : "w-64";
-  const sidebarClass = `fixed top-0 left-0 z-50 h-full ${sidebarWidth} transform transition-transform duration-300 ease-in-out ${
-    isOpen || !isMobile ? "translate-x-0" : "-translate-x-full"
-  } bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 flex flex-col`;
-
   return (
     <>
       {/* Mobile menu button */}
@@ -199,12 +197,12 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
           onClick={toggleSidebar}
           aria-label="Toggle Sidebar"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-6 w-6" />
         </Button>
       </div>
 
       {/* Overlay */}
-      {isOpen && isMobile && (
+      {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={closeSidebar}
@@ -213,84 +211,61 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
       )}
 
       {/* Sidebar */}
-      <aside className={sidebarClass}>
-        <div className="flex items-center justify-between mb-6 md:mb-8">
+      <aside
+        className={`fixed top-0 left-0 z-50 h-full w-64 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 flex flex-col`}
+      >
+        <div className="flex items-center justify-between mb-8">
           <Link
             to="/dashboard"
             className="flex items-center"
             onClick={closeSidebar}
           >
-            <Logo size={isTablet && !isOpen ? "sm" : "md"} />
-            {(!isTablet || isOpen) && (
-              <span className="ml-2 text-xl font-bold">TH</span>
-            )}
+            <Logo size="md" />
+            <span className="ml-2 text-xl font-bold">TH</span>
           </Link>
-          {isMobile && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={closeSidebar}
-              aria-label="Close Sidebar"
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={closeSidebar}
+            aria-label="Close Sidebar"
+          >
+            <X className="h-5 w-5" />
+          </Button>
         </div>
 
-        {/* Profile section - hide text in tablet mini sidebar mode */}
-        {(!isTablet || isOpen) && (
-          <div className="flex items-center space-x-3 mb-6 p-3 rounded-lg bg-gray-100 dark:bg-gray-700">
-            <div className="relative">
-              {userAvatar ? (
-                <img
-                  src={userAvatar}
-                  alt={userName}
-                  className="h-9 w-9 rounded-full object-cover"
-                />
-              ) : (
-                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="h-4 w-4 text-primary" />
-                </div>
-              )}
-              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-white dark:border-gray-700"></span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{userName}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                {userEmail}
-              </p>
-            </div>
-            <NotificationDropdown />
+        <div className="flex items-center space-x-3 mb-8 p-3 rounded-lg bg-gray-100 dark:bg-gray-700">
+          <div className="relative">
+            {userAvatar ? (
+              <img
+                src={userAvatar || "/placeholder.svg"}
+                alt={userName}
+                className="h-10 w-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <User className="h-5 w-5 text-primary" />
+              </div>
+            )}
+            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-gray-700"></span>
           </div>
-        )}
-
-        {/* Icons-only view for tablet without text */}
-        {isTablet && !isOpen && (
-          <div className="flex flex-col items-center py-3 mb-4">
-            <div className="relative mb-4">
-              {userAvatar ? (
-                <img
-                  src={userAvatar}
-                  alt={userName}
-                  className="h-9 w-9 rounded-full object-cover"
-                />
-              ) : (
-                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="h-4 w-4 text-primary" />
-                </div>
-              )}
-              <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-green-500 border-2 border-white dark:border-gray-700"></span>
-            </div>
-            <NotificationDropdown />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium truncate">{userName}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+              {userEmail}
+            </p>
           </div>
-        )}
+          <NotificationDropdown />
+        </div>
 
-        <nav className="flex-1 space-y-1 overflow-y-auto">
+        <nav className="flex-1 space-y-1">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              onClick={() => isMobile && closeSidebar()}
+              onClick={closeSidebar}
               className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                 (activePage &&
                   item.label
@@ -303,12 +278,12 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
               aria-label={item.label}
             >
               <span className="mr-3">{item.icon}</span>
-              {(!isTablet || isOpen) && item.label}
+              {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <Button
               variant="ghost"
@@ -322,27 +297,23 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
                 <Moon className="h-5 w-5" />
               )}
             </Button>
-            {(!isTablet || isOpen) && (
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="text-sm bg-transparent border-none focus:ring-0"
-                aria-label={t.language}
-              >
-                <option value="en">English</option>
-                <option value="fr">Français</option>
-              </select>
-            )}
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="text-sm bg-transparent border-none focus:ring-0"
+              aria-label={t.language}
+            >
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+            </select>
           </div>
           <Button
             variant="ghost"
-            className={`${
-              isTablet && !isOpen ? "" : "w-full justify-start"
-            } text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20`}
+            className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
             onClick={handleSignOut}
           >
-            <LogOut className={`${isTablet && !isOpen ? "" : "mr-3"} h-5 w-5`} />
-            {(!isTablet || isOpen) && t.signOut}
+            <LogOut className="mr-3 h-5 w-5" />
+            {t.signOut}
           </Button>
         </div>
       </aside>
