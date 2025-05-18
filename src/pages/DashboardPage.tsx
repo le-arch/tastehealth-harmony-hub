@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { ProfileSidebar } from '@/components/profile/ProfileSidebar';
 import NutritionDashboard from '@/components/nutrition/NutritionDashboard';
@@ -10,14 +11,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import ChallengeCreator from '../components/ChallengeCreator'; // Import the ChallengeCreator component
+import ChallengeCreator from '../components/ChallengeCreator';
 import TasteHealthLoader from "../components/TastehealthLoader";
+import { useScreenSize } from '@/utils/mobile';
 
 const DashboardPage = () => {
   const { language } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedTab, setSelectedTab] = useState("dashboard");
-   const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const { isMobile, isTablet } = useScreenSize();
+  
   const translations = {
     en: {
       title: "Health Dashboard",
@@ -27,7 +31,7 @@ const DashboardPage = () => {
         rewards: "Rewards",
         summary: "Weekly Summary",
         mood: "Mood Tracker",
-        challenges: "Challenges", // Added Challenges tab
+        challenges: "Challenges",
       },
     },
     fr: {
@@ -38,7 +42,7 @@ const DashboardPage = () => {
         rewards: "Récompenses",
         summary: "Résumé Hebdomadaire",
         mood: "Suivi de l'Humeur",
-        challenges: "Défis", // Added Challenges tab
+        challenges: "Défis",
       },
     },
   };
@@ -67,30 +71,41 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-auto align-stretch">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col md:flex-row">
       <ProfileSidebar activePage="dashboard" />
 
-      <div className="flex-1 p-4 sm:ml-64">
-        <div className="p-4 max-w-6xl mx-auto">
-          <h1 className="text-2xl font-bold mb-1">{t.title}</h1>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">{t.subtitle}</p>
+      <div className={`flex-1 p-3 sm:p-4 ${isMobile ? 'mt-14' : isTablet ? 'sm:ml-16' : 'sm:ml-64'}`}>
+        <div className="p-2 sm:p-4 max-w-6xl mx-auto">
+          <h1 className="text-xl sm:text-2xl font-bold mb-1">{t.title}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">{t.subtitle}</p>
 
           <Tabs
             defaultValue="dashboard"
             value={selectedTab}
             onValueChange={setSelectedTab}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
-            <TabsList className="grid grid-cols-5 w-full max-w-3xl mx-auto">
+            <TabsList className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-5'} w-full max-w-3xl mx-auto`}>
               <TabsTrigger value="dashboard">{t.tabs.dashboard}</TabsTrigger>
               <TabsTrigger value="rewards">{t.tabs.rewards}</TabsTrigger>
               <TabsTrigger value="summary">{t.tabs.summary}</TabsTrigger>
-              <TabsTrigger value="mood">{t.tabs.mood}</TabsTrigger>
-              <TabsTrigger value="challenges">{t.tabs.challenges}</TabsTrigger> {/* Added Challenges tab */}
+              {!isMobile && (
+                <>
+                  <TabsTrigger value="mood">{t.tabs.mood}</TabsTrigger>
+                  <TabsTrigger value="challenges">{t.tabs.challenges}</TabsTrigger>
+                </>
+              )}
             </TabsList>
+            
+            {isMobile && (
+              <TabsList className="grid grid-cols-2 w-full max-w-3xl mx-auto">
+                <TabsTrigger value="mood">{t.tabs.mood}</TabsTrigger>
+                <TabsTrigger value="challenges">{t.tabs.challenges}</TabsTrigger>
+              </TabsList>
+            )}
 
-            <TabsContent value="dashboard" className="space-y-8">
-              <div className="grid grid-cols-1 gap-6">
+            <TabsContent value="dashboard" className="space-y-4 sm:space-y-8">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6">
                 <ProgressTracker />
                 <BMICalculator />
                 <NutritionDashboard />
@@ -121,7 +136,7 @@ const DashboardPage = () => {
               )}
             </TabsContent>
 
-            <TabsContent value="challenges"> {/* Added Challenges content */}
+            <TabsContent value="challenges">
               {isAuthenticated ? (
                 <ChallengeCreator />
               ) : (
