@@ -47,7 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Button>
 
             {/* Mobile menu button */}
-            <Button
+{/*             <Button
               variant="ghost"
               size="icon"
               className="md:hidden"
@@ -59,7 +59,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               ) : (
                 <Menu className="h-5 w-5" />
               )}
-            </Button>
+            </Button> */}
           </div>
         </div>
 
