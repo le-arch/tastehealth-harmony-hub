@@ -1,6 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { TabsTrigger } from '@/components/ui/scrollable-tabs';
+import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { 
   BarChart,
   Bar, 
@@ -35,11 +38,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Calendar, Droplet, Moon, Utensils, Activity, Heart, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DataEntryDialog, { DataEntryType } from './DataEntryDialog';
+import { useScreenSize } from '@/utils/mobile';
 
 const ProgressTracker = () => {
   const [progressData, setProgressData] = useState<DailyProgress[]>([]);
   const [activeTab, setActiveTab] = useState('overview');
   const { language } = useLanguage();
+  const { isMobile, isTablet } = useScreenSize();
   
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -236,7 +241,7 @@ const ProgressTracker = () => {
       <CardContent>
         <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>
           <div className="flex items-center justify-between mb-4">
-            <TabsList className="grid grid-cols-5 gap-4 w-full max-w-3xl mx-auto">
+            <ScrollableTabsList className="w-full max-w-3xl mx-auto">
               <TabsTrigger value="overview" className="flex items-center">
                 <Heart className="w-4 h-4 mr-1" />
                 <span>{t.overview}</span>
@@ -257,7 +262,7 @@ const ProgressTracker = () => {
                 <Activity className="w-4 h-4 mr-1" />
                 <span>{t.exercise}</span>
               </TabsTrigger>
-            </TabsList>
+            </ScrollableTabsList>
             {activeTab !== 'overview' && (
               <Button 
                 size="sm" 
