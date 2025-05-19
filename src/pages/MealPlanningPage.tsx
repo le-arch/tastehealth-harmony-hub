@@ -53,7 +53,6 @@ const MealPlanningPage: React.FC = () => {
             onClick={handleBackToDashboard}
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Back to Dashboard
           </Button>
           <h1 className="text-2xl font-bold">Meal Planning</h1>
         </div>
