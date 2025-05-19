@@ -7,11 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, Trophy, Award } from "lucide-react";
 import { toast } from "sonner";
 import gamificationService from "@/services/gamificationService";
+import { useScreenSize } from "@/utils/mobile";
 
 const GamificationPage: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [userPoints, setUserPoints] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { isMobile, isTablet } = useScreenSize();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -60,10 +62,10 @@ const GamificationPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-6 px-4 sm:px-6">
         {/* Points overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
+        <div className={`grid grid-cols-1 ${isTablet ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-4 sm:gap-6 mb-6 sm:mb-8`}>
+          <Card className="h-full">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Star className="h-5 w-5 text-yellow-500" />
@@ -76,7 +78,7 @@ const GamificationPage: React.FC = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="h-full">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Trophy className="h-5 w-5 text-blue-500" />
@@ -90,7 +92,7 @@ const GamificationPage: React.FC = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className={`h-full ${isTablet ? 'col-span-2 md:col-span-1' : ''}`}>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Award className="h-5 w-5 text-purple-500" />

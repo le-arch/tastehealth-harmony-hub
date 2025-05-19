@@ -7,9 +7,11 @@ import MealPrepTimer from './MealPrepTimer';
 import HydrationTracker from './HydrationTracker';
 import NutritionProgressWheel from './NutritionProgressWheel';
 import { ChefHat, LayoutDashboard, Award } from 'lucide-react';
+import { useScreenSize } from '@/utils/mobile';
 
 const NutritionDashboard: React.FC = () => {
   const { language } = useLanguage();
+  const { isMobile, isTablet } = useScreenSize();
 
   const translations = {
     en: {
@@ -29,32 +31,32 @@ const NutritionDashboard: React.FC = () => {
   const t = translations[language as keyof typeof translations] || translations.en;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-2 sm:pb-3">
           <CardTitle className="text-lg font-medium flex items-center">
             <LayoutDashboard className="mr-2 h-5 w-5" />
             {t.dashboard}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="daily" className="space-y-6">
+          <Tabs defaultValue="daily" className="space-y-4 sm:space-y-6">
             <TabsList className="grid grid-cols-3">
               <TabsTrigger value="daily">
                 <ChefHat className="h-4 w-4 mr-2" />
-                {t.dailyProgress}
+                {isMobile ? "" : t.dailyProgress}
               </TabsTrigger>
               <TabsTrigger value="summary">
-                {t.summary}
+                {isMobile ? "" : t.summary}
               </TabsTrigger>
               <TabsTrigger value="achievements">
                 <Award className="h-4 w-4 mr-2" />
-                {t.achievements}
+                {isMobile ? "" : t.achievements}
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="daily" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <TabsContent value="daily" className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 gap-4">
                 <MealPrepTimer />
                 <HydrationTracker />
                 <NutritionProgressWheel />
@@ -62,14 +64,14 @@ const NutritionDashboard: React.FC = () => {
             </TabsContent>
             
             <TabsContent value="summary">
-              <div className="min-h-[400px]">
+              <div className="min-h-[300px] sm:min-h-[400px]">
                 {/* Summary content will be implemented later */}
                 <p>Progress summary will appear here.</p>
               </div>
             </TabsContent>
             
             <TabsContent value="achievements">
-              <div className="min-h-[400px]">
+              <div className="min-h-[300px] sm:min-h-[400px]">
                 {/* Achievements content will be implemented later */}
                 <p>Achievements will appear here.</p>
               </div>

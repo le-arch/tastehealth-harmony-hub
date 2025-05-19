@@ -10,11 +10,13 @@ import questService, { type UserQuest } from "@/services/questService";
 import { Award, CheckCircle, Clock, Star } from "lucide-react";
 import { toast } from "sonner";
 import gamificationService from "@/services/gamificationService";
+import { useScreenSize } from "@/utils/mobile";
 
 export default function DailyQuestsList() {
   const [userQuests, setUserQuests] = useState<UserQuest[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const { isMobile, isTablet } = useScreenSize();
 
   useEffect(() => {
     const fetchUserAndQuests = async () => {
@@ -129,7 +131,7 @@ export default function DailyQuestsList() {
   if (loading) {
     return (
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="flex justify-center">
             <p>Loading quests...</p>
           </div>
@@ -141,9 +143,9 @@ export default function DailyQuestsList() {
   if (userQuests.length === 0) {
     return (
       <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center gap-4 py-8">
-            <Award size={48} className="text-gray-400" />
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col items-center gap-4 py-6 sm:py-8">
+            <Award size={isMobile ? 36 : 48} className="text-gray-400" />
             <p className="text-center text-gray-500">
               No active quests available.
             </p>
@@ -151,6 +153,7 @@ export default function DailyQuestsList() {
               onClick={() =>
                 userId && questService.generateDailyQuestsForUser(userId)
               }
+              size={isMobile ? "sm" : "default"}
             >
               Generate Daily Quests
             </Button>
@@ -168,24 +171,24 @@ export default function DailyQuestsList() {
           Daily Quests
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4">
-        <div className="space-y-4">
+      <CardContent className="p-3 sm:p-4">
+        <div className="space-y-3 sm:space-y-4">
           {userQuests.map((userQuest) => (
-            <div key={userQuest.id} className="rounded-lg border p-4">
-              <div className="flex justify-between items-start mb-2">
+            <div key={userQuest.id} className="rounded-lg border p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
                 <div>
                   <h3 className="font-medium">{userQuest.quest?.title}</h3>
                   <p className="text-sm text-gray-500">
                     {userQuest.quest?.description}
                   </p>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 mt-1 sm:mt-0">
                   <Star className="h-4 w-4 text-yellow-500" />
                   <span className="font-medium">{userQuest.quest?.rewards?.points}</span>
                 </div>
               </div>
 
-              <div className="mt-4">
+              <div className="mt-3 sm:mt-4">
                 <div className="flex justify-between text-sm mb-1">
                   <span
                     className={getDifficultyColor(
@@ -207,7 +210,7 @@ export default function DailyQuestsList() {
 
               {/* Quest steps */}
               {userQuest.quest?.steps && (
-                <div className="mt-4 space-y-2">
+                <div className="mt-3 sm:mt-4 space-y-2">
                   {userQuest.quest.steps.map((step, index) => (
                     <div 
                       key={step.id} 
@@ -225,7 +228,7 @@ export default function DailyQuestsList() {
                           {index === userQuest.current_step && !step.completed && (
                             <Button 
                               variant="outline" 
-                              size="sm" 
+                              size={isMobile ? "xs" : "sm"} 
                               className="mt-2"
                               onClick={() => handleCompleteQuestStep(userQuest, index)}
                             >
@@ -239,7 +242,7 @@ export default function DailyQuestsList() {
                 </div>
               )}
 
-              <div className="mt-4 flex items-center justify-between">
+              <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div className="flex items-center text-xs text-gray-500">
                   <Clock className="h-3 w-3 mr-1" />
                   Started {new Date(userQuest.started_at).toLocaleDateString()}
