@@ -37,6 +37,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Link>
 
           <div className="flex items-center space-x-2">
+            <NotificationButton />
             <Button
               variant="ghost"
               size="icon"

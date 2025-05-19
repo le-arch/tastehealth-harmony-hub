@@ -30,6 +30,16 @@
   cursor: pointer;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.tabs-scroll-button:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tabs-scroll-button:active {
+  transform: translateY(-50%) scale(0.95);
 }
 
 .tabs-scroll-prev {
@@ -40,8 +50,25 @@
   right: 0;
 }
 
+.tabs-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 @media (max-width: 768px) {
   .scrollable-tabs-list .tabs-trigger {
     min-width: max-content;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .tabs-scroll-button {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .tabs-scroll-button svg {
+    width: 14px;
+    height: 14px;
   }
 }

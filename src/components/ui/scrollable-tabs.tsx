@@ -7,15 +7,17 @@ import "./scrollable-tabs.css";
 
 interface ScrollableTabsListProps extends React.ComponentPropsWithoutRef<typeof TabsList> {
   showScrollButtons?: boolean;
+  scrollAmount?: number;
 }
 
 export const ScrollableTabsList = React.forwardRef<
   React.ElementRef<typeof TabsList>,
   ScrollableTabsListProps
->(({ className, showScrollButtons = true, children, ...props }, ref) => {
+>(({ className, showScrollButtons = true, scrollAmount = 120, children, ...props }, ref) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   const checkScroll = () => {
     if (scrollRef.current) {
@@ -34,7 +36,17 @@ export const ScrollableTabsList = React.forwardRef<
     }
     
     // Add resize listener for responsive behavior
-    const resizeObserver = new ResizeObserver(checkScroll);
+    const resizeObserver = new ResizeObserver(() => {
+      checkScroll();
+      // Center active tab on resize
+      if (scrollElement) {
+        const activeTab = scrollElement.querySelector('[data-state="active"]');
+        if (activeTab) {
+          centerActiveTab(activeTab as HTMLElement);
+        }
+      }
+    });
+    
     if (scrollElement) {
       resizeObserver.observe(scrollElement);
     }
@@ -46,16 +58,61 @@ export const ScrollableTabsList = React.forwardRef<
       }
     };
   }, [children]);
+  
+  // Center the active tab when it changes
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    if (scrollElement) {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === 'data-state') {
+            const activeTab = scrollElement.querySelector('[data-state="active"]');
+            if (activeTab) {
+              centerActiveTab(activeTab as HTMLElement);
+            }
+          }
+        });
+      });
+      
+      observer.observe(scrollElement, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ['data-state']
+      });
+      
+      return () => {
+        observer.disconnect();
+      };
+    }
+  }, []);
+
+  const centerActiveTab = (activeTab: HTMLElement) => {
+    if (scrollRef.current && activeTab) {
+      const container = scrollRef.current;
+      const tabRect = activeTab.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      
+      const targetScrollLeft = activeTab.offsetLeft - (containerRect.width / 2) + (tabRect.width / 2);
+      container.scrollTo({
+        left: targetScrollLeft,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const scrollLeft = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -100, behavior: "smooth" });
+    if (scrollRef.current && !isScrolling) {
+      setIsScrolling(true);
+      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+      setTimeout(() => setIsScrolling(false), 300);
     }
   };
 
   const scrollRight = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 100, behavior: "smooth" });
+    if (scrollRef.current && !isScrolling) {
+      setIsScrolling(true);
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      setTimeout(() => setIsScrolling(false), 300);
     }
   };
 
@@ -78,26 +135,30 @@ export const ScrollableTabsList = React.forwardRef<
       </TabsList>
       {showScrollButtons && (
         <>
-          {showLeftArrow && (
-            <button 
-              className="tabs-scroll-button tabs-scroll-prev" 
-              onClick={scrollLeft}
-              type="button"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-          )}
-          {showRightArrow && (
-            <button 
-              className="tabs-scroll-button tabs-scroll-next" 
-              onClick={scrollRight}
-              type="button"
-              aria-label="Scroll right"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          )}
+          <button 
+            className={cn(
+              "tabs-scroll-button tabs-scroll-prev", 
+              !showLeftArrow && "tabs-hidden"
+            )}
+            onClick={scrollLeft}
+            type="button"
+            aria-label="Scroll left"
+            disabled={!showLeftArrow || isScrolling}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button 
+            className={cn(
+              "tabs-scroll-button tabs-scroll-next", 
+              !showRightArrow && "tabs-hidden"
+            )}
+            onClick={scrollRight}
+            type="button"
+            aria-label="Scroll right"
+            disabled={!showRightArrow || isScrolling}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </>
       )}
     </div>

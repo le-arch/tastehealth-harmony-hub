@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import ChallengeCreator from '../components/ChallengeCreator';
 import TasteHealthLoader from "../components/TastehealthLoader";
 import { useScreenSize } from '@/utils/mobile';
+import { LayoutDashboard, Award, Calendar, Smile, Trophy } from 'lucide-react';
 
 const DashboardPage = () => {
   const { language } = useLanguage();
@@ -33,7 +34,7 @@ const DashboardPage = () => {
         rewards: "Rewards",
         summary: "Weekly Summary",
         mood: "Mood Tracker",
-        challenges: "Challenges", // Added Challenges tab
+        challenges: "Challenges",
       },
     },
     fr: {
@@ -44,7 +45,7 @@ const DashboardPage = () => {
         rewards: "Récompenses",
         summary: "Résumé Hebdomadaire",
         mood: "Suivi de l'Humeur",
-        challenges: "Défis", // Added Challenges tab
+        challenges: "Défis",
       },
     },
   };
@@ -88,11 +89,26 @@ const DashboardPage = () => {
             className="space-y-4 sm:space-y-6"
           >
             <ScrollableTabsList className="w-full max-w-3xl mx-auto">
-              <TabsTrigger value="dashboard">{t.tabs.dashboard}</TabsTrigger>
-              <TabsTrigger value="rewards">{t.tabs.rewards}</TabsTrigger>
-              <TabsTrigger value="summary">{t.tabs.summary}</TabsTrigger>
-              <TabsTrigger value="mood">{t.tabs.mood}</TabsTrigger>
-              <TabsTrigger value="challenges">{t.tabs.challenges}</TabsTrigger>
+              <TabsTrigger value="dashboard" className="flex items-center gap-2">
+                <LayoutDashboard className="h-4 w-4" />
+                {!isMobile && t.tabs.dashboard}
+              </TabsTrigger>
+              <TabsTrigger value="rewards" className="flex items-center gap-2">
+                <Trophy className="h-4 w-4" />
+                {!isMobile && t.tabs.rewards}
+              </TabsTrigger>
+              <TabsTrigger value="summary" className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                {!isMobile && t.tabs.summary}
+              </TabsTrigger>
+              <TabsTrigger value="mood" className="flex items-center gap-2">
+                <Smile className="h-4 w-4" />
+                {!isMobile && t.tabs.mood}
+              </TabsTrigger>
+              <TabsTrigger value="challenges" className="flex items-center gap-2">
+                <Award className="h-4 w-4" />
+                {!isMobile && t.tabs.challenges}
+              </TabsTrigger>
             </ScrollableTabsList>
 
             <TabsContent value="dashboard" className="space-y-6 sm:space-y-8">
