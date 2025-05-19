@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
@@ -25,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col bg-softgreen-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex items-center justify-between h-16 px-4">
           <Link to="/" className="flex items-center space-x-2">
             <Utensils className="h-6 w-6 text-primary" />
@@ -45,21 +46,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Sun className="h-5 w-5" />
               )}
             </Button>
-
-            {/* Mobile menu button */}
-{/*             <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
-              aria-label="Toggle menu"
-            >
-              {isMobileNavOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </Button> */}
           </div>
         </div>
 
