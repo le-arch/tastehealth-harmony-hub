@@ -1,0 +1,47 @@
+
+.scrollable-tabs-list {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scroll-behavior: smooth;
+  white-space: nowrap;
+  padding-bottom: 4px; /* Adds space for the scrollbar */
+  position: relative;
+}
+
+.scrollable-tabs-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.tabs-scroll-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tabs-scroll-prev {
+  left: 0;
+}
+
+.tabs-scroll-next {
+  right: 0;
+}
+
+@media (max-width: 768px) {
+  .scrollable-tabs-list .tabs-trigger {
+    min-width: max-content;
+  }
+}

@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { TabsTrigger } from "@/components/ui/scrollable-tabs";
+import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Zap, Crown } from "lucide-react";
@@ -20,6 +22,7 @@ import DailyStreak from "./DailyStreak";
 import NutritionBadges from "./NutritionBadges";
 import NutritionLeaderboard from "./NutritionLeaderboard";
 import NutritionQuest from "./NutritionQuest";
+import { useScreenSize } from "@/utils/mobile";
 
 interface NutritionGamificationSystemProps {
   userId?: string;
@@ -36,6 +39,7 @@ const NutritionGamificationSystem = ({
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [streak, setStreak] = useState(0);
   const { language } = useLanguage();
+  const { isMobile, isTablet } = useScreenSize();
 
   // Translations
   const translations = {
@@ -330,14 +334,14 @@ const NutritionGamificationSystem = ({
         value={activeTab}
         onValueChange={setActiveTab}
       >
-        <TabsList className="grid grid-cols-3 md:grid-cols-6">
+        <ScrollableTabsList className={`w-full ${isMobile ? '' : 'grid-cols-6'}`}>
           <TabsTrigger value="dashboard">{t.dashboard}</TabsTrigger>
           <TabsTrigger value="challenges">{t.challenges}</TabsTrigger>
           <TabsTrigger value="rewards">{t.rewards}</TabsTrigger>
           <TabsTrigger value="badges">{t.badges}</TabsTrigger>
           <TabsTrigger value="leaderboard">{t.leaderboard}</TabsTrigger>
           <TabsTrigger value="quests">{t.quests}</TabsTrigger>
-        </TabsList>
+        </ScrollableTabsList>
 
         <TabsContent value="dashboard" className="space-y-4 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-1 gap-10">
@@ -376,7 +380,7 @@ const NutritionGamificationSystem = ({
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       <ProfileSidebar activePage="Nutrition Game" />
-      <div className="flex-1 p-8 ml-64">{content}</div>
+      <div className={`flex-1 p-8 ${isMobile ? '' : 'ml-64'}`}>{content}</div>
     </div>
   );
 };

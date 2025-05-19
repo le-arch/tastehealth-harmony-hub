@@ -7,7 +7,9 @@ import ProgressTracker from '@/components/health/ProgressTracker';
 import RewardsSystem from '../components/RewardSystem';
 import WeeklySummary from '@/components/WeeklySummary';
 import MealMoodTracker from '@/components/MealMoodTracker';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { TabsTrigger } from "@/components/ui/scrollable-tabs";
+import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
@@ -85,13 +87,13 @@ const DashboardPage = () => {
             onValueChange={setSelectedTab}
             className="space-y-4 sm:space-y-6"
           >
-            <TabsList className={`grid ${isMobile ? 'grid-cols-2 gap-y-2' : isTablet ? 'grid-cols-3 gap-y-2' : 'grid-cols-5'} w-full max-w-3xl mx-auto`}>
+            <ScrollableTabsList className="w-full max-w-3xl mx-auto">
               <TabsTrigger value="dashboard">{t.tabs.dashboard}</TabsTrigger>
               <TabsTrigger value="rewards">{t.tabs.rewards}</TabsTrigger>
               <TabsTrigger value="summary">{t.tabs.summary}</TabsTrigger>
               <TabsTrigger value="mood">{t.tabs.mood}</TabsTrigger>
               <TabsTrigger value="challenges">{t.tabs.challenges}</TabsTrigger>
-            </TabsList>
+            </ScrollableTabsList>
 
             <TabsContent value="dashboard" className="space-y-6 sm:space-y-8">
               <div className="grid grid-cols-1 gap-4 sm:gap-6">

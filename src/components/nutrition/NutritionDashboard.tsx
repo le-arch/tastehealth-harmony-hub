@@ -1,7 +1,9 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { TabsTrigger } from '@/components/ui/scrollable-tabs';
+import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { useLanguage } from '@/contexts/LanguageContext';
 import MealPrepTimer from './MealPrepTimer';
 import HydrationTracker from './HydrationTracker';
@@ -41,19 +43,19 @@ const NutritionDashboard: React.FC = () => {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="daily" className="space-y-4 sm:space-y-6">
-            <TabsList className="grid grid-cols-3">
-              <TabsTrigger value="daily">
+            <ScrollableTabsList>
+              <TabsTrigger value="daily" className="flex items-center">
                 <ChefHat className="h-4 w-4 mr-2" />
                 {isMobile ? "" : t.dailyProgress}
               </TabsTrigger>
               <TabsTrigger value="summary">
                 {isMobile ? "" : t.summary}
               </TabsTrigger>
-              <TabsTrigger value="achievements">
+              <TabsTrigger value="achievements" className="flex items-center">
                 <Award className="h-4 w-4 mr-2" />
                 {isMobile ? "" : t.achievements}
               </TabsTrigger>
-            </TabsList>
+            </ScrollableTabsList>
             
             <TabsContent value="daily" className="space-y-4 sm:space-y-6">
               <div className="grid grid-cols-1 gap-4">

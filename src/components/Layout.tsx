@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import NotificationButton from "./NotificationButton";
 import { useScreenSize } from "@/utils/mobile";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { TabsTrigger } from "@/components/ui/scrollable-tabs";
+import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
 
 interface LayoutProps {
   children: React.ReactNode;

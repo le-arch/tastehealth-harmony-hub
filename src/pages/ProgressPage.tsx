@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProfileSidebar } from '@/components/profile/ProfileSidebar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { useLanguage } from '@/contexts/LanguageContext';
 import RewardSystem from '@/components/RewardSystem';
 import BMICalculator from '@/components/health/BMICalculator';
@@ -16,11 +16,13 @@ import HydrationInput from '@/components/health/HydrationInput';
 import { BarChart, TrendingUp, Trophy, History, ChevronLeft, PlusCircle, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ChallengeCreator from '@/components/ChallengeCreator';
+import { useScreenSize } from '@/utils/mobile';
 
 const ProgressPage = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const { isMobile, isTablet } = useScreenSize();
   
   const translations = {
     en: {
@@ -81,14 +83,6 @@ const ProgressPage = () => {
         <div className="p-4 max-w-6xl mx-auto">
           <div className="mb-6 flex flex-wrap items-center justify-between">
             <div className="flex items-center mb-2 md:mb-0">
-              {/* <Button 
-                variant="ghost" 
-                className="mr-4" 
-                onClick={handleBackToDashboard}
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                {t.backToDashboard}
-              </Button> */}
               <h1 className="text-2xl font-bold">{t.title}</h1>
             </div>
             <div>
@@ -109,7 +103,7 @@ const ProgressPage = () => {
           <p className="text-gray-500 dark:text-gray-400 mb-6">{t.subtitle}</p>
           
           <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <ScrollableTabsList className={`w-full ${isMobile || isTablet ? 'grid-cols-1' : 'grid grid-cols-5'}`}>
               <TabsTrigger value="overview" className="flex items-center gap-1">
                 <BarChart className="h-4 w-4" />
                 {t.overview}
@@ -130,7 +124,7 @@ const ProgressPage = () => {
                 <History className="h-4 w-4" />
                 {t.history}
               </TabsTrigger>
-            </TabsList>
+            </ScrollableTabsList>
             
             <TabsContent value="overview" className="space-y-6 mt-6">
               <ProgressTracker />
@@ -145,13 +139,13 @@ const ProgressPage = () => {
                 </CardHeader>
                 <CardContent>
                   <Tabs defaultValue="calories" className="w-full">
-                    <TabsList className="flex w-full">
+                    <ScrollableTabsList className="flex w-full">
                       <TabsTrigger value="calories" className="flex-1">{t.calories}</TabsTrigger>
                       <TabsTrigger value="sleep" className="flex-1">{t.sleep}</TabsTrigger>
                       <TabsTrigger value="exercise" className="flex-1">{t.exercise}</TabsTrigger>
                       <TabsTrigger value="water" className="flex-1">{t.water}</TabsTrigger>
                       <TabsTrigger value="bmi" className="flex-1">{t.bmiTracker}</TabsTrigger>
-                    </TabsList>
+                    </ScrollableTabsList>
                     
                     <div className="my-6">
                       <TabsContent value="calories">

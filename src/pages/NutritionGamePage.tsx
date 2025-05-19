@@ -1,13 +1,19 @@
+
 "use client";
 
 import type React from "react";
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/SuperbaseClient";
+import { supabase } from "../integrations/supabase/client";
 import NutritionGamificationSystem from "../components/gamification/NutritionGamificationSystem";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { TabsTrigger } from "@/components/ui/scrollable-tabs";
+import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
+import { useScreenSize } from "@/utils/mobile";
 
 const NutritionGamePage: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { isMobile, isTablet } = useScreenSize();
 
   useEffect(() => {
     const fetchUser = async () => {
