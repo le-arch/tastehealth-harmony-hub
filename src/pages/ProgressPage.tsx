@@ -14,7 +14,7 @@ import CalorieTracker from '@/components/health/CalorieTracker';
 import SleepTracker from '@/components/health/SleepTracker';
 import ExerciseTracker from '@/components/health/ExerciseTracker';
 import HydrationInput from '@/components/health/HydrationInput';
-import { BarChart, TrendingUp, Trophy, History, ChevronLeft, PlusCircle, Edit } from 'lucide-react';
+import { BarChart, TrendingUp, Trophy, History, ChevronLeft, PlusCircle, Edit, Gift } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ChallengeCreator from '@/components/ChallengeCreator';
 import { useScreenSize } from '@/utils/mobile';
@@ -120,7 +120,7 @@ const ProgressPage = () => {
                 {!isSmallScreen && <span>{t.trackers}</span>}
               </TabsTrigger>
               <TabsTrigger value="rewards" className="flex items-center gap-1">
-                <Trophy className="h-4 w-4" />
+                <Gift className="h-4 w-4" />
                 {!isSmallScreen && <span>{t.rewards}</span>}
               </TabsTrigger>
               <TabsTrigger value="challenges" className="flex items-center gap-1">
