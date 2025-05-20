@@ -17,7 +17,6 @@ import { AddMealToMealPlanDialog } from "@/components/AddToMealPlanDialog";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { useToast } from "@/hooks/use-toast";
 import "./MealPlanPage.css";
-import TasteHealthLoader from "@/components/TastehealthLoader";
 
 interface MealPlan {
   id: string;
@@ -317,8 +316,7 @@ const MealPlanPage: React.FC = () => {
       <div className="page-container">
         <ProfileSidebar />
         <div className="content-area">
-            <p>Loading meal plans...</p>
-          <TasteHealthLoader/>
+          <p>Loading meal plans...</p>
         </div>
       </div>
     );
