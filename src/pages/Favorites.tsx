@@ -1,16 +1,14 @@
-
 "use client";
-
 import { useState, useEffect } from "react";
 import { Search, Filter, Plus, Loader2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Card, 
-  CardContent, 
+import {
+  Card,
+  CardContent,
   CardFooter,
   ScrollableCardContainer,
-  ScrollableCardContent  
+  ScrollableCardContent,
 } from "@/components/ui/card";
 import { getFavorites, removeFavorite } from "@/services/favoriteService";
 import { useToast } from "@/hooks/use-toast";
