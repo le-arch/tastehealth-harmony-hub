@@ -55,6 +55,39 @@
   pointer-events: none;
 }
 
+/* Card scroll container styles */
+.card-scroll-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scroll-behavior: smooth;
+  padding-bottom: 8px;
+  margin-left: -8px;
+  margin-right: -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.card-scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.card-scroll-content {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+/* Table scroll container styles */
+.table-scroll-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  max-width: 100%;
+  position: relative;
+}
+
 @media (max-width: 768px) {
   .scrollable-tabs-list .tabs-trigger {
     min-width: 40px;
@@ -71,5 +104,23 @@
   .tabs-scroll-button svg {
     width: 14px;
     height: 14px;
+  }
+  
+  /* Adjust card display on mobile */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  
+  .card-scroll-content {
+    width: max-content;
+    min-width: 100%;
+  }
+  
+  .card-scroll-content > * {
+    min-width: 260px;
+    max-width: 85vw;
+    flex: 0 0 auto;
   }
 }

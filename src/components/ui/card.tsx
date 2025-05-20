@@ -77,4 +77,53 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+// Card grid container for responsive display
+const CardGrid = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4", className)}
+    {...props}
+  />
+))
+CardGrid.displayName = "CardGrid"
+
+// Horizontal scrolling cards container
+const ScrollableCardContainer = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("card-scroll-container", className)}
+    {...props}
+  />
+))
+ScrollableCardContainer.displayName = "ScrollableCardContainer"
+
+// Content container for scrollable cards
+const ScrollableCardContent = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("card-scroll-content", className)}
+    {...props}
+  />
+))
+ScrollableCardContent.displayName = "ScrollableCardContent"
+
+export { 
+  Card, 
+  CardHeader, 
+  CardFooter, 
+  CardTitle, 
+  CardDescription, 
+  CardContent,
+  CardGrid,
+  ScrollableCardContainer,
+  ScrollableCardContent
+}

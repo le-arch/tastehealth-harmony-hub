@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -10,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Plus } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
+import { useScreenSize } from "@/utils/mobile"
 
 interface CreateMealPlanDialogProps {
   onMealPlanCreated?: () => void
@@ -27,6 +29,8 @@ export function CreateMealPlanDialog({
   const [description, setDescription] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
+  const { isMobile, isTablet } = useScreenSize()
+  const isSmallScreen = isMobile || isTablet
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -90,10 +94,10 @@ export function CreateMealPlanDialog({
       <DialogTrigger asChild>
         <Button>
           {buttonIcon}
-          {buttonText}
+          {isSmallScreen ? "" : buttonText}
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Create New Meal Plan</DialogTitle>
         </DialogHeader>

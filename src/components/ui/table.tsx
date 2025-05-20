@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -105,6 +106,21 @@ const TableCaption = React.forwardRef<
 ))
 TableCaption.displayName = "TableCaption"
 
+// Scrollable table wrapper component
+const ScrollableTable = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => (
+  <div 
+    ref={ref}
+    className={cn("table-scroll-container", className)} 
+    {...props}
+  >
+    {children}
+  </div>
+))
+ScrollableTable.displayName = "ScrollableTable"
+
 export {
   Table,
   TableHeader,
@@ -114,4 +130,5 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  ScrollableTable,
 }

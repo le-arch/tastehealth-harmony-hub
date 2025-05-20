@@ -161,12 +161,14 @@
   border-radius: 8px;
   padding: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .plan-selector {
   display: flex;
   align-items: center;
   margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
 .plan-selector select {
@@ -176,6 +178,7 @@
   border-radius: 4px;
   font-size: 14px;
   margin: 0 12px;
+  min-width: 150px;
 }
 
 .nav-button {
@@ -233,13 +236,16 @@
 .meal-plan-grid {
   border: 1px solid #83bb8d;
   border-radius: 4px;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
 .meal-times-header {
   display: grid;
   grid-template-columns: 100px repeat(4, 1fr);
   border-bottom: 1px solid #94c5a4;
+  min-width: 600px;
 }
 
 .meal-time-cell {
@@ -257,6 +263,7 @@
   display: grid;
   grid-template-columns: 100px repeat(4, 1fr);
   border-bottom: 1px solid #82c48f;
+  min-width: 600px;
 }
 
 .day-row:last-child {
@@ -415,7 +422,7 @@
 @media (max-width: 768px) {
   .meal-times-header,
   .day-row {
-    grid-template-columns: 80px repeat(4, 1fr);
+    grid-template-columns: 80px repeat(4, minmax(120px, 1fr));
   }
 
   .meal-time-cell,
@@ -427,17 +434,45 @@
   .meal-name {
     font-size: 12px;
   }
+  
+  .meal-plan-content {
+    padding: 12px;
+  }
+  
+  .plan-selector {
+    gap: 8px;
+  }
+  
+  .plan-selector select {
+    margin: 0;
+  }
+  
+  .card-scroll-container {
+    margin: 0 -12px;
+    padding: 0 12px;
+  }
+  
+  .header-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
 }
 
 @media (max-width: 640px) {
   .meal-times-header,
   .day-row {
-    grid-template-columns: 60px repeat(4, 1fr);
+    grid-template-columns: 60px repeat(4, minmax(100px, 1fr));
   }
 
-  .header-actions {
+  .page-header {
     flex-direction: column;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .plan-selector {
@@ -447,5 +482,14 @@
   .plan-actions {
     margin-left: 0;
     margin-top: 8px;
+    width: 100%;
+    justify-content: flex-end;
+    display: flex;
+    gap: 8px;
+  }
+  
+  .meal-plan-grid {
+    margin: 0 -12px;
+    width: calc(100% + 24px);
   }
 }
