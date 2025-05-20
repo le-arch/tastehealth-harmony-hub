@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -7,9 +8,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getMealCategories, getMealSubcategories, getMeals, getMealImagePublicUrl } from '@/services/mealService';
 import { Search, X } from 'lucide-react';
 import { supabase } from '@/lib/SupabaseClient';
+import { useIsMobile, useIsTablet } from '@/hooks/use-mobile';
 
 interface MealSearchProps {
   onSelectMeal: (mealId: string) => void;
+  renderFavoriteButton?: (mealId: string) => React.ReactNode;
 }
 
 // Helper to get the public URL for a meal image from Supabase Storage
@@ -19,10 +22,13 @@ const getMealImageUrl = (imagePath: string | null) => {
   return data?.publicUrl || "";
 };
 
-const MealSearch = ({ onSelectMeal }: MealSearchProps) => {
+const MealSearch = ({ onSelectMeal, renderFavoriteButton }: MealSearchProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [subcategoryFilter, setSubcategoryFilter] = useState('');
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
+  const isSmallScreen = isMobile || isTablet;
   
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ['mealCategories'],
@@ -60,12 +66,13 @@ const MealImage = ({ mealId }: { mealId: string }) => {
 
   return <img src={imageUrl} alt="Meal" className="w-full h-full object-cover" />;
 };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Find Meals</h2>
+        <h2 className="text-lg sm:text-xl font-semibold">Find Meals</h2>
         
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className={`flex flex-col ${isSmallScreen ? 'space-y-3' : 'md:flex-row md:gap-4'}`}>
           <div className="flex-1 relative">
             <Input
               placeholder="Search meals..."
@@ -76,7 +83,7 @@ const MealImage = ({ mealId }: { mealId: string }) => {
             <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
           </div>
           
-          <div className="w-full md:w-60">
+          <div className={`${isSmallScreen ? 'w-full' : 'md:w-60'}`}>
             {categoriesLoading ? (
               <Skeleton className="h-10 w-full" />
             ) : (
@@ -88,7 +95,7 @@ const MealImage = ({ mealId }: { mealId: string }) => {
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="">All Categories</SelectItem>
                   {categories?.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
@@ -99,7 +106,7 @@ const MealImage = ({ mealId }: { mealId: string }) => {
             )}
           </div>
           
-          <div className="w-full md:w-60">
+          <div className={`${isSmallScreen ? 'w-full' : 'md:w-60'}`}>
             {subcategoriesLoading ? (
               <Skeleton className="h-10 w-full" />
             ) : (
@@ -111,7 +118,7 @@ const MealImage = ({ mealId }: { mealId: string }) => {
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="">All Types</SelectItem>
                   {subcategories?.map((subcategory) => (
                     <SelectItem key={subcategory.id} value={subcategory.id}>
                       {subcategory.name}
@@ -122,7 +129,12 @@ const MealImage = ({ mealId }: { mealId: string }) => {
             )}
           </div>
           
-          <Button variant="outline" onClick={handleReset} className="md:w-auto">
+          <Button 
+            variant="outline" 
+            onClick={handleReset}
+            size={isSmallScreen ? "sm" : "default"}
+            className={`${isSmallScreen ? 'w-full' : 'md:w-auto'} flex items-center justify-center`}
+          >
             <X className="h-4 w-4 mr-2" />
             Reset
           </Button>
@@ -131,42 +143,43 @@ const MealImage = ({ mealId }: { mealId: string }) => {
       
       <div>
         {mealsLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             {[...Array(6)].map((_, i) => (
-              <Skeleton key={i} className="h-48 w-full rounded-md" />
+              <Skeleton key={i} className="h-40 sm:h-48 w-full rounded-md" />
             ))}
           </div>
         ) : meals && meals.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             {meals.map((meal) => (
               <div 
                 key={meal.id} 
-                className="border rounded-md overflow-hidden hover:shadow-md transition-all cursor-pointer"
+                className="border rounded-md overflow-hidden hover:shadow-md transition-all cursor-pointer relative"
                 onClick={() => onSelectMeal(meal.id)}
               >
-                <div className="h-48 bg-gray-600 relative">
+                <div className="h-40 sm:h-48 bg-gray-600 relative">
                   {meal.image_url ? (
                     <MealImage mealId={meal.id} />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-700">
-                      <MealImage mealId={meal.id} />
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
+                      No Image
                     </div>
                   )}
-                  <div className="absolute bottom-2 right-2  px-2 py-1 text-xs font-medium rounded">
+                  <div className="absolute bottom-2 right-2 px-2 py-1 text-xs font-medium rounded">
                     {meal.category_name}
                   </div>
+                  {renderFavoriteButton && renderFavoriteButton(meal.id)}
                 </div>
                 <div className="p-3">
-                  <h3 className="font-medium text-gray-700 truncate dark:text-gray=700">{meal.meal_name}</h3>
+                  <h3 className="font-medium text-gray-700 truncate dark:text-gray-200">{meal.meal_name}</h3>
                   {meal.subcategory_name && (
-                    <p className="text-sm text-gray-500 dark:text-gray-500">{meal.subcategory_name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{meal.subcategory_name}</p>
                   )}
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
+          <div className="text-center py-8 sm:py-12">
             <p className="text-gray-500">No meals found. Try adjusting your search.</p>
           </div>
         )}
