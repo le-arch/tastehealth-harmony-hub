@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-
+import { useScreenSize } from "@/utils/mobile";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +30,7 @@ const MealDetail = ({
     queryFn: () => getMealDetails(mealId),
     enabled: !!mealId,
   });
-
+  const { isMobile, isTablet } = useScreenSize();
   const [isFavorited, setIsFavorited] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
 
@@ -119,12 +119,27 @@ const MealDetail = ({
             disabled={favoriteLoading}
           >
             <Heart className={`h-4 w-4 ${isFavorited ? "fill-red-500" : ""}`} />
-            {isFavorited ? "Favorited" : "Add to Favorites"}
+            {!(isMobile || isTablet) &&
+              (isFavorited ? "Favorited" : "Add to Favorites")}
           </Button>
 
           {onAddToMealPlan && (
             <Button onClick={() => onAddToMealPlan(mealId)} variant="default">
-              Add to Meal Plan
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              {!(isMobile || isTablet) && <span>Add to Meal Plan</span>}
             </Button>
           )}
         </div>
@@ -133,7 +148,9 @@ const MealDetail = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div>
-            <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">{meal.meal_name}</h1>
+            <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+              {meal.meal_name}
+            </h1>
             <div className="flex flex-wrap gap-2 mb-4">
               <span className="bg-gray-100 px-3 py-1 rounded-full text-sm font-medium text-gray-900 dark:text-gray-900">
                 {meal.category_name}
@@ -165,10 +182,13 @@ const MealDetail = ({
                   <h3 className="font-medium mb-2">Ingredients</h3>
                   {recipe.ingredients && recipe.ingredients.length > 0 ? (
                     <ul className="list-disc pl-5 space-y-1 text-gray-700">
-                      {recipe.ingredients.map((ingredient, index) => (
-                        <li key={index} className="text-gray-700 dark:text-gray-100">
-                          {ingredient.quantity && `${ingredient.quantity} `}
-                          {ingredient.name}
+                      {recipe.ingredients.map((ingredients, index) => (
+                        <li
+                          key={index}
+                          className="text-gray-700 dark:text-gray-100"
+                        >
+                          {ingredients.quantity && `${ingredients.quantity} `}
+                          {ingredients.quantity}
                         </li>
                       ))}
                     </ul>
@@ -184,7 +204,9 @@ const MealDetail = ({
                       {recipe.instructions}
                     </p>
                   ) : (
-                    <p className="text-gray-100 dark:text-gray-100">No instructions provided.</p>
+                    <p className="text-gray-100 dark:text-gray-100">
+                      No instructions provided.
+                    </p>
                   )}
                 </div>
               </CardContent>
