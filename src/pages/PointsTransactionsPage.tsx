@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/SupabaseClient";
 import PointsTransactionHistory from "../components/gamification/PointsTransactionHistory";
 import ProfileSidebar from "../components/profile/ProfileSidebar";
-
+import { useScreenSize } from "@/utils/mobile";
 const PointsTransactionsPage: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { isMobile, isTablet } = useScreenSize();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -50,7 +51,7 @@ const PointsTransactionsPage: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       <ProfileSidebar activePage="Points History" />
-      <div className="flex-1 p-8 ml-64">
+      <div className={`flex-1 p-4 sm:p-6 md:p-8 ${isMobile ? "" : "md:ml-64"}`}>
         <h1 className="text-3xl font-bold mb-6">Points Transactions</h1>
         <p className="text-gray-600 dark:text-gray-100 mb-8">
           View your complete points transaction history, including points earned
