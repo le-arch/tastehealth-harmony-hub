@@ -8,7 +8,16 @@ import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Zap, Crown } from "lucide-react";
+import {
+  Trophy,
+  Zap,
+  Crown,
+  Award,
+  LayoutDashboard,
+  Target,
+  Gift,
+  Compass,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -245,7 +254,7 @@ const NutritionGamificationSystem = ({
   };
 
   const content = (
-    <div className="space-y-6">
+    <div className="space-y-6 flex-1 p-3 sm:p-4 ${isMobile ? 'mt-16' : 'md:ml-64'}">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold flex items-center">
           <Trophy className="h-6 w-6 mr-2 text-amber-500" />
@@ -334,13 +343,38 @@ const NutritionGamificationSystem = ({
         value={activeTab}
         onValueChange={setActiveTab}
       >
-        <ScrollableTabsList className={`w-full ${isMobile ? '' : 'grid-cols-6'}`}>
-          <TabsTrigger value="dashboard">{t.dashboard}</TabsTrigger>
-          <TabsTrigger value="challenges">{t.challenges}</TabsTrigger>
-          <TabsTrigger value="rewards">{t.rewards}</TabsTrigger>
-          <TabsTrigger value="badges">{t.badges}</TabsTrigger>
-          <TabsTrigger value="leaderboard">{t.leaderboard}</TabsTrigger>
-          <TabsTrigger value="quests">{t.quests}</TabsTrigger>
+        <ScrollableTabsList
+          className={`w-full ${isMobile ? "" : "grid-cols-4"}`}
+        >
+          <TabsTrigger value="dashboard">
+            {" "}
+            <LayoutDashboard className="h-4 w-4" />
+            {!isMobile && t.dashboard}
+          </TabsTrigger>
+          <TabsTrigger value="challenges">
+            {" "}
+            <Target className="h-4 w-4" />
+            {!isMobile && t.challenges}{" "}
+          </TabsTrigger>
+          <TabsTrigger value="rewards">
+            {" "}
+            <Gift className="h-4 w-4" />
+            {!isMobile && t.rewards}
+          </TabsTrigger>
+          <TabsTrigger value="badges">
+            {" "}
+            <Award className="h-4 w-4" />
+            {!isMobile && t.badges}
+          </TabsTrigger>
+          <TabsTrigger value="leaderboard">
+            <Trophy className="h-4 w-4" />
+            {!isMobile && t.leaderboard}
+          </TabsTrigger>
+          <TabsTrigger value="quests">
+            {" "}
+            <Compass className="h-4 w-4" />
+            {!isMobile && t.quests}
+          </TabsTrigger>
         </ScrollableTabsList>
 
         <TabsContent value="dashboard" className="space-y-4 mt-6">
@@ -380,7 +414,7 @@ const NutritionGamificationSystem = ({
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       <ProfileSidebar activePage="Nutrition Game" />
-      <div className={`flex-1 p-8 ${isMobile ? '' : 'ml-64'}`}>{content}</div>
+      <div className={`flex-1 p-8 ${isMobile ? "" : "ml-64"}`}>{content}</div>
     </div>
   );
 };
