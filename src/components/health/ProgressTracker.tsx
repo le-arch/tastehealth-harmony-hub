@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
@@ -244,23 +243,23 @@ const ProgressTracker = () => {
             <ScrollableTabsList className="w-full max-w-3xl mx-auto">
               <TabsTrigger value="overview" className="flex items-center">
                 <Heart className="w-4 h-4 mr-1" />
-                <span>{t.overview}</span>
+                {!isMobile && !isTablet && <span>{t.overview}</span>}
               </TabsTrigger>
               <TabsTrigger value="water" className="flex items-center">
                 <Droplet className="w-4 h-4 mr-1" />
-                <span>{t.water}</span>
+                {!isMobile && !isTablet && <span>{t.water}</span>}
               </TabsTrigger>
               <TabsTrigger value="sleep" className="flex items-center">
                 <Moon className="w-4 h-4 mr-1" />
-                <span>{t.sleep}</span>
+                {!isMobile && !isTablet && <span>{t.sleep}</span>}
               </TabsTrigger>
               <TabsTrigger value="calories" className="flex items-center">
                 <Utensils className="w-4 h-4 mr-1" />
-                <span>{t.calories}</span>
+                {!isMobile && !isTablet && <span>{t.calories}</span>}
               </TabsTrigger>
               <TabsTrigger value="exercise" className="flex items-center">
                 <Activity className="w-4 h-4 mr-1" />
-                <span>{t.exercise}</span>
+                {!isMobile && !isTablet && <span>{t.exercise}</span>}
               </TabsTrigger>
             </ScrollableTabsList>
             {activeTab !== 'overview' && (
@@ -271,7 +270,7 @@ const ProgressTracker = () => {
                 className="flex items-center"
               >
                 <Plus className="h-4 w-4 mr-1" />
-                {t.addData}
+                {!isMobile && !isTablet ? t.addData : ""}
               </Button>
             )}
           </div>
