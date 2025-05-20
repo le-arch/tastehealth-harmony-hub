@@ -1,25 +1,37 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { toast } from "sonner"
-import { motion, AnimatePresence } from "framer-motion"
-import { useLanguage } from "@/contexts/LanguageContext"
-import { supabase } from "@/integrations/supabase/client"
-import { getMeals } from "@/services/mealService"
-import { saveMealMood, getMealMoods } from "@/services/moodTrackerService"
-
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { getMeals } from "@/services/mealService";
+import { saveMealMood, getMealMoods } from "@/services/moodTrackerService";
+import { useScreenSize } from "@/utils/mobile";
 type MoodEntry = {
-  id: string
-  user_id: string
-  meal_id: string
-  meal_name: string
-  mood: string
-  notes: string | null
-  created_at: string
-}
+  id: string;
+  user_id: string;
+  meal_id: string;
+  meal_name: string;
+  mood: string;
+  notes: string | null;
+  created_at: string;
+};
 
 const MOODS = [
   { emoji: "😋", label: "Delicious", value: "delicious" },
@@ -27,19 +39,19 @@ const MOODS = [
   { emoji: "😐", label: "Neutral", value: "neutral" },
   { emoji: "😞", label: "Disappointed", value: "disappointed" },
   { emoji: "😖", label: "Uncomfortable", value: "uncomfortable" },
-]
+];
 
 const MealMoodTracker = () => {
-  const [meals, setMeals] = useState<any[]>([])
-  const [selectedMeal, setSelectedMeal] = useState<string>("")
-  const [selectedMood, setSelectedMood] = useState<string>("")
-  const [notes, setNotes] = useState<string>("")
-  const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [userId, setUserId] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { language } = useLanguage()
-
+  const [meals, setMeals] = useState<any[]>([]);
+  const [selectedMeal, setSelectedMeal] = useState<string>("");
+  const [selectedMood, setSelectedMood] = useState<string>("");
+  const [notes, setNotes] = useState<string>("");
+  const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { language } = useLanguage();
+  const { isMobile, isTablet } = useScreenSize();
   // Translations
   const translations = {
     en: {
@@ -63,73 +75,76 @@ const MealMoodTracker = () => {
       submit: "Enregistrer l'Humeur",
       submitting: "Enregistrement...",
       recentMoods: "Vos Humeurs Récentes",
-      noMoods: "Pas encore d'entrées d'humeur. Commencez à suivre comment vous vous sentez après les repas!",
+      noMoods:
+        "Pas encore d'entrées d'humeur. Commencez à suivre comment vous vous sentez après les repas!",
       moodSaved: "Votre humeur a été enregistrée!",
       selectMoodFirst: "Veuillez d'abord sélectionner une humeur",
       selectMealFirst: "Veuillez d'abord sélectionner un repas",
     },
-  }
+  };
 
-  const t = translations[language as keyof typeof translations] || translations.en
+  const t =
+    translations[language as keyof typeof translations] || translations.en;
 
   useEffect(() => {
     const loadUserData = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
         const {
           data: { session },
-        } = await supabase.auth.getSession()
+        } = await supabase.auth.getSession();
 
         if (session) {
-          setUserId(session.user.id)
-          await loadMeals()
-          await loadMoodEntries(session.user.id)
+          setUserId(session.user.id);
+          await loadMeals();
+          await loadMoodEntries(session.user.id);
         }
       } catch (error) {
-        console.error("Error loading user data:", error)
+        console.error("Error loading user data:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    loadUserData()
-  }, [])
+    loadUserData();
+  }, []);
 
   const loadMeals = async () => {
     try {
-      const mealsData = await getMeals()
-      setMeals(mealsData)
+      const mealsData = await getMeals();
+      setMeals(mealsData);
     } catch (error) {
-      console.error("Error loading meals:", error)
+      console.error("Error loading meals:", error);
     }
-  }
+  };
 
   const loadMoodEntries = async (userId: string) => {
     try {
-      const entries = await getMealMoods(userId)
-      setMoodEntries(entries)
+      const entries = await getMealMoods(userId);
+      setMoodEntries(entries);
     } catch (error) {
-      console.error("Error loading mood entries:", error)
+      console.error("Error loading mood entries:", error);
     }
-  }
+  };
 
   const handleSubmit = async () => {
     if (!selectedMeal) {
-      toast.error(t.selectMealFirst)
-      return
+      toast.error(t.selectMealFirst);
+      return;
     }
 
     if (!selectedMood) {
-      toast.error(t.selectMoodFirst)
-      return
+      toast.error(t.selectMoodFirst);
+      return;
     }
 
-    if (!userId) return
+    if (!userId) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      const mealName = meals.find((meal) => meal.id === selectedMeal)?.meal_name || ""
+      const mealName =
+        meals.find((meal) => meal.id === selectedMeal)?.meal_name || "";
 
       await saveMealMood({
         user_id: userId,
@@ -137,47 +152,47 @@ const MealMoodTracker = () => {
         meal_name: mealName,
         mood: selectedMood,
         notes: notes || null,
-      })
+      });
 
       // Play a celebratory sound
-      const audio = new Audio("/sounds/success.mp3")
-      audio.play().catch((e) => console.log("Audio play failed:", e))
+      const audio = new Audio("/sounds/success.mp3");
+      audio.play().catch((e) => console.log("Audio play failed:", e));
 
-      toast.success(t.moodSaved)
+      toast.success(t.moodSaved);
 
       // Reset form
-      setSelectedMeal("")
-      setSelectedMood("")
-      setNotes("")
+      setSelectedMeal("");
+      setSelectedMood("");
+      setNotes("");
 
       // Reload entries
-      await loadMoodEntries(userId)
+      await loadMoodEntries(userId);
     } catch (error) {
-      console.error("Error saving mood:", error)
-      toast.error("Failed to save mood")
+      console.error("Error saving mood:", error);
+      toast.error("Failed to save mood");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const getMoodEmoji = (mood: string) => {
-    return MOODS.find((m) => m.value === mood)?.emoji || "😐"
-  }
+    return MOODS.find((m) => m.value === mood)?.emoji || "😐";
+  };
 
   const getMoodLabel = (mood: string) => {
-    return MOODS.find((m) => m.value === mood)?.label || "Neutral"
-  }
+    return MOODS.find((m) => m.value === mood)?.label || "Neutral";
+  };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return date.toLocaleDateString(language === "fr" ? "fr-FR" : "en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    })
-  }
+    });
+  };
 
   return (
     <Card className="w-full">
@@ -207,15 +222,15 @@ const MealMoodTracker = () => {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">{t.howDidYouFeel}</label>
-          <div className="flex justify-between">
+          <label className="text-sm font-small">{t.howDidYouFeel}</label>
+          <div className="flex">
             {MOODS.map((mood) => (
               <motion.button
                 key={mood.value}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setSelectedMood(mood.value)}
-                className={`flex flex-col items-center p-2 rounded-lg ${
+                className={`flex flex-col items-center p-1 rounded-md ${
                   selectedMood === mood.value
                     ? "bg-primary/20 ring-2 ring-primary"
                     : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -243,7 +258,11 @@ const MealMoodTracker = () => {
           />
         </div>
 
-        <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full">
+        <Button
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="w-full"
+        >
           {isSubmitting ? t.submitting : t.submit}
         </Button>
       </CardContent>
@@ -265,13 +284,21 @@ const MealMoodTracker = () => {
                   transition={{ duration: 0.3 }}
                   className="flex items-center p-2 border rounded-md"
                 >
-                  <div className="text-2xl mr-3">{getMoodEmoji(entry.mood)}</div>
+                  <div className="text-2xl mr-3">
+                    {getMoodEmoji(entry.mood)}
+                  </div>
                   <div className="flex-1">
                     <div className="font-medium">{entry.meal_name}</div>
-                    <div className="text-xs text-gray-500">{formatDate(entry.created_at)}</div>
-                    {entry.notes && <div className="text-sm mt-1">{entry.notes}</div>}
+                    <div className="text-xs text-gray-500">
+                      {formatDate(entry.created_at)}
+                    </div>
+                    {entry.notes && (
+                      <div className="text-sm mt-1">{entry.notes}</div>
+                    )}
                   </div>
-                  <div className="text-sm font-medium">{getMoodLabel(entry.mood)}</div>
+                  <div className="text-sm font-medium">
+                    {getMoodLabel(entry.mood)}
+                  </div>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -279,7 +306,7 @@ const MealMoodTracker = () => {
         )}
       </CardFooter>
     </Card>
-  )
-}
+  );
+};
 
-export default MealMoodTracker
+export default MealMoodTracker;
