@@ -37,10 +37,9 @@ import {
   PieChartIcon as ChartPie,
   MessageSquare,
 } from "lucide-react";
+import { useScreenSize } from "@/utils/mobile";
 import { ProfileSidebar } from "../components/profile/ProfileSidebar";
 import { StarRating } from "../components/ui/star-rating";
-import TasteHealthLoader from "../components/TastehealthLoader"
-
 interface UserSettings {
   id: string;
   user_id: string;
@@ -80,7 +79,7 @@ const SettingsPage: React.FC = () => {
     rating: 0,
     comment: "",
   });
-
+  const { isMobile, isTablet } = useScreenSize();
   useEffect(() => {
     fetchUserSettings();
     fetchUserProfile();
@@ -297,20 +296,19 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  if (isLoadingSettings || isLoadingProfile) {
-    return (
-      <div className="container py-8">
-        <h1 className="text-2xl font-bold mb-6">Settings</h1>
-        <TasteHealthLoader />
-        {/* <p className="text-center py-4">Loading settings...</p> */}
-      </div>
-    );
-  }
+  // if (isLoadingSettings || isLoadingProfile) {
+  //   return (
+  //     <div className="container py-8">
+  //       {/* <h1 className="text-2xl font-bold mb-6">Settings</h1> */}
+  //       {/* <p className="text-center py-4">Loading settings...</p> */}
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="flex container space-y-6 py-8 ">
       <ProfileSidebar activePage="settings" />
-      <div className="settings-page ml-16 md:ml-64 w-full transition-all duration-300 ease-in-out">
+      <div className={`flex-1 p-4 sm:p-6 md:p-8 ${isMobile ? "" : "md:ml-64"}`}>
         <div className="flex items-center justify-between"></div>
 
         <Card>
