@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProfileSidebar } from '@/components/profile/ProfileSidebar';
@@ -23,6 +24,7 @@ const ProgressPage = () => {
   const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState<string>("overview");
   const { isMobile, isTablet } = useScreenSize();
+  const isSmallScreen = isMobile || isTablet;
   
   const translations = {
     en: {
@@ -79,75 +81,90 @@ const ProgressPage = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       <ProfileSidebar activePage="progress" />
       
-      <div className="flex-1 p-4 sm:ml-64">
-        <div className="p-4 max-w-6xl mx-auto">
-          <div className="mb-6 flex flex-wrap items-center justify-between">
-            <div className="flex items-center mb-2 md:mb-0">
-              <h1 className="text-2xl font-bold">{t.title}</h1>
+      <div className="flex-1 p-3 sm:p-4 sm:ml-64">
+        <div className="p-3 sm:p-4 max-w-6xl mx-auto">
+          <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold">{t.title}</h1>
+              <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base">{t.subtitle}</p>
             </div>
             <div>
               <Button 
                 variant="default"
                 className="flex items-center" 
                 onClick={handleAddProgress}
+                size={isSmallScreen ? "icon" : "default"}
               >
                 {activeTab === "trackers" ? (
-                  <Edit className="h-4 w-4 mr-1" />
+                  <Edit className="h-4 w-4" />
                 ) : (
-                  <PlusCircle className="h-4 w-4 mr-1" />
+                  <PlusCircle className="h-4 w-4" />
                 )}
-                {activeTab === "trackers" ? t.editProgress : t.addProgress}
+                {!isSmallScreen && (
+                  <span className="ml-1">
+                    {activeTab === "trackers" ? t.editProgress : t.addProgress}
+                  </span>
+                )}
               </Button>
             </div>
           </div>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">{t.subtitle}</p>
           
           <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <ScrollableTabsList className={`w-full ${isMobile || isTablet ? 'grid-cols-1' : 'grid grid-cols-5'}`}>
+            <ScrollableTabsList className="w-full">
               <TabsTrigger value="overview" className="flex items-center gap-1">
                 <BarChart className="h-4 w-4" />
-                {t.overview}
+                {!isSmallScreen && <span>{t.overview}</span>}
               </TabsTrigger>
               <TabsTrigger value="trackers" className="flex items-center gap-1">
                 <TrendingUp className="h-4 w-4" />
-                {t.trackers}
+                {!isSmallScreen && <span>{t.trackers}</span>}
               </TabsTrigger>
               <TabsTrigger value="rewards" className="flex items-center gap-1">
                 <Trophy className="h-4 w-4" />
-                {t.rewards}
+                {!isSmallScreen && <span>{t.rewards}</span>}
               </TabsTrigger>
               <TabsTrigger value="challenges" className="flex items-center gap-1">
                 <Trophy className="h-4 w-4" />
-                {t.challenges}
+                {!isSmallScreen && <span>{t.challenges}</span>}
               </TabsTrigger>
               <TabsTrigger value="history" className="flex items-center gap-1">
                 <History className="h-4 w-4" />
-                {t.history}
+                {!isSmallScreen && <span>{t.history}</span>}
               </TabsTrigger>
             </ScrollableTabsList>
             
-            <TabsContent value="overview" className="space-y-6 mt-6">
+            <TabsContent value="overview" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <ProgressTracker />
               <BMICalculator />
             </TabsContent>
             
-            <TabsContent value="trackers" className="mt-6">
-              <Card className="mb-6">
-                <CardHeader>
+            <TabsContent value="trackers" className="mt-4 sm:mt-6">
+              <Card className="mb-4 sm:mb-6">
+                <CardHeader className="p-4">
                   <CardTitle>{t.trackers}</CardTitle>
-                  <CardDescription>{t.trackDescription}</CardDescription>
+                  <CardDescription className="text-sm">{t.trackDescription}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Tabs defaultValue="calories" className="w-full">
                     <ScrollableTabsList className="flex w-full">
-                      <TabsTrigger value="calories" className="flex-1">{t.calories}</TabsTrigger>
-                      <TabsTrigger value="sleep" className="flex-1">{t.sleep}</TabsTrigger>
-                      <TabsTrigger value="exercise" className="flex-1">{t.exercise}</TabsTrigger>
-                      <TabsTrigger value="water" className="flex-1">{t.water}</TabsTrigger>
-                      <TabsTrigger value="bmi" className="flex-1">{t.bmiTracker}</TabsTrigger>
+                      <TabsTrigger value="calories" className="flex-1">
+                        {isSmallScreen ? "" : t.calories}
+                      </TabsTrigger>
+                      <TabsTrigger value="sleep" className="flex-1">
+                        {isSmallScreen ? "" : t.sleep}
+                      </TabsTrigger>
+                      <TabsTrigger value="exercise" className="flex-1">
+                        {isSmallScreen ? "" : t.exercise}
+                      </TabsTrigger>
+                      <TabsTrigger value="water" className="flex-1">
+                        {isSmallScreen ? "" : t.water}
+                      </TabsTrigger>
+                      <TabsTrigger value="bmi" className="flex-1">
+                        {isSmallScreen ? "" : t.bmiTracker}
+                      </TabsTrigger>
                     </ScrollableTabsList>
                     
-                    <div className="my-6">
+                    <div className="my-4 sm:my-6">
                       <TabsContent value="calories">
                         <CalorieTracker />
                       </TabsContent>
@@ -173,7 +190,7 @@ const ProgressPage = () => {
               </Card>
             </TabsContent>
             
-            <TabsContent value="rewards" className="space-y-6 mt-6">
+            <TabsContent value="rewards" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle>{t.rewards}</CardTitle>
@@ -184,19 +201,18 @@ const ProgressPage = () => {
               </Card>
             </TabsContent>
             
-            <TabsContent value="challenges" className="space-y-6 mt-6">
+            <TabsContent value="challenges" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle>{t.challenges}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ChallengeCreator />
-                  <CardDescription>{t.trackDescription}</CardDescription>
                 </CardContent>
               </Card>
             </TabsContent>
             
-            <TabsContent value="history" className="space-y-6 mt-6">
+            <TabsContent value="history" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle>{t.history}</CardTitle>
