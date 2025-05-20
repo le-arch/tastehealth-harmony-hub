@@ -1,0 +1,5 @@
+# This is the configuration file for the daily-notifications function
+# It will run once per day to send notifications to users
+
+[functions.daily-notifications]
+verify_jwt = false
