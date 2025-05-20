@@ -160,7 +160,7 @@ export default function Favorites() {
                   {filteredFavorites.map((favorite) => (
                     <Card
                       key={favorite.id}
-                      className="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-200 min-w-[240px] sm:min-w-[280px]"
+                      className="overflow-hidden w-full flex flex-col hover:shadow-lg transition-shadow duration-200 min-w-[240px] sm:min-w-[280px]"
                     >
                       <div
                         className="relative cursor-pointer"
