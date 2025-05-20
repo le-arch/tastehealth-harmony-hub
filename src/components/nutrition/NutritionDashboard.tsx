@@ -1,15 +1,14 @@
-
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { TabsTrigger } from '@/components/ui/scrollable-tabs';
-import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
-import { useLanguage } from '@/contexts/LanguageContext';
-import MealPrepTimer from './MealPrepTimer';
-import HydrationTracker from './HydrationTracker';
-import NutritionProgressWheel from './NutritionProgressWheel';
-import { ChefHat, LayoutDashboard, Award } from 'lucide-react';
-import { useScreenSize } from '@/utils/mobile';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { TabsTrigger } from "@/components/ui/scrollable-tabs";
+import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
+import { useLanguage } from "@/contexts/LanguageContext";
+import MealPrepTimer from "./MealPrepTimer";
+import HydrationTracker from "./HydrationTracker";
+import NutritionProgressWheel from "./NutritionProgressWheel";
+import { ChefHat, LayoutDashboard, Award, Pencil } from "lucide-react";
+import { useScreenSize } from "@/utils/mobile";
 
 const NutritionDashboard: React.FC = () => {
   const { language } = useLanguage();
@@ -20,17 +19,18 @@ const NutritionDashboard: React.FC = () => {
       dashboard: "Nutrition Dashboard",
       dailyProgress: "Daily Tools",
       summary: "Progress Summary",
-      achievements: "Achievements"
+      achievements: "Achievements",
     },
     fr: {
       dashboard: "Tableau de Bord Nutritionnel",
       dailyProgress: "Outils Quotidiens",
       summary: "Résumé des Progrès",
-      achievements: "Réussites"
-    }
+      achievements: "Réussites",
+    },
   };
 
-  const t = translations[language as keyof typeof translations] || translations.en;
+  const t =
+    translations[language as keyof typeof translations] || translations.en;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -49,6 +49,7 @@ const NutritionDashboard: React.FC = () => {
                 {isMobile ? "" : t.dailyProgress}
               </TabsTrigger>
               <TabsTrigger value="summary">
+                <Pencil className="h-4 w-4 mr-2" />
                 {isMobile ? "" : t.summary}
               </TabsTrigger>
               <TabsTrigger value="achievements" className="flex items-center">
@@ -56,7 +57,7 @@ const NutritionDashboard: React.FC = () => {
                 {isMobile ? "" : t.achievements}
               </TabsTrigger>
             </ScrollableTabsList>
-            
+
             <TabsContent value="daily" className="space-y-4 sm:space-y-6">
               <div className="grid grid-cols-1 gap-4">
                 <MealPrepTimer />
@@ -64,14 +65,14 @@ const NutritionDashboard: React.FC = () => {
                 <NutritionProgressWheel />
               </div>
             </TabsContent>
-            
+
             <TabsContent value="summary">
               <div className="min-h-[300px] sm:min-h-[400px]">
                 {/* Summary content will be implemented later */}
                 <p>Progress summary will appear here.</p>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="achievements">
               <div className="min-h-[300px] sm:min-h-[400px]">
                 {/* Achievements content will be implemented later */}
