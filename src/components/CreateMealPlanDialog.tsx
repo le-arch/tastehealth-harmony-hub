@@ -1,22 +1,27 @@
+"use client";
 
-"use client"
+import type React from "react";
 
-import type React from "react"
-
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Plus } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { supabase } from "@/integrations/supabase/client"
-import { useScreenSize } from "@/utils/mobile"
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Plus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useScreenSize } from "@/utils/mobile";
 
 interface CreateMealPlanDialogProps {
-  onMealPlanCreated?: () => void
-  buttonText?: string
-  buttonIcon?: React.ReactNode
+  onMealPlanCreated?: () => void;
+  buttonText?: string;
+  buttonIcon?: React.ReactNode;
 }
 
 export function CreateMealPlanDialog({
@@ -24,32 +29,32 @@ export function CreateMealPlanDialog({
   buttonText = "Create Meal Plan",
   buttonIcon = <Plus className="mr-2 h-4 w-4" />,
 }: CreateMealPlanDialogProps) {
-  const [open, setOpen] = useState(false)
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
-  const { isMobile, isTablet } = useScreenSize()
-  const isSmallScreen = isMobile || isTablet
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const { isMobile, isTablet } = useScreenSize();
+  const isSmallScreen = isMobile || isTablet;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       // Get the current user
       const {
         data: { user },
-      } = await supabase.auth.getUser()
+      } = await supabase.auth.getUser();
 
       if (!user) {
         toast({
           title: "Authentication Required",
           description: "You must be logged in to create a meal plan.",
           variant: "destructive",
-        })
-        setIsSubmitting(false)
-        return
+        });
+        setIsSubmitting(false);
+        return;
       }
 
       // Insert the meal plan with the user_id
@@ -64,30 +69,30 @@ export function CreateMealPlanDialog({
           },
         ])
         .select()
-        .single()
+        .single();
 
-      if (error) throw error
+      if (error) throw error;
 
       toast({
         title: "Meal Plan Created",
         description: "Your meal plan was successfully created.",
         variant: "default",
-      })
+      });
 
-      setOpen(false)
-      setName("")
-      setDescription("")
-      onMealPlanCreated?.()
+      setOpen(false);
+      setName("");
+      setDescription("");
+      onMealPlanCreated?.();
     } catch (error: any) {
       toast({
         title: "Error",
         description: "Failed to create meal plan: " + error.message,
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -103,7 +108,10 @@ export function CreateMealPlanDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="plan-name" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="plan-name"
+              className="block text-sm font-medium mb-1"
+            >
               Plan Name
             </label>
             <Input
@@ -115,7 +123,10 @@ export function CreateMealPlanDialog({
             />
           </div>
           <div>
-            <label htmlFor="plan-description" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="plan-description"
+              className="block text-sm font-medium mb-1"
+            >
               Description
             </label>
             <Textarea
@@ -126,11 +137,15 @@ export function CreateMealPlanDialog({
               rows={3}
             />
           </div>
-          <Button type="submit" disabled={isSubmitting || !name} className="w-full">
+          <Button
+            type="submit"
+            disabled={isSubmitting || !name}
+            className="w-full"
+          >
             {isSubmitting ? "Creating..." : "Create Plan"}
           </Button>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
