@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from "react";
@@ -98,7 +97,9 @@ const MealPlanningPage: React.FC = () => {
 
       <div className="space-y-6">
         <section>
-          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Your Meal Plans</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
+            Your Meal Plans
+          </h2>
           <div className="card-scroll-container">
             <div className="card-scroll-content">
               <MealPlanList />
@@ -107,7 +108,9 @@ const MealPlanningPage: React.FC = () => {
         </section>
 
         <section>
-          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Browse Meals</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
+            Browse Meals
+          </h2>
           {selectedMealId ? (
             <Card className="overflow-hidden">
               <MealDetail
