@@ -14,7 +14,7 @@ import CalorieTracker from '@/components/health/CalorieTracker';
 import SleepTracker from '@/components/health/SleepTracker';
 import ExerciseTracker from '@/components/health/ExerciseTracker';
 import HydrationInput from '@/components/health/HydrationInput';
-import { BarChart, TrendingUp, Trophy, History, ChevronLeft, PlusCircle, Edit, Gift } from 'lucide-react';
+import { BarChart, TrendingUp, Trophy, History, ChevronLeft, PlusCircle, Edit, Gift, Droplet, Moon, Flame, Scale, Dumbbell, } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ChallengeCreator from '@/components/ChallengeCreator';
 import { useScreenSize } from '@/utils/mobile';
@@ -148,18 +148,23 @@ const ProgressPage = () => {
                   <Tabs defaultValue="calories" className="w-full">
                     <ScrollableTabsList className="flex w-full">
                       <TabsTrigger value="calories" className="flex-1">
+                        <Flame className="h-4 w-4" />
                         {isSmallScreen ? "" : t.calories}
                       </TabsTrigger>
                       <TabsTrigger value="sleep" className="flex-1">
+                        <Moon className="h-4 w-4" />
                         {isSmallScreen ? "" : t.sleep}
                       </TabsTrigger>
                       <TabsTrigger value="exercise" className="flex-1">
+                        <Dumbbell className="h-4 w-4" />
                         {isSmallScreen ? "" : t.exercise}
                       </TabsTrigger>
                       <TabsTrigger value="water" className="flex-1">
+                        <Droplet className="h-4 w-4" />
                         {isSmallScreen ? "" : t.water}
                       </TabsTrigger>
                       <TabsTrigger value="bmi" className="flex-1">
+                        <Scale className="h-4 w-4" />
                         {isSmallScreen ? "" : t.bmiTracker}
                       </TabsTrigger>
                     </ScrollableTabsList>
