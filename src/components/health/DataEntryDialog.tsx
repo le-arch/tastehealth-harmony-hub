@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { saveWaterIntake, saveSleepRecord, saveCalorieRecord, saveExerciseRecord, saveBMIRecord } from '@/services/healthService';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-
+import {Droplet, Moon, Flame, Scale, Dumbbell, } from 'lucide-react';
 export type DataEntryType = 'water' | 'sleep' | 'calories' | 'exercise' | 'bmi';
 
 interface DataEntryDialogProps {
@@ -217,6 +217,7 @@ const DataEntryDialog: React.FC<DataEntryDialogProps> = ({
       case 'water':
         return (
           <div className="space-y-4 py-2">
+            <Droplet className="h-4 w-4" />
             <div className="space-y-2">
               <Label htmlFor="waterCups">{t.waterLabel}</Label>
               <Input
@@ -235,6 +236,7 @@ const DataEntryDialog: React.FC<DataEntryDialogProps> = ({
       case 'sleep':
         return (
           <div className="space-y-4 py-2">
+            <Moon className="h-4 w-4" />
             <div className="space-y-2">
               <Label htmlFor="sleepHours">{t.sleepHours}</Label>
               <Input
@@ -269,6 +271,7 @@ const DataEntryDialog: React.FC<DataEntryDialogProps> = ({
       case 'calories':
         return (
           <div className="space-y-4 py-2">
+            <Flame className="h-4 w-4" />
             <div className="space-y-2">
               <Label htmlFor="calories">{t.caloriesConsumed}</Label>
               <Input
@@ -300,6 +303,7 @@ const DataEntryDialog: React.FC<DataEntryDialogProps> = ({
       case 'exercise':
         return (
           <div className="space-y-4 py-2">
+            <Dumbbell className="h-4 w-4" />
             <div className="space-y-2">
               <Label htmlFor="exerciseType">{t.exerciseType}</Label>
               <Select value={exerciseType} onValueChange={setExerciseType}>
@@ -349,6 +353,7 @@ const DataEntryDialog: React.FC<DataEntryDialogProps> = ({
       case 'bmi':
         return (
           <div className="space-y-4 py-2">
+            <Scale className="h-4 w-4" />
             <div className="space-y-2">
               <Label htmlFor="height">{t.bmiHeight}</Label>
               <Input
