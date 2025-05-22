@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from "react";
@@ -17,6 +18,8 @@ import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useScreenSize } from "@/utils/mobile";
+import { saveMealPlanCalories } from "@/services/mealPlanCalorieService";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface CreateMealPlanDialogProps {
   onMealPlanCreated?: () => void;
@@ -36,6 +39,42 @@ export function CreateMealPlanDialog({
   const { toast } = useToast();
   const { isMobile, isTablet } = useScreenSize();
   const isSmallScreen = isMobile || isTablet;
+  const { language } = useLanguage();
+
+  const translations = {
+    en: {
+      createMealPlan: "Create Meal Plan",
+      planName: "Plan Name",
+      enterPlanName: "Enter plan name",
+      description: "Description",
+      descriptionOptional: "Description (optional)",
+      creating: "Creating...",
+      create: "Create Plan",
+      mealPlanCreated: "Meal Plan Created",
+      mealPlanCreatedDesc: "Your meal plan was successfully created.",
+      authRequired: "Authentication Required",
+      loginRequired: "You must be logged in to create a meal plan.",
+      error: "Error",
+      failedToCreate: "Failed to create meal plan:"
+    },
+    fr: {
+      createMealPlan: "Créer un Plan de Repas",
+      planName: "Nom du Plan",
+      enterPlanName: "Entrez le nom du plan",
+      description: "Description",
+      descriptionOptional: "Description (optionnel)",
+      creating: "Création en cours...",
+      create: "Créer le Plan",
+      mealPlanCreated: "Plan de Repas Créé",
+      mealPlanCreatedDesc: "Votre plan de repas a été créé avec succès.",
+      authRequired: "Authentification Requise",
+      loginRequired: "Vous devez être connecté pour créer un plan de repas.",
+      error: "Erreur",
+      failedToCreate: "Échec de la création du plan de repas:"
+    }
+  };
+
+  const t = translations[language as keyof typeof translations] || translations.en;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,8 +88,8 @@ export function CreateMealPlanDialog({
 
       if (!user) {
         toast({
-          title: "Authentication Required",
-          description: "You must be logged in to create a meal plan.",
+          title: t.authRequired,
+          description: t.loginRequired,
           variant: "destructive",
         });
         setIsSubmitting(false);
@@ -73,9 +112,14 @@ export function CreateMealPlanDialog({
 
       if (error) throw error;
 
+      // Initialize calorie tracking for this meal plan
+      if (data) {
+        await saveMealPlanCalories(data.id, user.id);
+      }
+
       toast({
-        title: "Meal Plan Created",
-        description: "Your meal plan was successfully created.",
+        title: t.mealPlanCreated,
+        description: t.mealPlanCreatedDesc,
         variant: "default",
       });
 
@@ -85,8 +129,8 @@ export function CreateMealPlanDialog({
       onMealPlanCreated?.();
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to create meal plan: " + error.message,
+        title: t.error,
+        description: t.failedToCreate + " " + error.message,
         variant: "destructive",
       });
     } finally {
@@ -99,12 +143,12 @@ export function CreateMealPlanDialog({
       <DialogTrigger asChild>
         <Button>
           {buttonIcon}
-          {isSmallScreen ? "" : buttonText}
+          {isSmallScreen ? "" : (language === 'fr' ? "Créer un Plan de Repas" : buttonText)}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create New Meal Plan</DialogTitle>
+          <DialogTitle>{t.createMealPlan}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -112,11 +156,11 @@ export function CreateMealPlanDialog({
               htmlFor="plan-name"
               className="block text-sm font-medium mb-1"
             >
-              Plan Name
+              {t.planName}
             </label>
             <Input
               id="plan-name"
-              placeholder="Enter plan name"
+              placeholder={t.enterPlanName}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -127,11 +171,11 @@ export function CreateMealPlanDialog({
               htmlFor="plan-description"
               className="block text-sm font-medium mb-1"
             >
-              Description
+              {t.description}
             </label>
             <Textarea
               id="plan-description"
-              placeholder="Description (optional)"
+              placeholder={t.descriptionOptional}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -142,7 +186,7 @@ export function CreateMealPlanDialog({
             disabled={isSubmitting || !name}
             className="w-full"
           >
-            {isSubmitting ? "Creating..." : "Create Plan"}
+            {isSubmitting ? t.creating : t.create}
           </Button>
         </form>
       </DialogContent>

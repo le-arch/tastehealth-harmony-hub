@@ -1,16 +1,14 @@
-"use client";
 
-import type React from "react";
-import { useScreenSize } from "@/utils/mobile";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getMealDetails } from "@/services/mealService";
-import { ArrowLeft } from "lucide-react";
-import { Heart } from "lucide-react";
-import { useState, useEffect } from "react";
-import { addToFavorites, isFavorite } from "@/services/favoriteService";
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/lib/SupabaseClient';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChevronLeft, Clock, Users, Star } from 'lucide-react';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { TabsTrigger } from '@/components/ui/scrollable-tabs';
+import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
+import { getMealImagePublicUrl } from '@/services/mealService';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MealDetailProps {
   mealId: string;
@@ -19,308 +17,328 @@ interface MealDetailProps {
   renderFavoriteButton?: (mealId: string) => React.ReactNode;
 }
 
-const MealDetail = ({
+interface Ingredient {
+  id: string;
+  meal_id: string;
+  ingredients: string;
+}
+
+interface NutritionFacts {
+  id: string;
+  meal_id: string;
+  calories: string;
+  protein: string;
+  carbs: string;
+  fat: string;
+  serving_size: string;
+}
+
+interface Recipe {
+  id: string;
+  meal_id: string;
+  instructions: string;
+}
+
+interface Meal {
+  id: string;
+  meal_name: string;
+  image_url: string;
+  description?: string;
+  prep_time?: number;
+  cook_time?: number;
+  servings?: number;
+  difficulty?: number;
+}
+
+const MealDetail: React.FC<MealDetailProps> = ({
   mealId,
   onBack,
   onAddToMealPlan,
   renderFavoriteButton,
-}: MealDetailProps) => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["meal", mealId],
-    queryFn: () => getMealDetails(mealId),
-    enabled: !!mealId,
-  });
-  const { isMobile, isTablet } = useScreenSize();
-  const [isFavorited, setIsFavorited] = useState(false);
-  const [favoriteLoading, setFavoriteLoading] = useState(false);
+}) => {
+  const [meal, setMeal] = useState<Meal | null>(null);
+  const [ingredients, setIngredients] = useState<Ingredient | null>(null);
+  const [nutrition, setNutrition] = useState<NutritionFacts | null>(null);
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const { language } = useLanguage();
 
-  useEffect(() => {
-    const checkFavoriteStatus = async () => {
-      if (mealId) {
-        const favorited = await isFavorite(mealId);
-        setIsFavorited(favorited);
-      }
-    };
-
-    checkFavoriteStatus();
-  }, [mealId]);
-
-  const handleToggleFavorite = async () => {
-    setFavoriteLoading(true);
-    try {
-      await addToFavorites(mealId);
-      setIsFavorited(true);
-    } catch (error) {
-      console.error("Error toggling favorite:", error);
-    } finally {
-      setFavoriteLoading(false);
+  const translations = {
+    en: {
+      back: "Back",
+      addToMealPlan: "Add to Meal Plan",
+      overview: "Overview",
+      nutrition: "Nutrition",
+      recipe: "Recipe",
+      prepTime: "Prep Time:",
+      cookTime: "Cook Time:",
+      servings: "Servings:",
+      difficulty: "Difficulty:",
+      min: "min",
+      nutritionFacts: "Nutrition Facts",
+      servingSize: "Serving Size",
+      calories: "Calories",
+      protein: "Protein",
+      carbs: "Carbs",
+      fat: "Fat",
+      ingredients: "Ingredients",
+      instructions: "Instructions",
+      notAvailable: "Not available"
+    },
+    fr: {
+      back: "Retour",
+      addToMealPlan: "Ajouter au Plan de Repas",
+      overview: "Aperçu",
+      nutrition: "Nutrition",
+      recipe: "Recette",
+      prepTime: "Temps de Préparation:",
+      cookTime: "Temps de Cuisson:",
+      servings: "Portions:",
+      difficulty: "Difficulté:",
+      min: "min",
+      nutritionFacts: "Informations Nutritionnelles",
+      servingSize: "Portion",
+      calories: "Calories",
+      protein: "Protéines",
+      carbs: "Glucides",
+      fat: "Lipides",
+      ingredients: "Ingrédients",
+      instructions: "Instructions",
+      notAvailable: "Non disponible"
     }
   };
 
+  const t = translations[language as keyof typeof translations] || translations.en;
+
   useEffect(() => {
-    if (error) {
-      console.error("Error fetching meal details:", error);
+    const fetchMealDetails = async () => {
+      setLoading(true);
+      try {
+        // Fetch the meal
+        const { data: mealData, error: mealError } = await supabase
+          .from('meals')
+          .select('*')
+          .eq('id', mealId)
+          .single();
+
+        if (mealError) throw mealError;
+        setMeal(mealData);
+
+        // Get the image URL
+        if (mealData?.image_url) {
+          const url = await getMealImagePublicUrl(mealId);
+          setImageUrl(url);
+        }
+
+        // Fetch ingredients
+        const { data: ingredientsData } = await supabase
+          .from('ingredients')
+          .select('*')
+          .eq('meal_id', mealId)
+          .maybeSingle();
+
+        setIngredients(ingredientsData);
+
+        // Fetch nutrition
+        const { data: nutritionData } = await supabase
+          .from('nutrition_facts')
+          .select('*')
+          .eq('meal_id', mealId)
+          .maybeSingle();
+
+        setNutrition(nutritionData);
+
+        // Fetch recipe
+        const { data: recipeData } = await supabase
+          .from('recipes')
+          .select('*')
+          .eq('meal_id', mealId)
+          .maybeSingle();
+        
+        setRecipe(recipeData);
+
+      } catch (error) {
+        console.error('Error fetching meal details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (mealId) {
+      fetchMealDetails();
     }
-  }, [error]);
+  }, [mealId]);
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={onBack} className="p-2">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <Skeleton className="h-8 w-48" />
-        </div>
-        <Skeleton className="h-64 w-full" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-32 w-full" />
+      <div className="p-6 flex justify-center items-center min-h-[300px]">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-400"></div>
       </div>
     );
   }
 
-  if (!data) {
+  if (!meal) {
     return (
-      <div className="space-y-4">
-        <Button
-          onClick={onBack}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back to search
+      <div className="p-6">
+        <p>Meal not found.</p>
+        <Button onClick={onBack} variant="outline" className="mt-4">
+          {t.back}
         </Button>
-        <div className="text-center py-12">
-          <p className="text-gray-500">Meal not found.</p>
-        </div>
       </div>
     );
   }
 
-  const { meal, recipe, nutritionFacts } = data;
+  const renderDifficultyStars = (difficulty: number = 1) => {
+    return (
+      <div className="flex">
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            size={14}
+            className={i < difficulty ? "fill-yellow-500 text-yellow-500" : "text-gray-300"}
+          />
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="relative">
+      {renderFavoriteButton && renderFavoriteButton(mealId)}
+      
+      <div className="relative h-48 overflow-hidden">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={meal.meal_name}
+            className="object-cover w-full h-full"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <span className="text-gray-400">No image</span>
+          </div>
+        )}
         <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-2 left-2 bg-white/80 backdrop-blur-sm shadow-sm"
           onClick={onBack}
-          variant="outline"
-          className="flex items-center gap-2"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to search
+          <ChevronLeft className="h-5 w-5" />
         </Button>
-
-        <div className="flex gap-2">
-          <Button
-            onClick={handleToggleFavorite}
-            variant="outline"
-            className={`flex items-center gap-2 ${
-              isFavorited ? "text-red-500 border-red-500 hover:bg-red-50" : ""
-            }`}
-            disabled={favoriteLoading}
-          >
-            <Heart className={`h-4 w-4 ${isFavorited ? "fill-red-500" : ""}`} />
-            {!(isMobile || isTablet) &&
-              (isFavorited ? "Favorited" : "Add to Favorites")}
-          </Button>
-
-          {onAddToMealPlan && (
-            <Button onClick={() => onAddToMealPlan(mealId)} variant="default">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              {!(isMobile || isTablet) && <span>Add to Meal Plan</span>}
-            </Button>
-          )}
-        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <div>
-            <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
-              {meal.meal_name}
-            </h1>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <span className="bg-gray-100 px-3 py-1 rounded-full text-sm font-medium text-gray-900 dark:text-gray-900">
-                {meal.category_name}
-              </span>
-              <span className="bg-th-green-100 text-th-green-700 px-3 py-1 rounded-full text-sm font-medium">
-                {meal.subcategory_name}
-              </span>
-            </div>
+      <div className="p-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold">{meal.meal_name}</h2>
+          <Button onClick={() => onAddToMealPlan(mealId)} size="sm">
+            {t.addToMealPlan}
+          </Button>
+        </div>
 
-            <div className="h-48 md:h-64 bg-gray-200 rounded-md overflow-hidden">
-              <div className="relative">
-                {renderFavoriteButton && renderFavoriteButton(mealId)}
-                <img
-                  src={meal.image_url || "/assets/images/achu.jpg"}
-                  alt={meal.meal_name}
-                  className="w-full h-64 object-cover rounded-lg mb-4"
-                />
+        <Tabs defaultValue="overview" className="mt-4">
+          <ScrollableTabsList>
+            <TabsTrigger value="overview">{t.overview}</TabsTrigger>
+            <TabsTrigger value="nutrition">{t.nutrition}</TabsTrigger>
+            <TabsTrigger value="recipe">{t.recipe}</TabsTrigger>
+          </ScrollableTabsList>
+
+          <TabsContent value="overview" className="mt-4 space-y-4">
+            {meal.description && <p>{meal.description}</p>}
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-gray-500" />
+                <span className="text-sm">{t.prepTime} {meal.prep_time || t.notAvailable} {meal.prep_time ? t.min : ''}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-gray-500" />
+                <span className="text-sm">{t.cookTime} {meal.cook_time || t.notAvailable} {meal.cook_time ? t.min : ''}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-gray-500" />
+                <span className="text-sm">{t.servings} {meal.servings || t.notAvailable}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm">{t.difficulty}</span>
+                {meal.difficulty ? renderDifficultyStars(meal.difficulty) : t.notAvailable}
               </div>
             </div>
-          </div>
+          </TabsContent>
 
-          {recipe && (
+          <TabsContent value="nutrition" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle>Recipe</CardTitle>
+                <CardTitle className="text-lg">{t.nutritionFacts}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-medium mb-2">Ingredients</h3>
-                  {recipe.ingredients && recipe.ingredients.length > 0 ? (
-                    <ul className="list-disc pl-5 space-y-1 text-gray-700">
-                      {recipe.ingredients.map((ingredients, index) => (
-                        <li
-                          key={index}
-                          className="text-gray-700 dark:text-gray-100"
-                        >
-                          {ingredients.quantity && `${ingredients.quantity} `}
-                          {ingredients.quantity}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-gray-500">No ingredients listed.</p>
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="font-medium mb-2">Instructions</h3>
-                  {recipe.instructions ? (
-                    <p className="text-gray-700 dark:text-gray-100 whitespace-pre-line">
-                      {recipe.instructions}
-                    </p>
-                  ) : (
-                    <p className="text-gray-100 dark:text-gray-100">
-                      No instructions provided.
-                    </p>
-                  )}
-                </div>
+              <CardContent>
+                {nutrition ? (
+                  <div className="space-y-2">
+                    <div className="flex justify-between border-b pb-1">
+                      <span>{t.servingSize}</span>
+                      <span>{nutrition.serving_size || '-'}</span>
+                    </div>
+                    <div className="flex justify-between font-bold">
+                      <span>{t.calories}</span>
+                      <span>{nutrition.calories || '-'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{t.protein}</span>
+                      <span>{nutrition.protein || '-'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{t.carbs}</span>
+                      <span>{nutrition.carbs || '-'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{t.fat}</span>
+                      <span>{nutrition.fat || '-'}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-500">{t.notAvailable}</p>
+                )}
               </CardContent>
             </Card>
-          )}
-        </div>
+          </TabsContent>
 
-        <div>
-          {nutritionFacts && (
+          <TabsContent value="recipe" className="mt-4 space-y-4">
             <Card>
-              <CardHeader className="bg-gray-50">
-                <CardTitle className="text-lg">Nutrition Facts</CardTitle>
-                <p className="text-sm text-gray-500">
-                  Serving Size: {nutritionFacts.serving_size}
-                </p>
+              <CardHeader>
+                <CardTitle className="text-lg">{t.ingredients}</CardTitle>
               </CardHeader>
-              <CardContent className="pt-4">
-                <table className="w-full text-sm">
-                  <tbody>
-                    <tr className="border-b">
-                      <td className="py-2 font-bold">Calories</td>
-                      <td className="py-2 text-right">
-                        {nutritionFacts.calories}
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2">
-                        <span className="font-bold">Total Fat</span>{" "}
-                        {nutritionFacts.total_fat}
-                      </td>
-                      <td className="py-2 text-right">
-                        {nutritionFacts.total_fat}
-                      </td>
-                    </tr>
-                    <tr className="border-b pl-4">
-                      <td className="py-2 pl-4">Saturated Fat</td>
-                      <td className="py-2 text-right">
-                        {nutritionFacts.saturated_fat}
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2 pl-4">Trans Fat</td>
-                      <td className="py-2 text-right">
-                        {nutritionFacts.trans_fat}
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2">
-                        <span className="font-bold">Cholesterol</span>
-                      </td>
-                      <td className="py-2 text-right">
-                        {nutritionFacts.cholesterol}
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2">
-                        <span className="font-bold">Sodium</span>
-                      </td>
-                      <td className="py-2 text-right">
-                        {nutritionFacts.sodium}
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2">
-                        <span className="font-bold">Total Carbohydrate</span>
-                      </td>
-                      <td className="py-2 text-right">
-                        {nutritionFacts.total_carbohydrate}
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2 pl-4">Dietary Fiber</td>
-                      <td className="py-2 text-right">
-                        {nutritionFacts.dietary_fiber}
-                      </td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2 pl-4">Total Sugars</td>
-                      <td className="py-2 text-right">
-                        {nutritionFacts.total_sugars}
-                      </td>
-                    </tr>
-                    {nutritionFacts.added_sugars && (
-                      <tr className="border-b">
-                        <td className="py-2 pl-8">Added Sugars</td>
-                        <td className="py-2 text-right">
-                          {nutritionFacts.added_sugars}
-                        </td>
-                      </tr>
-                    )}
-                    <tr className="border-b">
-                      <td className="py-2">
-                        <span className="font-bold">Protein</span>
-                      </td>
-                      <td className="py-2 text-right">
-                        {nutritionFacts.protein}
-                      </td>
-                    </tr>
-
-                    {nutritionFacts.additional_nutrients &&
-                      Object.entries(nutritionFacts.additional_nutrients).map(
-                        ([key, value]) => (
-                          <tr key={key} className="border-b">
-                            <td className="py-2">{key.replace(/_/g, " ")}</td>
-                            <td className="py-2 text-right">{value}</td>
-                          </tr>
-                        )
-                      )}
-                  </tbody>
-                </table>
+              <CardContent>
+                {ingredients && ingredients.ingredients ? (
+                  <ul className="list-disc pl-5 space-y-1">
+                    {ingredients.ingredients.split('\n').map((ingredient, index) => (
+                      <li key={index}>{ingredient.trim()}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">{t.notAvailable}</p>
+                )}
               </CardContent>
             </Card>
-          )}
-        </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">{t.instructions}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {recipe && recipe.instructions ? (
+                  <ol className="list-decimal pl-5 space-y-2">
+                    {recipe.instructions.split('\n').map((step, index) => (
+                      <li key={index} className="pl-1">{step.trim()}</li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="text-gray-500">{t.notAvailable}</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

@@ -12,12 +12,43 @@ import { useScreenSize } from "@/utils/mobile";
 import { Trophy, Star, Users, Activity } from "lucide-react";
 import NutritionQuest from "../components/gamification/NutritionQuest";
 import NutritionLeaderboard from "../components/gamification/NutritionLeaderboard";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const NutritionGamePage: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { isMobile, isTablet } = useScreenSize();
   const [activeTab, setActiveTab] = useState("main");
+  const { language } = useLanguage();
+
+  const translations = {
+    en: {
+      title: "Nutrition Game Center",
+      tabs: {
+        main: "Main Dashboard",
+        challenges: "Challenges",
+        leaderboard: "Leaderboard",
+        progress: "Progress",
+      },
+      progressTracking: "Progress Tracking",
+      comingSoon: "Coming soon: Track your nutrition game progress over time!",
+      pleaseLogin: "Please log in to access the Nutrition Game Center.",
+    },
+    fr: {
+      title: "Centre de Jeu Nutritionnel",
+      tabs: {
+        main: "Tableau de Bord Principal",
+        challenges: "Défis",
+        leaderboard: "Classement",
+        progress: "Progrès",
+      },
+      progressTracking: "Suivi de Progrès",
+      comingSoon: "Bientôt disponible : Suivez vos progrès nutritionnels au fil du temps !",
+      pleaseLogin: "Veuillez vous connecter pour accéder au Centre de Jeu Nutritionnel.",
+    }
+  };
+
+  const t = translations[language as keyof typeof translations] || translations.en;
 
   const addPoints = async (points: number, reason: string) => {
     if (!userId) return;
@@ -69,7 +100,7 @@ const NutritionGamePage: React.FC = () => {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded">
-          <p>Please log in to access the Nutrition Game Center.</p>
+          <p>{t.pleaseLogin}</p>
         </div>
       </div>
     );
@@ -77,25 +108,25 @@ const NutritionGamePage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-4 sm:py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Nutrition Game Center</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">{t.title}</h1>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
         <ScrollableTabsList>
           <TabsTrigger value="main" className="flex items-center gap-2">
             <Trophy className="h-4 w-4" />
-            {!isMobile && "Main Dashboard"}
+            {!isMobile && t.tabs.main}
           </TabsTrigger>
           <TabsTrigger value="challenges" className="flex items-center gap-2">
             <Star className="h-4 w-4" />
-            {!isMobile && "Challenges"}
+            {!isMobile && t.tabs.challenges}
           </TabsTrigger>
           <TabsTrigger value="leaderboard" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            {!isMobile && "Leaderboard"}
+            {!isMobile && t.tabs.leaderboard}
           </TabsTrigger>
           <TabsTrigger value="progress" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
-            {!isMobile && "Progress"}
+            {!isMobile && t.tabs.progress}
           </TabsTrigger>
         </ScrollableTabsList>
         
@@ -113,8 +144,8 @@ const NutritionGamePage: React.FC = () => {
         
         <TabsContent value="progress" className="mt-4">
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Progress Tracking</h2>
-            <p>Coming soon: Track your nutrition game progress over time!</p>
+            <h2 className="text-xl font-semibold mb-4">{t.progressTracking}</h2>
+            <p>{t.comingSoon}</p>
           </div>
         </TabsContent>
       </Tabs>

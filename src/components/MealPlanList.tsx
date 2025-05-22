@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { CalendarDays } from 'lucide-react';
+import { saveMealPlanCalories } from '@/services/mealPlanCalorieService';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface MealPlan {
   id: string;
@@ -15,6 +17,34 @@ export interface MealPlan {
 }
 
 export function MealPlanList() {
+  const { language } = useLanguage();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const translations = {
+    en: {
+      noMealPlans: "No meal plans",
+      getStarted: "Get started by creating a new meal plan.",
+      created: "Created"
+    },
+    fr: {
+      noMealPlans: "Aucun plan de repas",
+      getStarted: "Commencez par créer un nouveau plan de repas.",
+      created: "Créé le"
+    }
+  };
+
+  const t = translations[language as keyof typeof translations] || translations.en;
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user) {
+        setUserId(data.user.id);
+      }
+    };
+    getUser();
+  }, []);
+
   const { data: mealPlans, isLoading } = useQuery({
     queryKey: ['mealPlans'],
     queryFn: async () => {
@@ -26,7 +56,21 @@ export function MealPlanList() {
       if (error) throw error;
       return data as MealPlan[];
     },
+    enabled: !!userId,
   });
+
+  useEffect(() => {
+    // Update calorie information when meal plans are loaded
+    const updateCalorieTracking = async () => {
+      if (mealPlans && mealPlans.length > 0 && userId) {
+        for (const plan of mealPlans) {
+          await saveMealPlanCalories(plan.id, userId);
+        }
+      }
+    };
+
+    updateCalorieTracking();
+  }, [mealPlans, userId]);
 
   if (isLoading) {
     return (
@@ -42,8 +86,8 @@ export function MealPlanList() {
     return (
       <div className="text-center py-12">
         <CalendarDays className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-semibold text-gray-900">No meal plans</h3>
-        <p className="mt-1 text-sm text-gray-500">Get started by creating a new meal plan.</p>
+        <h3 className="mt-2 text-sm font-semibold text-gray-900">{t.noMealPlans}</h3>
+        <p className="mt-1 text-sm text-gray-500">{t.getStarted}</p>
       </div>
     );
   }
@@ -61,7 +105,7 @@ export function MealPlanList() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-500">
-                Created {new Date(plan.created_at).toLocaleDateString()}
+                {t.created} {new Date(plan.created_at).toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US')}
               </p>
             </CardContent>
           </Card>

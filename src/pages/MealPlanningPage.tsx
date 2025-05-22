@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from "react";
@@ -11,16 +12,44 @@ import { CreateMealPlanDialog } from "@/components/CreateMealPlanDialog";
 import { MealPlanList } from "@/components/MealPlanList";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { useToast } from "@/hooks/use-toast";
-import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
+import { useScreenSize } from "@/utils/mobile";
 import { Card } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const MealPlanningPage: React.FC = () => {
   const navigate = useNavigate();
   const [selectedMealId, setSelectedMealId] = useState<string | null>(null);
   const { toast } = useToast();
-  const isMobile = useIsMobile();
-  const isTablet = useIsTablet();
+  const { isMobile, isTablet } = useScreenSize();
   const isSmallScreen = isMobile || isTablet;
+  const { language } = useLanguage();
+
+  const translations = {
+    en: {
+      back: "Back",
+      mealPlanning: "Meal Planning",
+      favorites: "Favorites",
+      yourMealPlans: "Your Meal Plans",
+      browseMeals: "Browse Meals",
+      addedToFavorites: "Added to favorites",
+      removedFromFavorites: "Removed from favorites",
+      mealAddedToFavorites: "This meal has been added to your favorites",
+      mealRemovedFromFavorites: "This meal has been removed from your favorites"
+    },
+    fr: {
+      back: "Retour",
+      mealPlanning: "Planification des Repas",
+      favorites: "Favoris",
+      yourMealPlans: "Vos Plans de Repas",
+      browseMeals: "Parcourir les Repas",
+      addedToFavorites: "Ajouté aux favoris",
+      removedFromFavorites: "Retiré des favoris",
+      mealAddedToFavorites: "Ce repas a été ajouté à vos favoris",
+      mealRemovedFromFavorites: "Ce repas a été retiré de vos favoris"
+    }
+  };
+
+  const t = translations[language as keyof typeof translations] || translations.en;
 
   const handleBackToDashboard = () => {
     navigate("/dashboard");
@@ -41,10 +70,10 @@ const MealPlanningPage: React.FC = () => {
 
   const handleToggleFavorite = (mealId: string, isFavorited: boolean) => {
     toast({
-      title: isFavorited ? "Added to favorites" : "Removed from favorites",
+      title: isFavorited ? t.addedToFavorites : t.removedFromFavorites,
       description: isFavorited
-        ? "This meal has been added to your favorites"
-        : "This meal has been removed from your favorites",
+        ? t.mealAddedToFavorites
+        : t.mealRemovedFromFavorites,
     });
   };
 
@@ -59,9 +88,9 @@ const MealPlanningPage: React.FC = () => {
             size={isSmallScreen ? "icon" : "default"}
           >
             <ChevronLeft className="h-4 w-4" />
-            {!isSmallScreen && <span className="ml-1">Back</span>}
+            {!isSmallScreen && <span className="ml-1">{t.back}</span>}
           </Button>
-          <h1 className="text-xl sm:text-2xl font-bold">Meal Planning</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">{t.mealPlanning}</h1>
         </div>
         <div className="flex items-center gap-2">
           {isSmallScreen ? (
@@ -87,7 +116,7 @@ const MealPlanningPage: React.FC = () => {
                 onClick={() => navigate("/favorites")}
               >
                 <Heart className="h-4 w-4" />
-                Favorites
+                {t.favorites}
               </Button>
               <CreateMealPlanDialog />
             </>
@@ -98,7 +127,7 @@ const MealPlanningPage: React.FC = () => {
       <div className="space-y-6">
         <section>
           <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
-            Your Meal Plans
+            {t.yourMealPlans}
           </h2>
           <div className="card-scroll-container">
             <div className="card-scroll-content">
@@ -109,7 +138,7 @@ const MealPlanningPage: React.FC = () => {
 
         <section>
           <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
-            Browse Meals
+            {t.browseMeals}
           </h2>
           {selectedMealId ? (
             <Card className="overflow-hidden">

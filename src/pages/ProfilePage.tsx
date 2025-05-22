@@ -1,505 +1,434 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { toast } from "sonner";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  User, Calendar, Ruler, Leaf, Weight, Users, Activity, 
-  Target, Salad, Flame, ChevronLeft, Save
-} from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { ProfileSidebar } from '@/components/profile/ProfileSidebar';
-import GenderSelect from '@/components/profile/GenderSelect';
-import ActivityLevelSelect from '@/components/profile/ActivityLevelSelect';
-import HealthGoalsSelect from '@/components/profile/HealthGoalsSelect';
-import DietaryRestrictionsSelect from '@/components/profile/DietaryRestrictionsSelect';
-import { getCurrentUser } from '@/services/authService';
-import { fetchUserProfile, updateUserProfile, UserProfile } from '@/services/profileService';
-//import TasteHealthLoader from '@/components/TastehealthLoader';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { GenderSelect } from '@/components/profile/GenderSelect';
+import { ActivityLevelSelect } from '@/components/profile/ActivityLevelSelect';
+import { HealthGoalsSelect } from '@/components/profile/HealthGoalsSelect';
+import { DietaryRestrictionsSelect } from '@/components/profile/DietaryRestrictionsSelect';
+import { UserProfile, fetchUserProfile, updateUserProfile } from '@/services/profileService';
+import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { LanguageSelector } from '@/components/settings/LanguageSelector';
 
-const formSchema = z.object({
-  age: z.string().min(1, "Age is required"),
-  height: z.string().min(1, "Height is required"),
-  weight: z.string().min(1, "Weight is required"),
-  gender: z.string().min(1, "Gender is required"),
-  activityLevel: z.string().min(1, "Activity level is required"),
-  healthGoals: z.string().min(1, "Health goals are required"),
-  dietaryRestrictions: z.string(),
-  allergies: z.string(),
-  calorieGoal: z.string().min(1, "Calorie goal is required"),
-});
+interface ProfileValues {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  username: string;
+  age: string;
+  height: string;
+  weight: string;
+  gender: string;
+  activityLevel: string;
+  healthGoals: string;
+  dietaryRestrictions: string;
+  allergies: string;
+  calorieGoal: string;
+}
 
 const ProfilePage = () => {
-  const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  //const [isLoading, setIsLoading] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      age: "",
-      height: "",
-      weight: "",
-      gender: "",
-      activityLevel: "",
-      healthGoals: "",
-      dietaryRestrictions: "",
-      allergies: "",
-      calorieGoal: "",
-    },
+  const [profileData, setProfileData] = useState<ProfileValues>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    username: '',
+    age: '',
+    height: '',
+    weight: '',
+    gender: '',
+    activityLevel: '',
+    healthGoals: '',
+    dietaryRestrictions: '',
+    allergies: '',
+    calorieGoal: ''
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const { toast } = useToast();
+  const { language, setLanguage } = useLanguage();
+
+  const translations = {
+    en: {
+      pageTitle: "Profile",
+      personalInfo: "Personal Information",
+      firstName: "First Name",
+      lastName: "Last Name",
+      email: "Email",
+      phone: "Phone Number",
+      username: "Username",
+      healthMetrics: "Health Metrics",
+      age: "Age",
+      height: "Height (cm)",
+      weight: "Weight (kg)",
+      gender: "Gender",
+      activityLevel: "Activity Level",
+      nutritionPreferences: "Nutrition Preferences",
+      healthGoals: "Health Goals",
+      dietaryRestrictions: "Dietary Restrictions",
+      allergies: "Allergies",
+      calorieGoal: "Daily Calorie Goal",
+      languagePreference: "Language Preference",
+      english: "English",
+      french: "French",
+      saveChanges: "Save Changes",
+      profileUpdated: "Profile Updated",
+      profileUpdateSuccess: "Your profile has been successfully updated",
+      notAuthenticated: "You need to be logged in to view this page",
+      errorLoading: "Error loading profile",
+      errorUpdating: "Error updating profile"
+    },
+    fr: {
+      pageTitle: "Profil",
+      personalInfo: "Informations Personnelles",
+      firstName: "Prénom",
+      lastName: "Nom",
+      email: "Email",
+      phone: "Numéro de Téléphone",
+      username: "Nom d'Utilisateur",
+      healthMetrics: "Mesures de Santé",
+      age: "Âge",
+      height: "Taille (cm)",
+      weight: "Poids (kg)",
+      gender: "Genre",
+      activityLevel: "Niveau d'Activité",
+      nutritionPreferences: "Préférences Nutritionnelles",
+      healthGoals: "Objectifs de Santé",
+      dietaryRestrictions: "Restrictions Alimentaires",
+      allergies: "Allergies",
+      calorieGoal: "Objectif Calorique Quotidien",
+      languagePreference: "Préférence de Langue",
+      english: "Anglais",
+      french: "Français",
+      saveChanges: "Sauvegarder les Modifications",
+      profileUpdated: "Profil Mis à Jour",
+      profileUpdateSuccess: "Votre profil a été mis à jour avec succès",
+      notAuthenticated: "Vous devez être connecté pour voir cette page",
+      errorLoading: "Erreur lors du chargement du profil",
+      errorUpdating: "Erreur lors de la mise à jour du profil"
+    }
+  };
+
+  const t = translations[language as keyof typeof translations] || translations.en;
 
   useEffect(() => {
     const loadUserProfile = async () => {
+      setIsLoading(true);
       try {
-        //setIsLoading(true);
-        const user = await getCurrentUser();
+        const { data: { user } } = await supabase.auth.getUser();
         
-        if (!user) {
-          navigate('/');
-          return;
-        }
-        
-        const profile = await fetchUserProfile(user.id);
-        
-        if (profile) {
-          setUserProfile(profile);
+        if (user) {
+          setUserId(user.id);
+          const profile = await fetchUserProfile(user.id);
           
-          form.reset({
-            age: profile.age || "",
-            height: profile.height || "",
-            weight: profile.weight || "",
-            gender: profile.gender || "",
-            activityLevel: profile.activity_level || "",
-            healthGoals: profile.health_goals || "",
-            dietaryRestrictions: profile.dietary_restrictions || "",
-            allergies: profile.allergies || "",
-            calorieGoal: profile.calorie_goal || "",
-          });
+          if (profile) {
+            setProfileData({
+              firstName: profile.first_name || '',
+              lastName: profile.last_name || '',
+              email: profile.email || '',
+              phone: profile.phone || '',
+              username: profile.username || '',
+              age: profile.age || '',
+              height: profile.height || '',
+              weight: profile.weight || '',
+              gender: profile.gender || '',
+              activityLevel: profile.activity_level || '',
+              healthGoals: profile.health_goals || '',
+              dietaryRestrictions: profile.dietary_restrictions || '',
+              allergies: profile.allergies || '',
+              calorieGoal: profile.calorie_goal || ''
+            });
+          }
         } else {
-          toast.error("Could not load profile data");
+          toast({
+            title: t.notAuthenticated,
+            variant: "destructive",
+          });
         }
       } catch (error) {
-        console.error("Error loading user data:", error);
-        toast.error("Error loading profile data");
+        console.error('Error loading profile:', error);
+        toast({
+          title: t.errorLoading,
+          variant: "destructive",
+        });
       } finally {
-        //setIsLoading(false);
+        setIsLoading(false);
       }
     };
     
     loadUserProfile();
-  }, [navigate, form]);
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  }, [language, t, toast]);
+  
+  const handleSaveProfile = async () => {
+    if (!userId) return;
+    
     try {
-      //setIsLoading(true);
+      await updateUserProfile(userId, {
+        first_name: profileData.firstName,
+        last_name: profileData.lastName,
+        phone: profileData.phone,
+        username: profileData.username,
+        age: profileData.age,
+        height: profileData.height,
+        weight: profileData.weight,
+        gender: profileData.gender,
+        activity_level: profileData.activityLevel,
+        health_goals: profileData.healthGoals,
+        dietary_restrictions: profileData.dietaryRestrictions,
+        allergies: profileData.allergies,
+        calorie_goal: profileData.calorieGoal
+      });
       
-      console.log("Saving profile data:", values);
+      toast({
+        title: t.profileUpdated,
+        description: t.profileUpdateSuccess
+      });
       
-      if (!userProfile?.id) {
-        toast.error("User ID not found");
-        return;
-      }
-      
-      const updatedData = {
-        age: values.age,
-        height: values.height,
-        weight: values.weight,
-        gender: values.gender,
-        activity_level: values.activityLevel,
-        health_goals: values.healthGoals,
-        dietary_restrictions: values.dietaryRestrictions,
-        allergies: values.allergies,
-        calorie_goal: values.calorieGoal,
-      };
-      
-      const updated = await updateUserProfile(userProfile.id, updatedData);
-      
-      if (updated) {
-        setUserProfile({
-          ...userProfile,
-          ...updatedData
-        });
-        setIsEditing(false);
-      }
     } catch (error) {
-      console.error("Error saving profile:", error);
-      toast.error("Failed to update profile");
-    } finally {
-     // setIsLoading(false);
+      console.error('Error updating profile:', error);
+      toast({
+        title: t.errorUpdating,
+        variant: "destructive",
+      });
     }
+  };
+
+  const handleLanguageChange = async (newLanguage: string) => {
+    setLanguage(newLanguage);
+    
+    // Save language preference to user_settings if user is authenticated
+    if (userId) {
+      try {
+        const { data: existingSettings } = await supabase
+          .from('user_settings')
+          .select('*')
+          .eq('user_id', userId)
+          .maybeSingle();
+        
+        if (existingSettings) {
+          // Update existing settings
+          await supabase
+            .from('user_settings')
+            .update({ language: newLanguage })
+            .eq('user_id', userId);
+        } else {
+          // Create new settings
+          await supabase
+            .from('user_settings')
+            .insert({ user_id: userId, language: newLanguage });
+        }
+      } catch (error) {
+        console.error('Error saving language preference:', error);
+      }
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setProfileData((prev) => ({ ...prev, [name]: value }));
   };
   
-  const handleBackToDashboard = () => {
-    navigate('/dashboard');
-  };
-  
-  // if (isLoading && !userProfile) {
-  //   return <TasteHealthLoader />;
-  // }
-
-  const formatActivityLevel = (level: string) => {
-    if (!level) return "Not set";
-    
-    switch(level) {
-      case "sedentary": return "Sedentary (little or no exercise)";
-      case "lightly-active": return "Lightly Active (light exercise 1-3 days/week)";
-      case "moderately-active": return "Moderately Active (moderate exercise 3-5 days/week)";
-      case "very-active": return "Very Active (hard exercise 6-7 days/week)";
-      case "extra-active": return "Extra Active (very hard exercise & physical job)";
-      default: return level;
-    }
-  };
-
-  const formatHealthGoals = (goal: string) => {
-    if (!goal) return "Not set";
-    
-    switch(goal) {
-      case "weight-loss": return "Weight Loss";
-      case "weight-gain": return "Weight Gain";
-      case "maintain": return "Maintain Weight";
-      case "muscle-gain": return "Muscle Gain";
-      case "overall-health": return "Overall Health";
-      default: return goal;
-    }
-  };
-
-  const formatDietaryRestrictions = (restrictions: string) => {
-    if (!restrictions) return "None";
-    
-    const restrictionLabels: Record<string, string> = {
-      "vegetarian": "Vegetarian",
-      "vegan": "Vegan",
-      "gluten-free": "Gluten-Free",
-      "dairy-free": "Dairy-Free",
-      "nut-free": "Nut-Free",
-      "pescatarian": "Pescatarian",
-      "keto": "Keto",
-      "paleo": "Paleo",
-    };
-    
-    return restrictions.split(',')
-      .map(r => restrictionLabels[r] || r)
-      .join(', ');
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-8 flex">
       <ProfileSidebar activePage="profile" />
       
-      <div className="flex-1 p-4 sm:ml-64">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-6 flex items-center">
-            <Button 
-              variant="ghost" 
-              className="mr-4" 
-              onClick={handleBackToDashboard}
-            >
-            {/* <ChevronLeft className="h-4 w-4 mr-1" />
-            Back to Dashboard */}
-            </Button>
-            <h1 className="text-2xl font-semibold flex items-center">
-              <User className="mr-2 h-6 w-6 text-th-green-600" />
-              Profile Management
-            </h1>
-          </div>
-          
-          <Card className="mb-8">
+      <div className="flex-1 p-6 md:ml-64 mt-16 md:mt-0 max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">{t.pageTitle}</h1>
+        
+        <div className="space-y-6">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex justify-between items-center">
-                <span>Personal Information</span>
-                <Button 
-                  onClick={() => setIsEditing(!isEditing)} 
-                  variant={isEditing ? "outline" : "default"}
-                >
-                  {isEditing ? "Cancel" : "Edit Profile"}
-                </Button>
-              </CardTitle>
-              <CardDescription>
-                View and update your profile information
-              </CardDescription>
+              <CardTitle>{t.personalInfo}</CardTitle>
             </CardHeader>
-            <CardContent>
-              {!isEditing ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Name</h3>
-                      <p className="text-base">{userProfile?.first_name || ""} {userProfile?.last_name || ""}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Email</h3>
-                      <p className="text-base">{userProfile?.email || ""}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 flex items-center">
-                        <Calendar className="h-4 w-4 mr-1 text-gray-400" />
-                        Age
-                      </h3>
-                      <p className="text-base">{userProfile?.age || "Not set"}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 flex items-center">
-                        <Users className="h-4 w-4 mr-1 text-gray-400" />
-                        Gender
-                      </h3>
-                      <p className="text-base">{userProfile?.gender || "Not set"}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 flex items-center">
-                        <Ruler className="h-4 w-4 mr-1 text-gray-400" />
-                        Height
-                      </h3>
-                      <p className="text-base">{userProfile?.height || "Not set"}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 flex items-center">
-                        <Weight className="h-4 w-4 mr-1 text-gray-400" />
-                        Weight
-                      </h3>
-                      <p className="text-base">{userProfile?.weight || "Not set"}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 flex items-center">
-                        <Activity className="h-4 w-4 mr-1 text-gray-400" />
-                        Activity Level
-                      </h3>
-                      <p className="text-base">{formatActivityLevel(userProfile?.activity_level || "")}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 flex items-center">
-                        <Target className="h-4 w-4 mr-1 text-gray-400" />
-                        Health Goals
-                      </h3>
-                      <p className="text-base">{formatHealthGoals(userProfile?.health_goals || "")}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 flex items-center">
-                        <Leaf className="h-4 w-4 mr-1 text-gray-400" />
-                        Allergies
-                      </h3>
-                      <p className="text-base">{userProfile?.allergies || "None"}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 flex items-center">
-                        <Salad className="h-4 w-4 mr-1 text-gray-400" />
-                        Dietary Restrictions
-                      </h3>
-                      <p className="text-base">{formatDietaryRestrictions(userProfile?.dietary_restrictions || "")}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 flex items-center">
-                        <Flame className="h-4 w-4 mr-1 text-gray-400" />
-                        Daily Calorie Goal
-                      </h3>
-                      <p className="text-base">{userProfile?.calorie_goal || "Not set"}</p>
-                    </div>
-                  </div>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">{t.firstName}</Label>
+                  <Input 
+                    id="firstName" 
+                    name="firstName"
+                    value={profileData.firstName}
+                    onChange={handleChange}
+                  />
                 </div>
-              ) : (
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="age"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="flex items-center">
-                              <Calendar className="h-4 w-4 mr-1 text-gray-400" />
-                              Age
-                            </FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter your age" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="gender"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="flex items-center">
-                              <Users className="h-4 w-4 mr-1 text-gray-400" />
-                              Gender
-                            </FormLabel>
-                            <FormControl>
-                              <GenderSelect 
-                                value={field.value} 
-                                onChange={field.onChange}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="height"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="flex items-center">
-                              <Ruler className="h-4 w-4 mr-1 text-gray-400" />
-                              Height (cm)
-                            </FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter your height" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="weight"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="flex items-center">
-                              <Weight className="h-4 w-4 mr-1 text-gray-400" />
-                              Weight (kg)
-                            </FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter your weight" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="activityLevel"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="flex items-center">
-                              <Activity className="h-4 w-4 mr-1 text-gray-400" />
-                              Activity Level
-                            </FormLabel>
-                            <FormControl>
-                              <ActivityLevelSelect 
-                                value={field.value} 
-                                onChange={field.onChange}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="calorieGoal"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="flex items-center">
-                              <Flame className="h-4 w-4 mr-1 text-gray-400" />
-                              Daily Calorie Goal
-                            </FormLabel>
-                            <FormControl>
-                              <Input placeholder="E.g., 2000" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <FormField
-                      control={form.control}
-                      name="healthGoals"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center">
-                            <Target className="h-4 w-4 mr-1 text-gray-400" />
-                            Health Goals
-                          </FormLabel>
-                          <FormControl>
-                            <HealthGoalsSelect
-                              value={field.value}
-                              onChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="allergies"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center">
-                            <Leaf className="h-4 w-4 mr-1 text-gray-400" />
-                            Allergies
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="E.g., Nuts, Dairy, Shellfish" 
-                              className="min-h-20"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="dietaryRestrictions"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center">
-                            <Salad className="h-4 w-4 mr-1 text-gray-400" />
-                            Dietary Restrictions
-                          </FormLabel>
-                          <FormControl>
-                            <DietaryRestrictionsSelect
-                              value={field.value}
-                              onChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full sm:w-auto"
-                      // disabled={isLoading}
-                    >
-                      <Save className="mr-1 h-4 w-4" />
-                      {/* {isLoading ? "Saving..." : "Save Profile"} */}
-                    </Button>
-                  </form>
-                </Form>
-              )}
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">{t.lastName}</Label>
+                  <Input 
+                    id="lastName" 
+                    name="lastName"
+                    value={profileData.lastName}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">{t.email}</Label>
+                  <Input 
+                    id="email" 
+                    name="email"
+                    value={profileData.email}
+                    onChange={handleChange}
+                    disabled
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">{t.phone}</Label>
+                  <Input 
+                    id="phone" 
+                    name="phone"
+                    value={profileData.phone}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="username">{t.username}</Label>
+                <Input 
+                  id="username" 
+                  name="username"
+                  value={profileData.username}
+                  onChange={handleChange}
+                />
+              </div>
             </CardContent>
           </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>{t.healthMetrics}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="age">{t.age}</Label>
+                  <Input 
+                    id="age" 
+                    name="age"
+                    type="number"
+                    value={profileData.age}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="height">{t.height}</Label>
+                  <Input 
+                    id="height" 
+                    name="height"
+                    type="number"
+                    value={profileData.height}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="weight">{t.weight}</Label>
+                  <Input 
+                    id="weight" 
+                    name="weight"
+                    type="number"
+                    value={profileData.weight}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{t.gender}</Label>
+                  <GenderSelect
+                    value={profileData.gender}
+                    onChange={(value) => setProfileData(prev => ({ ...prev, gender: value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t.activityLevel}</Label>
+                  <ActivityLevelSelect 
+                    value={profileData.activityLevel}
+                    onChange={(value) => setProfileData(prev => ({ ...prev, activityLevel: value }))}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>{t.nutritionPreferences}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>{t.healthGoals}</Label>
+                <HealthGoalsSelect 
+                  value={profileData.healthGoals}
+                  onChange={(value) => setProfileData(prev => ({ ...prev, healthGoals: value }))}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>{t.dietaryRestrictions}</Label>
+                <DietaryRestrictionsSelect 
+                  value={profileData.dietaryRestrictions}
+                  onChange={(value) => setProfileData(prev => ({ ...prev, dietaryRestrictions: value }))}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="allergies">{t.allergies}</Label>
+                <Input 
+                  id="allergies" 
+                  name="allergies"
+                  value={profileData.allergies}
+                  onChange={handleChange}
+                  placeholder="e.g., nuts, shellfish, dairy"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="calorieGoal">{t.calorieGoal}</Label>
+                <Input 
+                  id="calorieGoal" 
+                  name="calorieGoal"
+                  type="number"
+                  value={profileData.calorieGoal}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="space-y-2 pt-4">
+                <LanguageSelector 
+                  currentLanguage={language}
+                  onLanguageChange={handleLanguageChange}
+                  label={t.languagePreference}
+                  englishLabel={t.english}
+                  frenchLabel={t.french}
+                />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <div className="flex justify-end">
+            <Button onClick={handleSaveProfile} className="px-8">
+              {t.saveChanges}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
