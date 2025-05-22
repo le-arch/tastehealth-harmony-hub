@@ -14,6 +14,7 @@ import CalorieGoalStep from "@/components/goal-wizard/CalorieGoalStep";
 import MacroStep from "@/components/goal-wizard/MacroStep";
 import ReviewGoalsStep from "@/components/goal-wizard/ReviewGoalsStep";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
+
 const steps = [
   { id: 1, title: "Basic Information" },
   { id: 2, title: "Calorie Goals" },
@@ -169,7 +170,7 @@ const GoalWizard = () => {
     });
 
     setTimeout(() => {
-      navigate("/meal-builder");
+      navigate("/dashboard");
     }, 3000);
   };
 

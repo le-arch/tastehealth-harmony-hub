@@ -10,12 +10,33 @@ import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
 import { useScreenSize } from "@/utils/mobile";
 import { Trophy, Star, Users, Activity } from "lucide-react";
+import NutritionQuest from "../components/gamification/NutritionQuest";
+import NutritionLeaderboard from "../components/gamification/NutritionLeaderboard";
 
 const NutritionGamePage: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { isMobile, isTablet } = useScreenSize();
   const [activeTab, setActiveTab] = useState("main");
+
+  const addPoints = async (points: number, reason: string) => {
+    if (!userId) return;
+    
+    try {
+      // Using gamificationService through RPC
+      await supabase.rpc('record_points_transaction', {
+        p_user_id: userId,
+        p_points: points,
+        p_transaction_type: 'earn',
+        p_reason: reason
+      });
+      
+      return true;
+    } catch (error) {
+      console.error("Error adding points:", error);
+      return false;
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -83,17 +104,11 @@ const NutritionGamePage: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="challenges" className="mt-4">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Nutrition Challenges</h2>
-            <p>Coming soon: Participate in various nutrition challenges to earn points!</p>
-          </div>
+          <NutritionQuest userId={userId} addPoints={addPoints} />
         </TabsContent>
         
         <TabsContent value="leaderboard" className="mt-4">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Leaderboard</h2>
-            <p>Coming soon: See how you rank against other users!</p>
-          </div>
+          <NutritionLeaderboard />
         </TabsContent>
         
         <TabsContent value="progress" className="mt-4">

@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from "react";
@@ -182,13 +183,13 @@ const MealDetail = ({
                   <h3 className="font-medium mb-2">Ingredients</h3>
                   {recipe.ingredients && recipe.ingredients.length > 0 ? (
                     <ul className="list-disc pl-5 space-y-1 text-gray-700">
-                      {recipe.ingredients.map((ingredients, index) => (
+                      {recipe.ingredients.map((ingredient, index) => (
                         <li
                           key={index}
                           className="text-gray-700 dark:text-gray-100"
                         >
-                          {ingredients.quantity && `${ingredients.quantity} `}
-                          {ingredients.quantity}
+                          {ingredient.quantity && `${ingredient.quantity} `}
+                          {ingredient.name}
                         </li>
                       ))}
                     </ul>

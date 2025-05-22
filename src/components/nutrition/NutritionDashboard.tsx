@@ -86,14 +86,14 @@ const NutritionDashboard: React.FC = () => {
         
         const userId = sessionData.session.user.id;
         
-        // Fetch achievements
+        // Fetch achievements - using user_badges joined with badges
         setLoading(prev => ({ ...prev, achievements: true }));
-        const { data: achievementsData, error: achievementsError } = await supabase
-          .from('user_achievements')
+        const { data: badgesData, error: badgesError } = await supabase
+          .from('user_badges')
           .select(`
             id,
-            earned_at,
-            achievement:achievement_id (
+            unlocked_at,
+            badge:badge_id (
               id,
               name,
               description,
@@ -101,18 +101,18 @@ const NutritionDashboard: React.FC = () => {
             )
           `)
           .eq('user_id', userId)
-          .order('earned_at', { ascending: false })
+          .order('unlocked_at', { ascending: false })
           .limit(4);
         
-        if (achievementsError) {
-          console.error('Error fetching achievements:', achievementsError);
-        } else if (achievementsData) {
-          const formattedAchievements = achievementsData.map(item => ({
+        if (badgesError) {
+          console.error('Error fetching achievements:', badgesError);
+        } else if (badgesData) {
+          const formattedAchievements = badgesData.map(item => ({
             id: item.id,
-            name: item.achievement?.name || '',
-            description: item.achievement?.description || '',
-            icon: item.achievement?.icon || 'award',
-            earned_at: item.earned_at,
+            name: item.badge?.name || '',
+            description: item.badge?.description || '',
+            icon: item.badge?.icon || 'award',
+            earned_at: item.unlocked_at,
           }));
           setAchievements(formattedAchievements);
         }
