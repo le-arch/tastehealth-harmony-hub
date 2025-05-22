@@ -36,7 +36,7 @@ export interface Meal {
 }
 
 export interface RecipeIngredient {
-  name: string
+  meal: string
   quantity?: string
 }
 
@@ -181,8 +181,8 @@ export const getMealDetails = async (mealId: string) => {
     const { data: ingredientData, error: ingredientError } = await supabase
       .from("recipe_ingredients")
       .select(`
-        quantity,
-        ingredients(name)
+        meal,
+        quantity
       `)
       .eq("recipe_id", recipeData.id)
 
@@ -191,9 +191,9 @@ export const getMealDetails = async (mealId: string) => {
     }
 
     // Format recipe ingredients
-    const ingredients =
+    const ingredients: RecipeIngredient[] =
       ingredientData?.map((item) => ({
-        name: item.ingredients?.[0]?.name || "",
+        meal: item.meal || "",
         quantity: item.quantity,
       })) || []
 
