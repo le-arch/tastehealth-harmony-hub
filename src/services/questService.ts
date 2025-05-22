@@ -139,12 +139,29 @@ const questService = {
     })) || [];
   },
 
+  async getUserCompletedQuests(userId: string): Promise<UserQuest[]> {
+    if (!userId) return [];
+
+    const { data, error } = await supabase
+      .from("user_quests")
+      .select("*, quest:quest_id(*)")
+      .eq("user_id", userId)
+      .eq("completed", true);
+
+    if (error) {
+      console.error("Error fetching completed user quests:", error);
+      return [];
+    }
+
+    return data || [];
+  },
+
   async startQuest(userId: string, questId: string): Promise<UserQuest | null> {
     if (!userId || !questId) return null;
 
     // Check if user already has this quest
     const { data: existingQuest } = await supabase
-      .from("user_quests")
+      .from("user_nutrition_quests")
       .select("*")
       .eq("user_id", userId)
       .eq("quest_id", questId)
@@ -154,7 +171,7 @@ const questService = {
 
     // Start new quest
     const { data, error } = await supabase
-      .from("user_quests")
+      .from("user_nutrition_quests")
       .insert({
         user_id: userId,
         quest_id: questId,
@@ -181,7 +198,7 @@ const questService = {
     if (!userId || !questId) return false;
 
     const { error } = await supabase
-      .from("user_quests")
+      .from("user_nutrition_quests")
       .update({
         current_step: currentStep,
       })
@@ -204,7 +221,7 @@ const questService = {
     if (!userId || !questId) return false;
 
     const { error } = await supabase
-      .from("user_quests")
+      .from("user_nutrition_quests")
       .update({
         current_step: currentStep,
         completed: true,
@@ -228,62 +245,82 @@ const questService = {
   ): Promise<{ success: boolean; completed: boolean }> {
     if (!userId || !questId) return { success: false, completed: false };
 
-    // Get the quest
-    const { data: quest, error: questError } = await supabase
-      .from("quests")
-      .select("*")
-      .eq("id", questId)
-      .single();
+    try {
+      // Get the quest
+      const { data: quest } = await supabase
+        .from("nutrition_quests")
+        .select("*")
+        .eq("id", questId)
+        .single();
 
-    if (questError) {
-      console.error("Error fetching quest:", questError);
+      if (!quest) {
+        console.error("Quest not found");
+        return { success: false, completed: false };
+      }
+
+      // Get user quest
+      const { data: userQuest } = await supabase
+        .from("user_nutrition_quests")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("quest_id", questId)
+        .single();
+
+      if (!userQuest) {
+        console.error("User quest not found");
+        return { success: false, completed: false };
+      }
+
+      // Generate default steps if not present in requirements
+      let steps = [];
+      if (quest.requirements && quest.requirements.steps) {
+        steps = quest.requirements.steps;
+      } else {
+        steps = [
+          {
+            id: 1,
+            title: quest.title,
+            description: quest.description,
+            completed: false
+          }
+        ];
+      }
+
+      if (stepIndex >= steps.length) {
+        return { success: false, completed: false };
+      }
+
+      // Mark step as completed
+      steps[stepIndex].completed = true;
+      
+      // Check if all steps are completed
+      const allStepsCompleted = stepIndex === steps.length - 1;
+
+      // Update user quest with new progress
+      const updateData: any = {
+        current_step: stepIndex + 1,
+      };
+
+      if (allStepsCompleted) {
+        updateData.completed = true;
+        updateData.completed_at = new Date().toISOString();
+      }
+
+      const { error: updateError } = await supabase
+        .from("user_nutrition_quests")
+        .update(updateData)
+        .eq("id", userQuest.id);
+
+      if (updateError) {
+        console.error("Error updating user quest:", updateError);
+        return { success: false, completed: false };
+      }
+
+      return { success: true, completed: allStepsCompleted };
+    } catch (error) {
+      console.error("Error completing quest step:", error);
       return { success: false, completed: false };
     }
-
-    // Get user quest
-    const { data: userQuest, error: userQuestError } = await supabase
-      .from("user_quests")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("quest_id", questId)
-      .single();
-
-    if (userQuestError) {
-      console.error("Error fetching user quest:", userQuestError);
-      return { success: false, completed: false };
-    }
-
-    // Update step completion
-    const steps = quest.steps || [];
-    if (stepIndex >= steps.length) {
-      return { success: false, completed: false };
-    }
-
-    steps[stepIndex].completed = true;
-    const newCurrentStep = stepIndex + 1;
-    const allStepsCompleted = steps.every((step: QuestStep) => step.completed);
-
-    // Update user quest
-    const updateData: any = {
-      current_step: newCurrentStep,
-    };
-
-    if (allStepsCompleted) {
-      updateData.completed = true;
-      updateData.completed_at = new Date().toISOString();
-    }
-
-    const { error: updateError } = await supabase
-      .from("user_quests")
-      .update(updateData)
-      .eq("id", userQuest.id);
-
-    if (updateError) {
-      console.error("Error updating user quest:", updateError);
-      return { success: false, completed: false };
-    }
-
-    return { success: true, completed: allStepsCompleted };
   },
 
   async getActiveQuestsByType(
