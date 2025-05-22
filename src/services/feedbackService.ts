@@ -1,4 +1,4 @@
-import { supabase } from "../lib/SuperbaseClient";
+import { supabase } from "../integrations/supabase/client";
 
 export interface FeedbackData {
   id?: string;

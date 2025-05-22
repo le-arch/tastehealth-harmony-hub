@@ -1,3 +1,4 @@
+import React from 'react';
 import { createNotification } from "@/services/notificationService";
 
 // Sample notification data for different types

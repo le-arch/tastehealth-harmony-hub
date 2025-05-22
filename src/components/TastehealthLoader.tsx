@@ -2,10 +2,14 @@
 import React, { useEffect } from "react";
 import confetti from "canvas-confetti";
 import "./TasteHealthLoader.css";
-import { useScreenSize } from "@/hooks/use-mobile";
+import { useScreenSize } from "@/utils/mobile";
 
-const TasteHealthLoader: React.FC = () => {
-  const text = "TASTEHEALTH";
+interface TasteHealthLoaderProps {
+  message?: string;
+}
+
+const TasteHealthLoader: React.FC<TasteHealthLoaderProps> = ({ message = "TASTEHEALTH" }) => {
+  const text = message;
   const { isMobile, isTablet } = useScreenSize();
 
   useEffect(() => {

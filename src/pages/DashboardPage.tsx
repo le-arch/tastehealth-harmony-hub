@@ -17,12 +17,14 @@ import ChallengeCreator from '../components/ChallengeCreator';
 import TasteHealthLoader from "../components/TastehealthLoader";
 import { useScreenSize } from '@/utils/mobile';
 import { LayoutDashboard, Award, Calendar, Smile, Trophy } from 'lucide-react';
+import { checkAndFixGamificationData } from '@/services/gamificationFixService';
 
 const DashboardPage = () => {
   const { language } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedTab, setSelectedTab] = useState("dashboard");
   const [loading, setLoading] = useState(true);
+  const [showLoader, setShowLoader] = useState(false);
   const { isMobile, isTablet } = useScreenSize();
 
   const translations = {
@@ -53,22 +55,51 @@ const DashboardPage = () => {
   const t = translations[language as keyof typeof translations] || translations.en;
 
   useEffect(() => {
-    checkAuthStatus();
-    toast.success("Welcome to your Health Dashboard!", {
-      description: "Track your progress and stay motivated.",
-    });
+    const checkAuthAndShowLoader = async () => {
+      setLoading(true);
+      
+      // Check authentication status
+      const { data } = await supabase.auth.getSession();
+      const isLoggedIn = !!data.session;
+      setIsAuthenticated(isLoggedIn);
+      
+      if (isLoggedIn) {
+        // Fix gamification data if needed
+        await checkAndFixGamificationData(data.session.user.id);
+        
+        // Show the loader animation for a moment
+        setShowLoader(true);
+        
+        // Welcome toast
+        toast.success("Welcome to your Health Dashboard!", {
+          description: "Track your progress and stay motivated.",
+        });
+        
+        // Hide loader after 2.5 seconds
+        setTimeout(() => {
+          setShowLoader(false);
+          setLoading(false);
+        }, 2500);
+      } else {
+        setLoading(false);
+      }
+    };
+    
+    checkAuthAndShowLoader();
   }, []);
 
-  const checkAuthStatus = async () => {
-    const { data } = await supabase.auth.getSession();
-    setIsAuthenticated(!!data.session);
-    setLoading(false);
-  };
+  if (loading && showLoader) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <TasteHealthLoader />
+      </div>
+    );
+  }
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <TasteHealthLoader />
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
       </div>
     );
   }
