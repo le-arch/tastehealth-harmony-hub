@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
@@ -189,18 +188,7 @@ const sampleNotifications = {
 // Types for notifications
 type NotificationType = "meal" | "water" | "exercise" | "sleep" | "achievement" | "system"
 
-// Set up CORS headers
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-}
-
 serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders })
-  }
-  
   try {
     // Create a Supabase client with the service role key
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || ""
@@ -217,15 +205,13 @@ serve(async (req) => {
 
     if (!users || users.length === 0) {
       return new Response(JSON.stringify({ success: false, message: "No users found" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         status: 200,
       })
     }
 
-    console.log(`Found ${users.length} users to process for notifications`)
-
     // Get the current notification type to use (stored in a table)
-    let { data: currentTypeData, error: currentTypeError } = await supabase
+    const { data: currentTypeData, error: currentTypeError } = await supabase
       .from("notification_settings")
       .select("current_type")
       .single()
@@ -235,19 +221,15 @@ serve(async (req) => {
 
     if (currentTypeError || !currentTypeData) {
       // If the table or row doesn't exist, create it
-      console.log("Creating notification_settings record with default type:", currentType)
       await supabase.from("notification_settings").upsert({ id: 1, current_type: currentType })
     } else {
       currentType = currentTypeData.current_type as NotificationType
-      console.log("Using current notification type:", currentType)
     }
 
     // Determine the next type to use
     const types: NotificationType[] = ["meal", "water", "exercise", "sleep", "achievement", "system"]
     const currentIndex = types.indexOf(currentType)
     const nextType = types[(currentIndex + 1) % types.length]
-
-    console.log(`Next notification type will be: ${nextType}`)
 
     // Generate exactly one notification per user of the current type
     const notificationsToInsert = []
@@ -267,8 +249,6 @@ serve(async (req) => {
       })
     }
 
-    console.log(`Prepared ${notificationsToInsert.length} notifications to insert`)
-
     // Insert the notifications
     const { error: insertError } = await supabase.from("notifications").insert(notificationsToInsert)
 
@@ -286,8 +266,6 @@ serve(async (req) => {
       throw updateError
     }
 
-    console.log("Notifications successfully generated and notification_settings updated")
-
     return new Response(
       JSON.stringify({
         success: true,
@@ -297,14 +275,13 @@ serve(async (req) => {
         nextType: nextType,
       }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         status: 200,
       },
     )
   } catch (error) {
-    console.error("Error in auto-generate-notification:", error)
     return new Response(JSON.stringify({ success: false, error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       status: 500,
     })
   }

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -10,7 +9,6 @@ import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { Bell, Clock, Utensils, Droplets, Dumbbell, Moon, Award, RefreshCw, Trash2 } from "lucide-react"
-import { useIsMobile, useIsTablet } from "@/hooks/use-mobile"
 import {
   getNotifications,
   markNotificationAsRead,
@@ -26,8 +24,6 @@ const NotificationsPage = () => {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
-  const isMobile = useIsMobile()
-  const isTablet = useIsTablet()
 
   const translations = {
     en: {
@@ -207,51 +203,51 @@ const NotificationsPage = () => {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="flex space-y-6 bg-gray-50 dark:bg-gray-900">
       <ProfileSidebar activePage="notifications" />
 
-      <div className={`p-4 w-full ${isMobile ? 'mt-16' : 'sm:ml-0 lg:ml-64'}`}>
-        <div className="p-2 sm:p-4 max-w-5xl mx-auto">
-          <div className={`flex ${isMobile ? 'flex-col gap-3' : 'justify-between'} items-center mb-6`}>
+      <div className="sm:ml-64 p-4">
+        <div className="p-4 max-w-5xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t.title}</h1>
               <p className="text-gray-500 dark:text-gray-400">{t.subTitle}</p>
             </div>
 
-            <div className={`flex ${isMobile ? 'w-full justify-between' : 'space-x-2'}`}>
-              <Button variant="outline" size={isMobile ? "sm" : "default"} onClick={handleRefresh} title={t.refresh}>
-                <RefreshCw className={`${isMobile ? 'h-4 w-4' : 'h-4 w-4 mr-1'}`} />
-                {!isMobile && t.refresh}
+            <div className="flex space-x-2">
+              <Button variant="outline" size="sm" onClick={handleRefresh} title={t.refresh}>
+                <RefreshCw className="h-4 w-4 mr-1" />
+                {t.refresh}
               </Button>
 
               <Button
                 variant="outline"
-                size={isMobile ? "sm" : "default"}
+                size="sm"
                 onClick={handleMarkAllAsRead}
                 disabled={notifications.every((n) => n.is_read) || notifications.length === 0}
               >
-                {isMobile ? <CheckCheck className="h-4 w-4" /> : t.markAllRead}
+                {t.markAllRead}
               </Button>
 
               <Button
                 variant="outline"
-                size={isMobile ? "sm" : "default"}
+                size="sm"
                 onClick={handleClearAllNotifications}
                 disabled={notifications.length === 0}
               >
-                <Trash2 className={`${isMobile ? 'h-4 w-4' : 'h-4 w-4 mr-1'}`} />
-                {!isMobile && t.clearAll}
+                <Trash2 className="h-4 w-4 mr-1" />
+                {t.clearAll}
               </Button>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2">
+          <div className="flex flex-wrap gap-2 mb-6">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setActiveFilter("all")}
-              className={`${isMobile ? 'px-2 py-1 text-xs' : ''} ${activeFilter === "all" || activeFilter === null ? "bg-primary text-primary-foreground" : ""}`}
+              className={activeFilter === "all" || activeFilter === null ? "bg-primary text-primary-foreground" : ""}
             >
               {t.filterAll}
             </Button>
@@ -259,7 +255,7 @@ const NotificationsPage = () => {
               variant="outline"
               size="sm"
               onClick={() => setActiveFilter("unread")}
-              className={`${isMobile ? 'px-2 py-1 text-xs' : ''} ${activeFilter === "unread" ? "bg-primary text-primary-foreground" : ""}`}
+              className={activeFilter === "unread" ? "bg-primary text-primary-foreground" : ""}
             >
               {t.filterUnread}
             </Button>
@@ -267,46 +263,46 @@ const NotificationsPage = () => {
               variant="outline"
               size="sm"
               onClick={() => setActiveFilter("meal")}
-              className={`${isMobile ? 'px-2 py-1 text-xs' : ''} ${activeFilter === "meal" ? "bg-primary text-primary-foreground" : ""}`}
+              className={activeFilter === "meal" ? "bg-primary text-primary-foreground" : ""}
             >
-              <Utensils className="h-3 w-3 mr-1" />
-              {!isMobile && t.filterMeal}
+              <Utensils className="h-4 w-4 mr-1" />
+              {t.filterMeal}
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setActiveFilter("water")}
-              className={`${isMobile ? 'px-2 py-1 text-xs' : ''} ${activeFilter === "water" ? "bg-primary text-primary-foreground" : ""}`}
+              className={activeFilter === "water" ? "bg-primary text-primary-foreground" : ""}
             >
-              <Droplets className="h-3 w-3 mr-1" />
-              {!isMobile && t.filterWater}
+              <Droplets className="h-4 w-4 mr-1" />
+              {t.filterWater}
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setActiveFilter("exercise")}
-              className={`${isMobile ? 'px-2 py-1 text-xs' : ''} ${activeFilter === "exercise" ? "bg-primary text-primary-foreground" : ""}`}
+              className={activeFilter === "exercise" ? "bg-primary text-primary-foreground" : ""}
             >
-              <Dumbbell className="h-3 w-3 mr-1" />
-              {!isMobile && t.filterExercise}
+              <Dumbbell className="h-4 w-4 mr-1" />
+              {t.filterExercise}
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setActiveFilter("sleep")}
-              className={`${isMobile ? 'px-2 py-1 text-xs' : ''} ${activeFilter === "sleep" ? "bg-primary text-primary-foreground" : ""}`}
+              className={activeFilter === "sleep" ? "bg-primary text-primary-foreground" : ""}
             >
-              <Moon className="h-3 w-3 mr-1" />
-              {!isMobile && t.filterSleep}
+              <Moon className="h-4 w-4 mr-1" />
+              {t.filterSleep}
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setActiveFilter("achievement")}
-              className={`${isMobile ? 'px-2 py-1 text-xs' : ''} ${activeFilter === "achievement" ? "bg-primary text-primary-foreground" : ""}`}
+              className={activeFilter === "achievement" ? "bg-primary text-primary-foreground" : ""}
             >
-              <Award className="h-3 w-3 mr-1" />
-              {!isMobile && t.filterAchievement}
+              <Award className="h-4 w-4 mr-1" />
+              {t.filterAchievement}
             </Button>
           </div>
 
@@ -332,17 +328,17 @@ const NotificationsPage = () => {
                   key={notification.id}
                   className={`transition-all ${notification.is_read ? "bg-gray-50 dark:bg-gray-800/50" : "bg-white dark:bg-gray-800 shadow-md"}`}
                 >
-                  <CardContent className={`${isMobile ? 'p-3' : 'p-4'}`}>
+                  <CardContent className="p-4">
                     <div className="flex">
-                      <div className="flex-shrink-0 mr-3 mt-1 bg-gray-100 dark:bg-gray-700 rounded-full p-2">
+                      <div className="flex-shrink-0 mr-4 mt-1 bg-gray-100 dark:bg-gray-700 rounded-full p-2">
                         {getNotificationIcon(notification.type)}
                       </div>
 
                       <div className="flex-grow">
                         <div className="flex justify-between items-start">
-                          <div className={`${isMobile ? 'max-w-[70%]' : ''}`}>
+                          <div>
                             <h3
-                              className={`${isMobile ? 'text-base' : 'text-lg'} font-medium ${notification.is_read ? "text-gray-700 dark:text-gray-300" : "text-gray-900 dark:text-white"}`}
+                              className={`text-lg font-medium ${notification.is_read ? "text-gray-700 dark:text-gray-300" : "text-gray-900 dark:text-white"}`}
                             >
                               {notification.title}
                               {!notification.is_read && (
@@ -352,7 +348,7 @@ const NotificationsPage = () => {
                               )}
                             </h3>
                             <p
-                              className={`${isMobile ? 'text-xs' : 'text-sm'} mt-1 ${notification.is_read ? "text-gray-500 dark:text-gray-400" : "text-gray-700 dark:text-gray-300"}`}
+                              className={`text-sm mt-1 ${notification.is_read ? "text-gray-500 dark:text-gray-400" : "text-gray-700 dark:text-gray-300"}`}
                             >
                               {notification.message}
                             </p>
@@ -364,14 +360,14 @@ const NotificationsPage = () => {
                           </div>
                         </div>
 
-                        <div className={`mt-3 flex ${isMobile ? 'justify-start' : 'justify-end'} space-x-2`}>
+                        <div className="mt-3 flex justify-end space-x-2">
                           {!notification.is_read && (
                             <Button variant="ghost" size="sm" onClick={() => handleMarkAsRead(notification.id)}>
-                              {isMobile ? <Check className="h-4 w-4" /> : t.markAsRead}
+                              {t.markAsRead}
                             </Button>
                           )}
                           <Button variant="ghost" size="sm" onClick={() => handleDeleteNotification(notification.id)}>
-                            {isMobile ? <Trash2 className="h-4 w-4" /> : t.delete}
+                            {t.delete}
                           </Button>
                         </div>
                       </div>

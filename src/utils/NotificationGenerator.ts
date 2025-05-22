@@ -129,15 +129,3 @@ export const generateSampleNotifications = async (
     return false;
   }
 };
-
-export const generateNotification = async (
-  title: string, 
-  message: string, 
-  type: string
-): Promise<void> => {
-  try {
-    await createNotification(title, message, type);
-  } catch (error) {
-    console.error("Error generating notification:", error)
-  }
-}

@@ -1,7 +1,8 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export interface MealCalories {
+interface MealCalories {
   id: string;
   calories: number;
 }
@@ -9,53 +10,21 @@ export interface MealCalories {
 /**
  * Retrieves calorie information for a set of meals
  */
-export const getMealCalories = async (mealIds: string[]): Promise<MealCalories[]> => {
+export const getMealsCalories = async (mealIds: string[]): Promise<MealCalories[]> => {
   if (!mealIds.length) return [];
   
   try {
-    // First check if the meal has a nutrition_facts entry with calories
-    const { data: nutritionData, error: nutritionError } = await supabase
-      .from('nutrition_facts')
-      .select('meal_id, calories')
-      .in('meal_id', mealIds)
+    const { data, error } = await supabase
+      .from('meals')
+      .select('id, calories')
+      .in('id', mealIds);
+      
+    if (error) throw error;
     
-    if (nutritionError) {
-      console.error('Error fetching meal calories from nutrition_facts:', nutritionError)
-    }
-    
-    // Create a map of meal_id to calories from nutrition data
-    const caloriesMap: Record<string, number> = {}
-    
-    if (nutritionData && nutritionData.length > 0) {
-      nutritionData.forEach(item => {
-        if (item.meal_id && item.calories) {
-          // Convert string calories to number if needed
-          const caloriesValue = typeof item.calories === 'string' 
-            ? parseInt(item.calories, 10) 
-            : item.calories
-            
-          if (!isNaN(caloriesValue)) {
-            caloriesMap[item.meal_id] = caloriesValue
-          }
-        }
-      })
-    }
-    
-    // For meals without nutrition data, assign default calories
-    const defaultCaloriesPerMeal = 500
-    const result: MealCalories[] = mealIds.map(id => ({
-      id,
-      calories: caloriesMap[id] || defaultCaloriesPerMeal
-    }))
-    
-    return result
+    return data as MealCalories[];
   } catch (error) {
-    console.error('Error in getMealCalories:', error)
-    // Return default calories for all meals in case of error
-    return mealIds.map(id => ({
-      id,
-      calories: 500
-    }))
+    console.error('Error getting meal calories:', error);
+    return [];
   }
 };
 
@@ -80,7 +49,7 @@ export const saveMealPlanCalories = async (
     const mealIds = mealItems.map(item => item.meal_id);
     
     // Get calorie information for these meals
-    const mealsWithCalories = await getMealCalories(mealIds);
+    const mealsWithCalories = await getMealsCalories(mealIds);
     
     if (!mealsWithCalories.length) return false;
     
