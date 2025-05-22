@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -13,8 +12,6 @@ import {
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import questService from "@/services/questService";
-import { supabase } from "@/integrations/supabase/client";
-import gamificationService from "@/services/gamificationService";
 
 interface NutritionQuestProps {
   userId?: string;
@@ -105,121 +102,41 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
     const loadQuests = async () => {
       setIsLoading(true);
       try {
-        if (!userId) return;
-        
-        // Fetch available quests from nutrition_quests table
+        // Fetch quests from nutrition_quests table
         const questsData = await questService.getNutritionQuests();
-        
-        // Fetch user started quests
-        const userQuestsData = await supabase
-          .from("user_nutrition_quests")
-          .select("*, quest:quest_id(*)")
-          .eq("user_id", userId);
-        
-        if (userQuestsData.error) throw userQuestsData.error;
-        
-        // Filter active and completed quests
-        const userActiveQuests = userQuestsData.data
-          ?.filter(q => !q.completed)
-          .map(q => q.quest as Quest) || [];
-        
-        const userCompletedQuests = userQuestsData.data
-          ?.filter(q => q.completed)
-          .map(q => q.quest as Quest) || [];
-        
-        // Filter out quests that are already started or completed
-        const userQuestIds = userQuestsData.data?.map(q => q.quest_id) || [];
-        const availableQuestsData = questsData?.filter(
-          q => !userQuestIds.includes(q.id)
-        ) || [];
-        
-        setAvailableQuests(availableQuestsData);
-        setActiveQuests(userActiveQuests);
-        setCompletedQuests(userCompletedQuests);
+        setAvailableQuests(questsData || []);
       } catch (error) {
         console.error("Error loading quests:", error);
       } finally {
         setIsLoading(false);
       }
     };
-    
     loadQuests();
-  }, [userId]);
+  }, []);
 
   // Start a quest
   const startQuest = async (quest: Quest) => {
     if (!userId) return;
     try {
-      // Start the quest in the database
-      const { data, error } = await supabase
-        .from("user_nutrition_quests")
-        .insert({
-          user_id: userId,
-          quest_id: quest.id,
-          completed: false,
-          started_at: new Date().toISOString()
-        })
-        .select("*");
-      
-      if (error) throw error;
-      
+      const now = new Date().toISOString();
+      // Implement questService.startQuest if needed
+      const startedQuest = await questService.startQuest(userId, quest.id);
+      if (!startedQuest) throw new Error("Failed to start quest");
+
       // Update local state
-      setAvailableQuests(prev => prev.filter(q => q.id !== quest.id));
-      setActiveQuests(prev => [...prev, quest]);
-      
+      const updatedQuest = { ...quest, started_at: now };
+      setAvailableQuests((prev) => prev.filter((q) => q.id !== quest.id));
+      setActiveQuests((prev) => [...prev, updatedQuest]);
+      setSelectedQuest(updatedQuest);
+
       toast.success(t.questStarted, {
         description: quest.title,
       });
-      
-      // Play start sound
+
       const audio = new Audio("/sounds/quest-start.mp3");
-      audio.play().catch(e => console.log("Audio play failed:", e));
+      audio.play().catch((e) => console.log("Audio play failed:", e));
     } catch (error) {
       console.error("Error starting quest:", error);
-      toast.error("Failed to start quest");
-    }
-  };
-  
-  // Complete a quest
-  const completeQuest = async (quest: Quest) => {
-    if (!userId) return;
-    try {
-      // Update the user_nutrition_quests record
-      const { error } = await supabase
-        .from("user_nutrition_quests")
-        .update({
-          completed: true,
-          completed_at: new Date().toISOString()
-        })
-        .eq("user_id", userId)
-        .eq("quest_id", quest.id);
-        
-      if (error) throw error;
-      
-      // Award points to the user
-      await gamificationService.awardPoints(
-        userId,
-        quest.points,
-        `Completed quest: ${quest.title}`,
-        quest.id,
-        "quest_completion"
-      );
-      
-      // Update local state
-      setActiveQuests(prev => prev.filter(q => q.id !== quest.id));
-      setCompletedQuests(prev => [...prev, quest]);
-      
-      // Show success message
-      toast.success(t.questCompleted, {
-        description: `${t.rewardsEarned}: ${quest.points} ${t.points}`,
-      });
-      
-      // Play completion sound
-      const audio = new Audio("/sounds/quest-complete.mp3");
-      audio.play().catch(e => console.log("Audio play failed:", e));
-    } catch (error) {
-      console.error("Error completing quest:", error);
-      toast.error("Failed to complete quest");
     }
   };
 
@@ -245,25 +162,15 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
         <span>Points: {quest.points}</span>
         <span>Category: {quest.category}</span>
       </div>
-      
+      {/* Add more fields as needed */}
       <button
         onClick={(e) => {
           e.stopPropagation();
-          
-          // For available quests, start them
-          if (activeTab === "available") {
-            startQuest(quest);
-          } 
-          // For active quests, complete them
-          else if (activeTab === "active") {
-            completeQuest(quest);
-          }
+          startQuest(quest);
         }}
         className="mt-2 bg-primary text-white py-1 px-4 rounded-md text-sm hover:bg-primary/90 transition-colors"
       >
-        {activeTab === "available" ? t.start : 
-         activeTab === "active" ? t.claim : 
-         t.completed}
+        {t.start}
       </button>
     </motion.div>
   );
@@ -308,40 +215,6 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
       <div className="p-4 border-b dark:border-gray-700">
         <h2 className="text-xl font-bold">{t.title}</h2>
       </div>
-      
-      <div className="flex border-b dark:border-gray-700">
-        <button
-          onClick={() => setActiveTab("available")}
-          className={`px-4 py-2 text-sm font-medium flex-1 text-center ${
-            activeTab === "available" 
-              ? "border-b-2 border-primary text-primary" 
-              : "text-gray-500"
-          }`}
-        >
-          {t.available}
-        </button>
-        <button
-          onClick={() => setActiveTab("active")}
-          className={`px-4 py-2 text-sm font-medium flex-1 text-center ${
-            activeTab === "active" 
-              ? "border-b-2 border-primary text-primary" 
-              : "text-gray-500"
-          }`}
-        >
-          {t.active}
-        </button>
-        <button
-          onClick={() => setActiveTab("completed")}
-          className={`px-4 py-2 text-sm font-medium flex-1 text-center ${
-            activeTab === "completed" 
-              ? "border-b-2 border-primary text-primary" 
-              : "text-gray-500"
-          }`}
-        >
-          {t.completed}
-        </button>
-      </div>
-      
       <div className="p-4">
         {isLoading ? (
           <div className="flex justify-center py-10">
@@ -349,23 +222,9 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {activeTab === "available" && (
-              availableQuests.length > 0
-                ? availableQuests.map((quest) => renderQuestCard(quest))
-                : renderEmptyState("available", t)
-            )}
-            
-            {activeTab === "active" && (
-              activeQuests.length > 0
-                ? activeQuests.map((quest) => renderQuestCard(quest))
-                : renderEmptyState("active", t)
-            )}
-            
-            {activeTab === "completed" && (
-              completedQuests.length > 0
-                ? completedQuests.map((quest) => renderQuestCard(quest))
-                : renderEmptyState("completed", t)
-            )}
+            {availableQuests.length > 0
+              ? availableQuests.map((quest) => renderQuestCard(quest))
+              : renderEmptyState("available", t)}
           </div>
         )}
       </div>
