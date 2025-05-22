@@ -1,15 +1,19 @@
+
 "use client"
 
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { Link } from "react-router-dom"
 import { Bell, Check, CheckCheck, ExternalLink } from "lucide-react"
+import { useIsMobile, useIsTablet } from "@/hooks/use-mobile"
 import "./NotificationDropdown.css"
 
 const NotificationDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(3)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
+  const isTablet = useIsTablet()
 
   // Mock notifications data
   const notifications = [
@@ -97,7 +101,12 @@ const NotificationDropdown: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-md shadow-lg overflow-hidden z-50 border border-gray-200 dark:border-gray-700">
+        <div 
+          className={`absolute right-0 mt-2 bg-white dark:bg-gray-800 rounded-md shadow-lg overflow-hidden z-50 border border-gray-200 dark:border-gray-700 ${
+            isMobile ? 'w-[calc(100vw-32px)] left-[50%] -translate-x-1/2' : 
+            isTablet ? 'w-[350px]' : 'w-80'
+          }`}
+        >
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="font-semibold text-gray-800 dark:text-gray-200">Notifications</h3>
             {unreadCount > 0 && (
@@ -108,7 +117,7 @@ const NotificationDropdown: React.FC = () => {
             )}
           </div>
 
-          <div className="max-h-[300px] overflow-y-auto">
+          <div className={`overflow-y-auto ${isMobile ? 'max-h-[50vh]' : 'max-h-[300px]'}`}>
             {notifications.length === 0 ? (
               <div className="p-4 text-center text-gray-500 dark:text-gray-400">No notifications</div>
             ) : (

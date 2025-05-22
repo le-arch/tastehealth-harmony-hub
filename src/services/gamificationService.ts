@@ -144,7 +144,7 @@ export interface NutritionTip {
   title: string;
   content: string;
   category: string;
-  difficulty_level: "beginner" | "intermediate" | "advanced";
+  difficulty_level: number;
 }
 
 export interface LevelBenefit {
@@ -1135,3 +1135,32 @@ export const gamificationService = {
 };
 
 export default gamificationService;
+
+export const getNutritionTips = (): NutritionTip[] => {
+  const tips: NutritionTip[] = [
+    {
+      id: "1",
+      title: "Balanced Diet",
+      content: "Aim for a balanced diet that includes proteins, carbohydrates, and healthy fats.",
+      category: "general",
+      difficulty_level: 1
+    },
+    // ... Add more tips as needed
+    {
+      id: "2",
+      title: "Hydration",
+      content: "Drink at least 8 glasses of water per day to stay properly hydrated.",
+      category: "hydration",
+      difficulty_level: 1
+    },
+    {
+      id: "3",
+      title: "Portion Control",
+      content: "Use smaller plates to help control portion sizes and prevent overeating.",
+      category: "eating habits",
+      difficulty_level: 2
+    }
+  ];
+
+  return tips;
+};

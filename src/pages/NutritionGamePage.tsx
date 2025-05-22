@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from "react";
@@ -69,6 +68,15 @@ const NutritionGamePage: React.FC = () => {
     }
   };
 
+  const handleEarnPoints = async (points: number, reason: string): Promise<void> => {
+    try {
+      await addPoints(points, reason)
+      // Other logic
+    } catch (error) {
+      console.error("Error awarding points:", error)
+    }
+  };
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -135,7 +143,7 @@ const NutritionGamePage: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="challenges" className="mt-4">
-          <NutritionQuest userId={userId} addPoints={addPoints} />
+          <NutritionQuest userId={userId} addPoints={handleEarnPoints} />
         </TabsContent>
         
         <TabsContent value="leaderboard" className="mt-4">

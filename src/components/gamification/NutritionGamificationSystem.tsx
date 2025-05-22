@@ -1,368 +1,155 @@
+import React, { useState } from "react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
+import { Button } from "@/components/ui/button"
+import { Trophy, Award, ListChecks, Users } from "lucide-react"
+import NutritionQuest from "./NutritionQuest"
+import NutritionBadges from "./NutritionBadges"
+import NutritionLeaderboard from "./NutritionLeaderboard"
+import ChallengeList from "./ChallengeList"
+import { useUserPoints } from "@/hooks/useUserPoints"
 
-"use client";
+const NutritionGamificationSystem = () => {
+  const [activeTab, setActiveTab] = useState("quests")
+  const { userPoints, isLoading } = useUserPoints()
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { TabsTrigger } from "@/components/ui/scrollable-tabs";
-import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import {
-  Trophy,
-  Zap,
-  Crown,
-  Award,
-  LayoutDashboard,
-  Target,
-  Gift,
-  Compass,
-} from "lucide-react";
-import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
-import ProfileSidebar from "../profile/ProfileSidebar";
-import RewardSystem from "../RewardSystem";
-import NutritionProgressWheel from "../nutrition/NutritionProgressWheel";
-import MealMoodTracker from "../nutrition/MealMoodTracker";
-import NutritionChallenge from "../nutrition/NutritionChallenge";
-import UserLevel from "./UserLevel";
-import DailyStreak from "./DailyStreak";
-import NutritionBadges from "./NutritionBadges";
-import NutritionLeaderboard from "./NutritionLeaderboard";
-import NutritionQuest from "./NutritionQuest";
-import { useScreenSize } from "@/utils/mobile";
+  // Calculate level progress
+  const currentLevel = userPoints?.level || 1
+  const pointsForCurrentLevel = currentLevel * 100
+  const pointsForNextLevel = (currentLevel + 1) * 100
+  const pointsNeeded = pointsForNextLevel - pointsForCurrentLevel
+  const currentPoints = userPoints?.total_points || 0
+  const pointsAboveCurrentLevel = currentPoints - pointsForCurrentLevel
+  const progressPercentage = Math.min(Math.floor((pointsAboveCurrentLevel / pointsNeeded) * 100), 100)
 
-interface NutritionGamificationSystemProps {
-  userId?: string;
-  standalone?: boolean;
-}
-
-const NutritionGamificationSystem = ({
-  userId,
-  standalone = true,
-}: NutritionGamificationSystemProps) => {
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [userPoints, setUserPoints] = useState(0);
-  const [userLevel, setUserLevel] = useState(1);
-  const [showLevelUp, setShowLevelUp] = useState(false);
-  const [streak, setStreak] = useState(0);
-  const { language } = useLanguage();
-  const { isMobile, isTablet } = useScreenSize();
-
-  // Translations
-  const translations = {
-    en: {
-      title: "Nutrition Game Center",
-      dashboard: "Dashboard",
-      challenges: "Challenges",
-      rewards: "Rewards",
-      badges: "Badges",
-      leaderboard: "Leaderboard",
-      quests: "Quests",
-      yourLevel: "Your Level",
-      yourPoints: "Your Points",
-      dailyStreak: "Daily Streak",
-      days: "days",
-      levelUp: "Level Up!",
-      congratulations: "Congratulations! You've reached level",
-      continue: "Continue",
-      pointsEarned: "Points earned",
-      pointsNeeded: "Points needed for next level",
-    },
-    fr: {
-      title: "Centre de Jeu Nutritionnel",
-      dashboard: "Tableau de Bord",
-      challenges: "Défis",
-      rewards: "Récompenses",
-      badges: "Badges",
-      leaderboard: "Classement",
-      quests: "Quêtes",
-      yourLevel: "Votre Niveau",
-      yourPoints: "Vos Points",
-      dailyStreak: "Série Quotidienne",
-      days: "jours",
-      levelUp: "Niveau Supérieur !",
-      congratulations: "Félicitations ! Vous avez atteint le niveau",
-      continue: "Continuer",
-      pointsEarned: "Points gagnés",
-      pointsNeeded: "Points nécessaires pour le niveau suivant",
-    },
-  };
-
-  const t =
-    translations[language as keyof typeof translations] || translations.en;
-
-  // Load user gamification data
-  useEffect(() => {
-    const loadUserGamificationData = async () => {
-      if (!userId) return;
-
-      try {
-        // Use user_points table instead of user_gamification
-        const { data, error } = await supabase
-          .from("user_points")
-          .select("*")
-          .eq("user_id", userId)
-          .single();
-
-        if (error && error.code !== "PGRST116") {
-          console.error("Error fetching user gamification data:", error);
-          return;
-        }
-
-        if (data) {
-          setUserPoints(data.total_points || 0);
-          setUserLevel(data.current_level || 1);
-          // For streak, we'd need separate logic since it's not in user_points
-          // setStreak(0); // Default to 0 for now
-        } else {
-          // Create initial gamification record for user
-          await supabase.from("user_points").insert({
-            user_id: userId,
-            total_points: 0,
-            current_level: 1,
-            points_to_next_level: 100,
-          });
-        }
-      } catch (error) {
-        console.error("Error in loadUserGamificationData:", error);
-      }
-    };
-
-    loadUserGamificationData();
-  }, [userId]);
-
-  // Calculate points needed for next level
-  const getPointsForNextLevel = (level: number) => {
-    // Exponential growth formula for level requirements
-    return Math.floor(100 * Math.pow(1.5, level - 1));
-  };
-
-  // Add points to user
-  const addPoints = async (points: number, reason: string) => {
-    if (!userId) return;
-
-    try {
-      const newPoints = userPoints + points;
-      const pointsForNextLevel = getPointsForNextLevel(userLevel);
-      let newLevel = userLevel;
-
-      // Check if user leveled up
-      if (newPoints >= pointsForNextLevel) {
-        newLevel = userLevel + 1;
-        setShowLevelUp(true);
-
-        // Play level up sound
-        const audio = new Audio("/sounds/level-up.mp3");
-        audio.play().catch((e) => console.log("Audio play failed:", e));
-      }
-
-      // Update state
-      setUserPoints(newPoints);
-      setUserLevel(newLevel);
-
-      // Update database using points_transactions function
-      await supabase.rpc("record_points_transaction", {
-        p_user_id: userId,
-        p_points: points,
-        p_transaction_type: "earn",
-        p_reason: reason
-      });
-
-    } catch (error) {
-      console.error("Error adding points:", error);
-    }
-  };
-
-  // Update streak
-  const updateStreak = async () => {
-    if (!userId) return;
-
-    try {
-      // Simple streak update for now
-      setStreak(streak + 1);
-      toast.success(`Daily streak: ${streak + 1} days`);
-      
-      // Add points for streak
-      let streakPoints = 10;
-      
-      // Bonus points for milestone streaks
-      if ((streak + 1) % 7 === 0) streakPoints += 50;
-      else if ((streak + 1) % 3 === 0) streakPoints += 20;
-      
-      addPoints(streakPoints, `${streak + 1} day streak bonus`);
-      
-    } catch (error) {
-      console.error("Error updating streak:", error);
-    }
-  };
-
-  const content = (
-    <div className="space-y-6 flex-1 p-3 sm:p-4 ${isMobile ? 'mt-16' : 'md:ml-64'}">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold flex items-center">
-          <Trophy className="h-6 w-6 mr-2 text-amber-500" />
-          {t.title}
-        </h2>
-      </div>
-
-      {/* Level Up Animation */}
-      <AnimatePresence>
-        {showLevelUp && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="fixed inset-0 flex items-center justify-center z-50 bg-black/50"
-            onClick={() => setShowLevelUp(false)}
-          >
-            <motion.div
-              initial={{ y: 50 }}
-              animate={{ y: 0 }}
-              className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full text-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <motion.div
-                initial={{ rotate: 0, scale: 1 }}
-                animate={{ rotate: [0, 10, -10, 10, 0], scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.6 }}
-              >
-                <Crown className="h-16 w-16 mx-auto text-yellow-500 mb-4" />
-              </motion.div>
-              <h3 className="text-2xl font-bold mb-2">{t.levelUp}</h3>
-              <p className="text-lg mb-4">
-                {t.congratulations} {userLevel}!
-              </p>
-              <div className="mb-6 space-y-2">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  transition={{ delay: 0.3, duration: 0.8 }}
-                  className="h-2 bg-green-500 rounded-full"
-                />
-                <div className="flex justify-between text-sm">
-                  <span>Level {userLevel - 1}</span>
-                  <span>Level {userLevel}</span>
-                </div>
-              </div>
-              <Button onClick={() => setShowLevelUp(false)}>
-                {t.continue}
-              </Button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* User Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <UserLevel
-          level={userLevel}
-          points={userPoints}
-          pointsForNextLevel={getPointsForNextLevel(userLevel)}
-        />
-        <DailyStreak streak={streak} updateStreak={updateStreak} />
-        <Card>
+  return (
+    <div className="container mx-auto p-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="col-span-full md:col-span-1">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center">
-              <Zap className="h-4 w-4 mr-2 text-purple-500" />
-              {t.yourPoints}
-            </CardTitle>
+            <CardTitle className="text-2xl font-bold">Your Level</CardTitle>
+            <CardDescription>Track your nutrition journey progress</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{userPoints}</div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {getPointsForNextLevel(userLevel) - userPoints} {t.pointsNeeded}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-4xl font-bold">{currentLevel}</p>
+                <p className="text-sm text-muted-foreground">Current Level</p>
+              </div>
+              <div>
+                <Trophy className="h-10 w-10 text-yellow-500" />
+              </div>
             </div>
-            <Progress
-              value={(userPoints / getPointsForNextLevel(userLevel)) * 100}
-              className="h-2 mt-2"
-            />
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium">Progress to Level {currentLevel + 1}</span>
+                <span className="text-sm font-medium">{progressPercentage}%</span>
+              </div>
+              <Progress value={progressPercentage} className="h-2" />
+              <p className="mt-2 text-sm text-muted-foreground">
+                {pointsAboveCurrentLevel} / {pointsNeeded} points
+              </p>
+            </div>
+            <div className="mt-4">
+              <p className="text-sm font-medium">Total Points: {currentPoints}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-full md:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle>Daily Streak</CardTitle>
+            <CardDescription>Keep your nutrition tracking streak going</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-4xl font-bold">7</p>
+                <p className="text-sm text-muted-foreground">Days in a row</p>
+              </div>
+              <div className="flex space-x-1">
+                <div className="w-3 h-10 bg-green-500 rounded-sm"></div>
+                <div className="w-3 h-10 bg-green-500 rounded-sm"></div>
+                <div className="w-3 h-10 bg-green-500 rounded-sm"></div>
+                <div className="w-3 h-10 bg-green-500 rounded-sm"></div>
+                <div className="w-3 h-10 bg-green-500 rounded-sm"></div>
+                <div className="w-3 h-10 bg-green-500 rounded-sm"></div>
+                <div className="w-3 h-10 bg-green-500 rounded-sm"></div>
+              </div>
+            </div>
+            <p className="mt-4 text-sm">Log your meals daily to maintain your streak!</p>
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-full md:col-span-2 lg:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle>Recent Achievements</CardTitle>
+            <CardDescription>Your latest nutrition milestones</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-yellow-100 p-2 rounded-full">
+                  <Award className="h-5 w-5 text-yellow-600" />
+                </div>
+                <div>
+                  <p className="font-medium">Protein Champion</p>
+                  <p className="text-sm text-muted-foreground">Met protein goals 5 days in a row</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="bg-green-100 p-2 rounded-full">
+                  <ListChecks className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="font-medium">Meal Planner</p>
+                  <p className="text-sm text-muted-foreground">Created 3 weekly meal plans</p>
+                </div>
+              </div>
+            </div>
+            <Button variant="outline" className="w-full mt-4">View All Achievements</Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Content */}
-      <Tabs
-        defaultValue="dashboard"
-        value={activeTab}
-        onValueChange={setActiveTab}
-      >
-        <ScrollableTabsList
-          className={`w-full ${isMobile ? "" : "grid-cols-4"}`}
-        >
-          <TabsTrigger value="dashboard">
-            {" "}
-            <LayoutDashboard className="h-4 w-4" />
-            {!isMobile && t.dashboard}
-          </TabsTrigger>
-          <TabsTrigger value="challenges">
-            {" "}
-            <Target className="h-4 w-4" />
-            {!isMobile && t.challenges}{" "}
-          </TabsTrigger>
-          <TabsTrigger value="rewards">
-            {" "}
-            <Gift className="h-4 w-4" />
-            {!isMobile && t.rewards}
-          </TabsTrigger>
-          <TabsTrigger value="badges">
-            {" "}
-            <Award className="h-4 w-4" />
-            {!isMobile && t.badges}
-          </TabsTrigger>
-          <TabsTrigger value="leaderboard">
-            <Trophy className="h-4 w-4" />
-            {!isMobile && t.leaderboard}
-          </TabsTrigger>
-          <TabsTrigger value="quests">
-            {" "}
-            <Compass className="h-4 w-4" />
-            {!isMobile && t.quests}
-          </TabsTrigger>
-        </ScrollableTabsList>
-
-        <TabsContent value="dashboard" className="space-y-4 mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-10">
-            <NutritionProgressWheel />
-            <MealMoodTracker />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="challenges" className="mt-6">
-          <NutritionChallenge />
-        </TabsContent>
-
-        <TabsContent value="rewards" className="mt-6">
-          <RewardSystem />
-        </TabsContent>
-
-        <TabsContent value="badges" className="mt-6">
-          <NutritionBadges userId={userId} addPoints={addPoints} />
-        </TabsContent>
-
-        <TabsContent value="leaderboard" className="mt-6">
-          <NutritionLeaderboard userId={userId} />
-        </TabsContent>
-
-        <TabsContent value="quests" className="mt-6">
-          <NutritionQuest userId={userId} addPoints={addPoints} />
-        </TabsContent>
-      </Tabs>
+      <div className="mt-8">
+        <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid grid-cols-4 mb-6">
+            <TabsTrigger value="quests" className="flex items-center gap-2">
+              <ListChecks className="h-4 w-4" />
+              <span className="hidden sm:inline">Quests</span>
+            </TabsTrigger>
+            <TabsTrigger value="badges" className="flex items-center gap-2">
+              <Award className="h-4 w-4" />
+              <span className="hidden sm:inline">Badges</span>
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="flex items-center gap-2">
+              <Trophy className="h-4 w-4" />
+              <span className="hidden sm:inline">Leaderboard</span>
+            </TabsTrigger>
+            <TabsTrigger value="challenges" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">Challenges</span>
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="quests">
+            <NutritionQuest />
+          </TabsContent>
+          <TabsContent value="badges">
+            <NutritionBadges />
+          </TabsContent>
+          <TabsContent value="leaderboard">
+            <NutritionLeaderboard />
+          </TabsContent>
+          <TabsContent value="challenges">
+            <ChallengeList />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
-  );
+  )
+}
 
-  if (!standalone) {
-    return content;
-  }
-
-  return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-      <ProfileSidebar activePage="Nutrition Game" />
-      <div className={`flex-1 p-8 ${isMobile ? "" : "ml-64"}`}>{content}</div>
-    </div>
-  );
-};
-
-export default NutritionGamificationSystem;
+export default NutritionGamificationSystem

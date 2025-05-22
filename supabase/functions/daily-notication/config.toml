@@ -1,3 +1,4 @@
+
 # Whether the function should be invoked with each request
 on_request = false
 
