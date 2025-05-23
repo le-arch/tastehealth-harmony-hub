@@ -3,12 +3,16 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/SupabaseClient';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, Clock, Users, Star } from 'lucide-react';
+import { ChevronLeft, Clock, Users, Star, Heart } from 'lucide-react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { TabsTrigger } from '@/components/ui/scrollable-tabs';
 import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { getMealImagePublicUrl } from '@/services/mealService';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { addToFavorites, isFavorite } from '@/services/favoriteService';
+import { useIsMobile, useIsTablet } from '@/hooks/use-mobile';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 
 interface MealDetailProps {
   mealId: string;
@@ -31,6 +35,16 @@ interface NutritionFacts {
   carbs: string;
   fat: string;
   serving_size: string;
+  total_fat?: string;
+  saturated_fat?: string;
+  trans_fat?: string;
+  cholesterol?: string;
+  sodium?: string;
+  total_carbohydrate?: string;
+  dietary_fiber?: string;
+  total_sugars?: string;
+  added_sugars?: string;
+  additional_nutrients?: Record<string, string>;
 }
 
 interface Recipe {
@@ -48,6 +62,8 @@ interface Meal {
   cook_time?: number;
   servings?: number;
   difficulty?: number;
+  category_name?: string;
+  subcategory_name?: string;
 }
 
 const MealDetail: React.FC<MealDetailProps> = ({
@@ -62,7 +78,11 @@ const MealDetail: React.FC<MealDetailProps> = ({
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
   const { language } = useLanguage();
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
 
   const translations = {
     en: {
@@ -84,7 +104,9 @@ const MealDetail: React.FC<MealDetailProps> = ({
       fat: "Fat",
       ingredients: "Ingredients",
       instructions: "Instructions",
-      notAvailable: "Not available"
+      notAvailable: "Not available",
+      addToFavorites: "Add to Favorites",
+      favorited: "Favorited"
     },
     fr: {
       back: "Retour",
@@ -105,7 +127,9 @@ const MealDetail: React.FC<MealDetailProps> = ({
       fat: "Lipides",
       ingredients: "Ingrédients",
       instructions: "Instructions",
-      notAvailable: "Non disponible"
+      notAvailable: "Non disponible",
+      addToFavorites: "Ajouter aux favoris",
+      favorited: "Favori"
     }
   };
 
@@ -118,12 +142,21 @@ const MealDetail: React.FC<MealDetailProps> = ({
         // Fetch the meal
         const { data: mealData, error: mealError } = await supabase
           .from('meals')
-          .select('*')
+          .select(`
+            *,
+            meal_categories(name),
+            meal_subcategories(name)
+          `)
           .eq('id', mealId)
           .single();
 
         if (mealError) throw mealError;
-        setMeal(mealData);
+        
+        setMeal({
+          ...mealData,
+          category_name: mealData.meal_categories?.name,
+          subcategory_name: mealData.meal_subcategories?.name
+        });
 
         // Get the image URL
         if (mealData?.image_url) {
@@ -158,8 +191,13 @@ const MealDetail: React.FC<MealDetailProps> = ({
         
         setRecipe(recipeData);
 
+        // Check favorite status
+        const favorited = await isFavorite(mealId);
+        setIsFavorited(favorited);
+
       } catch (error) {
         console.error('Error fetching meal details:', error);
+        toast.error('Failed to load meal details');
       } finally {
         setLoading(false);
       }
@@ -170,24 +208,21 @@ const MealDetail: React.FC<MealDetailProps> = ({
     }
   }, [mealId]);
 
-  if (loading) {
-    return (
-      <div className="p-6 flex justify-center items-center min-h-[300px]">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-400"></div>
-      </div>
-    );
-  }
-
-  if (!meal) {
-    return (
-      <div className="p-6">
-        <p>Meal not found.</p>
-        <Button onClick={onBack} variant="outline" className="mt-4">
-          {t.back}
-        </Button>
-      </div>
-    );
-  }
+  const handleToggleFavorite = async () => {
+    if (favoriteLoading) return;
+    
+    setFavoriteLoading(true);
+    try {
+      await addToFavorites(mealId);
+      setIsFavorited(true);
+      toast.success('Added to favorites');
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error('Failed to add to favorites');
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
 
   const renderDifficultyStars = (difficulty: number = 1) => {
     return (
@@ -203,11 +238,41 @@ const MealDetail: React.FC<MealDetailProps> = ({
     );
   };
 
+  if (loading) {
+    return (
+      <div className="p-6 flex justify-center items-center min-h-[300px]">
+        <div className="space-y-4 w-full">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <Skeleton className="h-8 w-32" />
+          </div>
+          <Skeleton className="h-48 w-full rounded-md" />
+          <div className="grid grid-cols-2 gap-4">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+          </div>
+          <Skeleton className="h-32 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!meal) {
+    return (
+      <div className="p-6">
+        <p>Meal not found.</p>
+        <Button onClick={onBack} variant="outline" className="mt-4 flex items-center gap-2">
+          <ChevronLeft className="h-4 w-4" /> {t.back}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="relative">
       {renderFavoriteButton && renderFavoriteButton(mealId)}
       
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-48 sm:h-64 overflow-hidden rounded-lg mb-4">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -230,14 +295,51 @@ const MealDetail: React.FC<MealDetailProps> = ({
       </div>
 
       <div className="p-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">{meal.meal_name}</h2>
-          <Button onClick={() => onAddToMealPlan(mealId)} size="sm">
-            {t.addToMealPlan}
-          </Button>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-bold">{meal.meal_name}</h2>
+            {(meal.category_name || meal.subcategory_name) && (
+              <div className="flex flex-wrap gap-2 mt-1">
+                {meal.category_name && (
+                  <span className="bg-gray-100 px-2 py-1 rounded-full text-xs font-medium text-gray-700">
+                    {meal.category_name}
+                  </span>
+                )}
+                {meal.subcategory_name && (
+                  <span className="bg-green-100 px-2 py-1 rounded-full text-xs font-medium text-green-700">
+                    {meal.subcategory_name}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleToggleFavorite} 
+              variant="outline" 
+              size={isMobile ? "sm" : "default"}
+              className={isFavorited ? "bg-red-50" : ""}
+              disabled={favoriteLoading}
+            >
+              <Heart className={`h-4 w-4 ${isFavorited ? "fill-red-500 text-red-500" : ""}`} />
+              {!(isMobile || isTablet) && (
+                <span className="ml-2">{isFavorited ? t.favorited : t.addToFavorites}</span>
+              )}
+            </Button>
+            <Button 
+              onClick={() => onAddToMealPlan(mealId)} 
+              size={isMobile ? "sm" : "default"}
+            >
+              {!(isMobile || isTablet) ? t.addToMealPlan : (
+                <span className="flex items-center">
+                  <Users className="h-4 w-4 mr-1" />
+                </span>
+              )}
+            </Button>
+          </div>
         </div>
 
-        <Tabs defaultValue="overview" className="mt-4">
+        <Tabs defaultValue="overview" className="mt-6">
           <ScrollableTabsList>
             <TabsTrigger value="overview">{t.overview}</TabsTrigger>
             <TabsTrigger value="nutrition">{t.nutrition}</TabsTrigger>
@@ -245,9 +347,9 @@ const MealDetail: React.FC<MealDetailProps> = ({
           </ScrollableTabsList>
 
           <TabsContent value="overview" className="mt-4 space-y-4">
-            {meal.description && <p>{meal.description}</p>}
+            {meal.description && <p className="text-gray-700">{meal.description}</p>}
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-gray-500" />
                 <span className="text-sm">{t.prepTime} {meal.prep_time || t.notAvailable} {meal.prep_time ? t.min : ''}</span>
@@ -289,12 +391,68 @@ const MealDetail: React.FC<MealDetailProps> = ({
                     </div>
                     <div className="flex justify-between">
                       <span>{t.carbs}</span>
-                      <span>{nutrition.carbs || '-'}</span>
+                      <span>{nutrition.total_carbohydrate || nutrition.carbs || '-'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>{t.fat}</span>
-                      <span>{nutrition.fat || '-'}</span>
+                      <span>{nutrition.total_fat || nutrition.fat || '-'}</span>
                     </div>
+                    
+                    {nutrition.dietary_fiber && (
+                      <div className="flex justify-between">
+                        <span className="pl-4">Dietary Fiber</span>
+                        <span>{nutrition.dietary_fiber}</span>
+                      </div>
+                    )}
+                    
+                    {nutrition.total_sugars && (
+                      <div className="flex justify-between">
+                        <span className="pl-4">Total Sugars</span>
+                        <span>{nutrition.total_sugars}</span>
+                      </div>
+                    )}
+                    
+                    {nutrition.added_sugars && (
+                      <div className="flex justify-between">
+                        <span className="pl-4">Added Sugars</span>
+                        <span>{nutrition.added_sugars}</span>
+                      </div>
+                    )}
+                    
+                    {nutrition.saturated_fat && (
+                      <div className="flex justify-between">
+                        <span className="pl-4">Saturated Fat</span>
+                        <span>{nutrition.saturated_fat}</span>
+                      </div>
+                    )}
+                    
+                    {nutrition.trans_fat && (
+                      <div className="flex justify-between">
+                        <span className="pl-4">Trans Fat</span>
+                        <span>{nutrition.trans_fat}</span>
+                      </div>
+                    )}
+                    
+                    {nutrition.cholesterol && (
+                      <div className="flex justify-between">
+                        <span className="pl-4">Cholesterol</span>
+                        <span>{nutrition.cholesterol}</span>
+                      </div>
+                    )}
+                    
+                    {nutrition.sodium && (
+                      <div className="flex justify-between">
+                        <span className="pl-4">Sodium</span>
+                        <span>{nutrition.sodium}</span>
+                      </div>
+                    )}
+                    
+                    {nutrition.additional_nutrients && Object.entries(nutrition.additional_nutrients).map(([key, value]) => (
+                      <div key={key} className="flex justify-between">
+                        <span className="pl-4">{key.replace(/_/g, ' ')}</span>
+                        <span>{value}</span>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <p className="text-gray-500">{t.notAvailable}</p>
