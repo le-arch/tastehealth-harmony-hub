@@ -1,161 +1,254 @@
+"use client"
 
-"use client";
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Medal, Trophy, Crown, Users } from "lucide-react"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { supabase } from "@/lib/SupabaseClient"
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, Medal, User } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
-
-interface LeaderboardEntry {
-  user_id: string;
-  username: string;
-  avatar_url?: string;
-  points: number;
-  level: number;
-  rank?: number;
+interface NutritionLeaderboardProps {
+  userId?: string
 }
 
-export default function NutritionLeaderboard() {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userRank, setUserRank] = useState<number | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+interface LeaderboardEntry {
+  user_id: string
+  username: string
+  avatar_url: string | null
+  points: number
+  level: number
+  rank: number
+}
 
+const NutritionLeaderboard = ({ userId }: NutritionLeaderboardProps) => {
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [userRank, setUserRank] = useState<LeaderboardEntry | null>(null)
+  const [timeframe, setTimeframe] = useState<"weekly" | "monthly" | "alltime">("weekly")
+  const { language } = useLanguage()
+
+  const translations = {
+    en: {
+      title: "Nutrition Leaderboard",
+      weekly: "Weekly",
+      monthly: "Monthly",
+      allTime: "All Time",
+      rank: "Rank",
+      user: "User",
+      level: "Level",
+      points: "Points",
+      yourRank: "Your Rank",
+      loading: "Loading leaderboard...",
+    },
+    fr: {
+      title: "Classement Nutritionnel",
+      weekly: "Hebdomadaire",
+      monthly: "Mensuel",
+      allTime: "Tout Temps",
+      rank: "Rang",
+      user: "Utilisateur",
+      level: "Niveau",
+      points: "Points",
+      yourRank: "Votre Rang",
+      loading: "Chargement du classement...",
+    },
+  }
+
+  const t = translations[language as keyof typeof translations] || translations.en
+
+  // Load leaderboard data
   useEffect(() => {
-    const fetchLeaderboard = async () => {
-      try {
-        setLoading(true);
+    const loadLeaderboard = async () => {
+      if (!userId) return
 
-        // First check if user is logged in
-        const { data: userData } = await supabase.auth.getUser();
-        if (userData.user) {
-          setCurrentUserId(userData.user.id);
+      try {
+        let query = supabase
+          .from("user_gamification")
+          .select(
+            `
+            user_id,
+            points,
+            level,
+            profiles:user_id (
+              username,
+              avatar_url
+            )
+          `,
+          )
+          .order("points", { ascending: false })
+          .limit(100)
+
+        // Apply timeframe filter
+        if (timeframe === "weekly") {
+          const oneWeekAgo = new Date()
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+          query = query.gte("last_updated", oneWeekAgo.toISOString())
+        } else if (timeframe === "monthly") {
+          const oneMonthAgo = new Date()
+          oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
+          query = query.gte("last_updated", oneMonthAgo.toISOString())
         }
 
-        // Fetch leaderboard data
-        const { data, error } = await supabase
-          .from("user_points")
-          .select(`
-            user_id,
-            total_points,
-            current_level,
-            profiles:user_id (username, avatar_url)
-          `)
-          .order("total_points", { ascending: false })
-          .limit(10);
+        const { data, error } = await query
 
-        if (error) throw error;
+        if (error) throw error
 
         if (data) {
-          // Format the leaderboard data with ranks
+          // Process and format leaderboard data
           const formattedData: LeaderboardEntry[] = data.map((entry, index) => ({
             user_id: entry.user_id,
             username: entry.profiles?.username || `User ${entry.user_id.slice(0, 4)}`,
             avatar_url: entry.profiles?.avatar_url,
-            points: entry.total_points,
-            level: entry.current_level,
+            points: entry.points,
+            level: entry.level,
             rank: index + 1,
-          }));
+          }))
 
-          setLeaderboard(formattedData);
+          setLeaderboard(formattedData)
 
           // Find current user's rank
-          if (currentUserId) {
-            const userEntry = formattedData.find(
-              (entry) => entry.user_id === currentUserId
-            );
-            if (userEntry) {
-              setUserRank(userEntry.rank || null);
-            }
-          }
+          const currentUserRank = formattedData.find((entry) => entry.user_id === userId)
+          setUserRank(currentUserRank || null)
         }
       } catch (error) {
-        console.error("Error fetching leaderboard:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error loading leaderboard:", error)
       }
-    };
+    }
 
-    fetchLeaderboard();
-  }, [currentUserId]);
+    loadLeaderboard()
+  }, [userId, timeframe])
+
+  // Get medal for top 3 ranks
+  const getMedal = (rank: number) => {
+    switch (rank) {
+      case 1:
+        return <Crown className="h-5 w-5 text-yellow-500" />
+      case 2:
+        return <Medal className="h-5 w-5 text-gray-400" />
+      case 3:
+        return <Medal className="h-5 w-5 text-amber-700" />
+      default:
+        return null
+    }
+  }
 
   return (
     <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-yellow-500" />
-          Nutrition Leaderboard
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center text-lg font-medium">
+          <Trophy className="h-5 w-5 mr-2 text-amber-500" />
+          {t.title}
         </CardTitle>
+        <div className="flex space-x-2 mt-2">
+          <button
+            onClick={() => setTimeframe("weekly")}
+            className={`px-3 py-1 text-sm rounded-full ${
+              timeframe === "weekly"
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            }`}
+          >
+            {t.weekly}
+          </button>
+          <button
+            onClick={() => setTimeframe("monthly")}
+            className={`px-3 py-1 text-sm rounded-full ${
+              timeframe === "monthly"
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            }`}
+          >
+            {t.monthly}
+          </button>
+          <button
+            onClick={() => setTimeframe("alltime")}
+            className={`px-3 py-1 text-sm rounded-full ${
+              timeframe === "alltime"
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            }`}
+          >
+            {t.allTime}
+          </button>
+        </div>
       </CardHeader>
       <CardContent>
-        {loading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        ) : leaderboard.length === 0 ? (
+        {leaderboard.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            No leaderboard data available yet.
+            <Users className="h-12 w-12 mx-auto text-gray-300 mb-2" />
+            <p>{t.loading}</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {leaderboard.map((entry) => (
-              <div
-                key={entry.user_id}
-                className={`flex items-center justify-between p-3 rounded-lg ${
-                  entry.user_id === currentUserId
-                    ? "bg-primary/10 border border-primary/30"
-                    : "bg-gray-50 dark:bg-gray-800"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    {entry.rank && entry.rank <= 3 ? (
-                      <div
-                        className={`absolute -top-1 -left-1 w-6 h-6 rounded-full flex items-center justify-center 
-                        ${
-                          entry.rank === 1
-                            ? "bg-yellow-500"
-                            : entry.rank === 2
-                            ? "bg-gray-300"
-                            : "bg-amber-700"
-                        }`}
-                      >
-                        <Medal className="h-3 w-3 text-white" />
-                      </div>
-                    ) : (
-                      <div className="absolute -top-1 -left-1 w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">
-                        {entry.rank}
-                      </div>
-                    )}
-                    <Avatar className="h-10 w-10 border">
-                      <AvatarImage
-                        src={entry.avatar_url || ""}
-                        alt={entry.username}
-                      />
-                      <AvatarFallback className="bg-gray-200">
-                        <User className="h-5 w-5 text-gray-500" />
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">
-                      {entry.username}{" "}
-                      {entry.user_id === currentUserId && (
-                        <span className="text-xs text-primary">(You)</span>
-                      )}
-                    </p>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <span className="mr-2">Level {entry.level}</span>
-                      <span>{entry.points} points</span>
-                    </div>
-                  </div>
-                </div>
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="text-xs text-gray-500 border-b">
+                    <th className="font-medium text-left py-2 w-16">{t.rank}</th>
+                    <th className="font-medium text-left py-2">{t.user}</th>
+                    <th className="font-medium text-right py-2 w-16">{t.level}</th>
+                    <th className="font-medium text-right py-2 w-24">{t.points}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leaderboard.map((entry) => (
+                    <motion.tr
+                      key={entry.user_id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className={`border-b last:border-0 ${
+                        entry.user_id === userId ? "bg-primary/5" : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                      }`}
+                    >
+                      <td className="py-3 text-center">
+                        <div className="flex items-center">{getMedal(entry.rank) || <span>{entry.rank}</span>}</div>
+                      </td>
+                      <td className="py-3">
+                        <div className="flex items-center">
+                          <Avatar className="h-8 w-8 mr-2">
+                            <AvatarImage src={entry.avatar_url || ""} />
+                            <AvatarFallback>{entry.username.charAt(0).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium">{entry.username}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 text-right">{entry.level}</td>
+                      <td className="py-3 text-right font-medium">{entry.points}</td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {userRank && userRank.rank > 10 && (
+              <div className="mt-6 border-t pt-4">
+                <div className="text-sm font-medium mb-2">{t.yourRank}</div>
+                <table className="w-full">
+                  <tbody>
+                    <tr className="bg-primary/5">
+                      <td className="py-3 w-16 text-center">{userRank.rank}</td>
+                      <td className="py-3">
+                        <div className="flex items-center">
+                          <Avatar className="h-8 w-8 mr-2">
+                            <AvatarImage src={userRank.avatar_url || ""} />
+                            <AvatarFallback>{userRank.username.charAt(0).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium">{userRank.username}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 w-16 text-right">{userRank.level}</td>
+                      <td className="py-3 w-24 text-right font-medium">{userRank.points}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
-  );
+  )
 }
+
+export default NutritionLeaderboard
