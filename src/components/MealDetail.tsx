@@ -158,16 +158,12 @@ const MealDetail: React.FC<MealDetailProps> = ({
           subcategory_name: mealData.meal_subcategories?.name
         });
 
-        // Get the image URL from storage
+        // Get the image URL using the mealService function
         if (mealData?.image_url) {
           try {
-            const { data } = supabase
-              .storage
-              .from('tastehealth-store')
-              .getPublicUrl(mealData.image_url);
-            
-            if (data?.publicUrl) {
-              setImageUrl(data.publicUrl);
+            const imageUrl = await getMealImagePublicUrl(mealId);
+            if (imageUrl) {
+              setImageUrl(imageUrl);
             }
           } catch (imageError) {
             console.error('Error getting image URL:', imageError);
