@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -21,7 +20,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/SupabaseClient";
 import ProfileSidebar from "../profile/ProfileSidebar";
 import RewardSystem from "../RewardSystem";
 import NutritionProgressWheel from "../nutrition/NutritionProgressWheel";
@@ -100,9 +99,8 @@ const NutritionGamificationSystem = ({
       if (!userId) return;
 
       try {
-        // Use user_points table instead of user_gamification
         const { data, error } = await supabase
-          .from("user_points")
+          .from("user_gamification")
           .select("*")
           .eq("user_id", userId)
           .single();
@@ -113,17 +111,17 @@ const NutritionGamificationSystem = ({
         }
 
         if (data) {
-          setUserPoints(data.total_points || 0);
-          setUserLevel(data.current_level || 1);
-          // For streak, we'd need separate logic since it's not in user_points
-          // setStreak(0); // Default to 0 for now
+          setUserPoints(data.points || 0);
+          setUserLevel(data.level || 1);
+          setStreak(data.streak || 0);
         } else {
           // Create initial gamification record for user
-          await supabase.from("user_points").insert({
+          await supabase.from("user_gamification").insert({
             user_id: userId,
-            total_points: 0,
-            current_level: 1,
-            points_to_next_level: 100,
+            points: 0,
+            level: 1,
+            streak: 0,
+            last_check_in: new Date().toISOString(),
           });
         }
       } catch (error) {
@@ -163,14 +161,26 @@ const NutritionGamificationSystem = ({
       setUserPoints(newPoints);
       setUserLevel(newLevel);
 
-      // Update database using points_transactions function
-      await supabase.rpc("record_points_transaction", {
-        p_user_id: userId,
-        p_points: points,
-        p_transaction_type: "earn",
-        p_reason: reason
+      // Update database
+      await supabase.from("user_gamification").upsert({
+        user_id: userId,
+        points: newPoints,
+        level: newLevel,
+        last_updated: new Date().toISOString(),
       });
 
+      // Add points history
+      await supabase.from("points_history").insert({
+        user_id: userId,
+        points: points,
+        reason: reason,
+        created_at: new Date().toISOString(),
+      });
+
+      // Show toast notification
+      toast.success(`+${points} points: ${reason}`, {
+        description: `You now have ${newPoints} points`,
+      });
     } catch (error) {
       console.error("Error adding points:", error);
     }
@@ -181,19 +191,63 @@ const NutritionGamificationSystem = ({
     if (!userId) return;
 
     try {
-      // Simple streak update for now
-      setStreak(streak + 1);
-      toast.success(`Daily streak: ${streak + 1} days`);
-      
-      // Add points for streak
-      let streakPoints = 10;
-      
-      // Bonus points for milestone streaks
-      if ((streak + 1) % 7 === 0) streakPoints += 50;
-      else if ((streak + 1) % 3 === 0) streakPoints += 20;
-      
-      addPoints(streakPoints, `${streak + 1} day streak bonus`);
-      
+      const { data, error } = await supabase
+        .from("user_gamification")
+        .select("streak, last_check_in")
+        .eq("user_id", userId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching streak data:", error);
+        return;
+      }
+
+      const lastCheckIn = new Date(data.last_check_in);
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      // Check if last check-in was yesterday
+      const isConsecutiveDay =
+        lastCheckIn.getDate() === yesterday.getDate() &&
+        lastCheckIn.getMonth() === yesterday.getMonth() &&
+        lastCheckIn.getFullYear() === yesterday.getFullYear();
+
+      // Check if already checked in today
+      const isToday =
+        lastCheckIn.getDate() === today.getDate() &&
+        lastCheckIn.getMonth() === today.getMonth() &&
+        lastCheckIn.getFullYear() === today.getFullYear();
+
+      if (!isToday) {
+        const newStreak = isConsecutiveDay ? data.streak + 1 : 1;
+        setStreak(newStreak);
+
+        // Update streak in database
+        await supabase
+          .from("user_gamification")
+          .update({
+            streak: newStreak,
+            last_check_in: today.toISOString(),
+          })
+          .eq("user_id", userId);
+
+        // Award points for streak
+        if (newStreak > 0) {
+          // Base points for check-in
+          let streakPoints = 10;
+
+          // Bonus points for milestone streaks
+          if (newStreak % 7 === 0) streakPoints += 50;
+          else if (newStreak % 3 === 0) streakPoints += 20;
+
+          addPoints(streakPoints, `${newStreak} day streak bonus`);
+
+          // Play streak sound
+          const audio = new Audio("/sounds/streak.mp3");
+          audio.play().catch((e) => console.log("Audio play failed:", e));
+        }
+      }
     } catch (error) {
       console.error("Error updating streak:", error);
     }
