@@ -162,6 +162,7 @@ const MealDetail: React.FC<MealDetailProps> = ({
         if (mealData?.image_url) {
           try {
             const imageUrl = await getMealImagePublicUrl(mealId);
+            console.log("Fetched meal image URL:", imageUrl); // Debug log
             if (imageUrl) {
               setImageUrl(imageUrl);
             }
