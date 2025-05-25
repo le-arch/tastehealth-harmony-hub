@@ -95,9 +95,9 @@ export interface NutritionStreak {
 export interface PointsTransaction {
   id: string;
   user_id: string;
-  amount: number;
+  points: number;
   transaction_type: 'earn' | 'spend';
-  description: string;
+  reason: string;
   reference_id?: string;
   reference_type?: string;
   metadata?: any;
