@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -13,9 +14,15 @@ import { Progress } from "../ui/progress";
 import { Badge } from "../ui/badge";
 import { Sparkles } from "lucide-react";
 import gamificationService, {
-  type UserLevel,
   type UserPoints,
 } from "../../services/gamificationService";
+
+interface UserLevel {
+  level: number;
+  title: string;
+  min_points: number;
+  max_points: number;
+}
 
 interface UserLevelCardProps {
   userId: string;
@@ -44,36 +51,40 @@ export function UserLevelCard({
 
         setUserPoints(points);
 
-        // Get current level info
-        const levels = await gamificationService.getUserLevels();
-        const currentLevelInfo = levels.find(
-          (l) => l.level === points.current_level
-        );
-        if (currentLevelInfo) {
-          setLevelInfo(currentLevelInfo);
+        // Create mock level info since getUserLevels doesn't exist
+        const currentLevel = points.current_level;
+        const currentLevelInfo: UserLevel = {
+          level: currentLevel,
+          title: `Level ${currentLevel}`,
+          min_points: (currentLevel - 1) * 100,
+          max_points: currentLevel * 100
+        };
+        
+        setLevelInfo(currentLevelInfo);
 
-          // Get next level info
-          const nextLevel = levels.find(
-            (l) => l.level === points.current_level + 1
-          );
-          setNextLevelInfo(nextLevel || null);
-
+        // Create next level info
+        const nextLevel: UserLevel = {
+          level: currentLevel + 1,
+          title: `Level ${currentLevel + 1}`,
+          min_points: currentLevel * 100,
+          max_points: (currentLevel + 1) * 100
+        };
+        
+        if (points.points_to_next_level > 0) {
+          setNextLevelInfo(nextLevel);
+          
           // Calculate progress to next level
-          if (nextLevel) {
-            const pointsInCurrentLevel =
-              points.total_points - currentLevelInfo.min_points;
-            const pointsRequiredForNextLevel =
-              nextLevel.min_points - currentLevelInfo.min_points;
-            const calculatedProgress = Math.round(
-              (pointsInCurrentLevel / pointsRequiredForNextLevel) * 100
-            );
-            setProgress(calculatedProgress);
-            setPointsToNextLevel(points.points_to_next_level);
-          } else {
-            // Max level reached
-            setProgress(100);
-            setPointsToNextLevel(0);
-          }
+          const pointsInCurrentLevel = points.total_points - currentLevelInfo.min_points;
+          const pointsRequiredForNextLevel = nextLevel.min_points - currentLevelInfo.min_points;
+          const calculatedProgress = Math.round(
+            (pointsInCurrentLevel / pointsRequiredForNextLevel) * 100
+          );
+          setProgress(calculatedProgress);
+          setPointsToNextLevel(points.points_to_next_level);
+        } else {
+          // Max level reached
+          setProgress(100);
+          setPointsToNextLevel(0);
         }
       } catch (error) {
         console.error("Error fetching level data:", error);

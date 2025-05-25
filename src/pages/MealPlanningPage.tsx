@@ -8,14 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import MealPlanList from "@/components/MealPlanList";
-import CreateMealPlanDialog from "@/components/CreateMealPlanDialog";
+import { MealPlanList } from "@/components/MealPlanList";
+import { CreateMealPlanDialog } from "@/components/CreateMealPlanDialog";
 import MealSearch from "@/components/MealSearch";
 import AddToMealPlanDialog from "@/components/AddToMealPlanDialog";
-import { getMealPlans } from "@/services/mealService";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/lib/SupabaseClient";
-import FavoriteButton from "@/components/FavoriteButton";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface MealPlan {
   id: string;
@@ -90,8 +88,14 @@ const MealPlanningPage = () => {
 
   const fetchMealPlans = async (userId: string) => {
     try {
-      const plans = await getMealPlans(userId);
-      setMealPlans(plans);
+      const { data, error } = await supabase
+        .from('meal_plans')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setMealPlans(data || []);
     } catch (error) {
       console.error("Error fetching meal plans:", error);
     }
@@ -177,10 +181,7 @@ const MealPlanningPage = () => {
 
               {/* Meal Plans List */}
               {filteredMealPlans.length > 0 ? (
-                <MealPlanList
-                  mealPlans={filteredMealPlans}
-                  onSelectMealPlan={handleMealPlanSelect}
-                />
+                <MealPlanList />
               ) : (
                 <Card>
                   <CardContent className="text-center py-12">

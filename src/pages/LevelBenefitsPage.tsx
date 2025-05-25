@@ -1,10 +1,11 @@
+
 "use client";
 
 import type React from "react";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/SupabaseClient";
 import LevelBenefits from "../components/gamification/LevelBenefits";
-import { gamificationService } from "../services/gamificationService";
+import gamificationService from "../services/gamificationService";
 import ProfileSidebar from "../components/profile/ProfileSidebar";
 import { useScreenSize } from "@/utils/mobile";
 
@@ -66,7 +67,7 @@ const LevelBenefitsPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold">
-                  Level {userPoints.level}
+                  Level {userPoints.current_level}
                 </h2>
                 <p className="opacity-90">
                   {userPoints.points_to_next_level} points to next level

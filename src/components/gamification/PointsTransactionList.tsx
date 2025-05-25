@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -124,7 +125,7 @@ export function PointsTransactionList({
               <div className="flex items-center gap-3">
                 {getTransactionIcon(transaction)}
                 <div>
-                  <p className="font-medium">{transaction.reason}</p>
+                  <p className="font-medium">{transaction.reason || transaction.description}</p>
                   <p className="text-xs text-muted-foreground">
                     {format(
                       new Date(transaction.created_at),
@@ -142,7 +143,7 @@ export function PointsTransactionList({
                 className={getTransactionColor(transaction)}
               >
                 {transaction.transaction_type === "spend" ? "-" : "+"}
-                {Math.abs(transaction.points)}
+                {Math.abs(transaction.points || transaction.amount)}
               </Badge>
             </div>
           ))}

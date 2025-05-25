@@ -1,3 +1,4 @@
+
 import type React from "react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/SupabaseClient";
@@ -48,17 +49,16 @@ const GamificationPage: React.FC = () => {
         points,
         reason
       );
-      if (result.success) {
+      
+      // Since awardPoints returns a string (transaction ID), we need to handle it differently
+      if (result) {
         // Update the displayed points
         const pointsData = await gamificationService.getUserPoints(userId);
         if (pointsData) {
           setUserPoints(pointsData.total_points || 0);
         }
 
-        // Show level up notification if applicable
-        if (result.levelUp) {
-          toast.success(`Level Up! You're now level ${result.newLevel}`);
-        }
+        toast.success(`You earned ${points} points for ${reason}!`);
       }
     } catch (error) {
       console.error("Error awarding points:", error);
@@ -125,7 +125,7 @@ const GamificationPage: React.FC = () => {
         {/* Quests and other content */}
         <div className="space-y-6">
           <DailyQuests onQuestComplete={function (questId: string, points: number): Promise<void> {
-            throw new Error("Function not implemented.");
+            return handlePointsEarned(points, "Quest completion");
           } } />
         </div>
       </div>

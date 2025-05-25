@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from "react";
@@ -250,7 +251,7 @@ const GamificationDashboard: React.FC = () => {
                   </p>
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-medium px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">
-                      {challenge.challenge?.points} points
+                      {challenge.challenge?.reward || 50} points
                     </span>
                     <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-100 text-blue-800">
                       {challenge.challenge?.difficulty}

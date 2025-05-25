@@ -1,10 +1,11 @@
+
 "use client";
 
 import type React from "react";
 import { useEffect, useState } from "react";
 import {
   type PointsTransaction,
-  gamificationService,
+  default as gamificationService,
 } from "../../services/gamificationService";
 import { format } from "date-fns";
 
@@ -93,7 +94,7 @@ export const PointsTransactionHistory: React.FC<
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="font-medium">{transaction.description}</p>
+                <p className="font-medium">{transaction.reason || transaction.description}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-100">
                   {formatDate(transaction.created_at)}
                 </p>
@@ -106,11 +107,11 @@ export const PointsTransactionHistory: React.FC<
               <div
                 className={`font-semibold ${getTransactionColor(
                   transaction.transaction_type,
-                  transaction.amount
+                  transaction.amount || transaction.points
                 )}`}
               >
                 {getTransactionSign(transaction.transaction_type)}
-                {Math.abs(transaction.amount)} pts
+                {Math.abs(transaction.amount || transaction.points)} pts
               </div>
             </div>
           </div>

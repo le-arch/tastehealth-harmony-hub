@@ -355,7 +355,7 @@ const MealDetail = ({
                           className="text-gray-700 dark:text-gray-100"
                         >
                           {ingredient.quantity && `${ingredient.quantity} `}
-                          {ingredient.ingredient_name || ingredient.name || 'Ingredient'}
+                          {ingredient.name || ingredient.ingredient_name || 'Ingredient'}
                         </li>
                       ))}
                     </ul>
