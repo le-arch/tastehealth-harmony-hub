@@ -3,9 +3,8 @@
 
 import type React from "react";
 import { useEffect, useState } from "react";
-import {
+import gamificationService, {
   type PointsTransaction,
-  default as gamificationService,
 } from "../../services/gamificationService";
 import { format } from "date-fns";
 
@@ -28,8 +27,7 @@ export const PointsTransactionHistory: React.FC<
         setLoading(true);
         const data = await gamificationService.getPointsTransactions(
           userId,
-          limit,
-          offset
+          limit
         );
 
         if (offset === 0) {
@@ -94,7 +92,7 @@ export const PointsTransactionHistory: React.FC<
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="font-medium">{transaction.reason || transaction.description}</p>
+                <p className="font-medium">{transaction.description || transaction.reason}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-100">
                   {formatDate(transaction.created_at)}
                 </p>
