@@ -92,7 +92,7 @@ export const PointsTransactionHistory: React.FC<
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="font-medium">{transaction.description || transaction.reason}</p>
+                <p className="font-medium">{transaction.reason}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-100">
                   {formatDate(transaction.created_at)}
                 </p>
@@ -105,11 +105,11 @@ export const PointsTransactionHistory: React.FC<
               <div
                 className={`font-semibold ${getTransactionColor(
                   transaction.transaction_type,
-                  transaction.amount || transaction.points
+                  transaction.points
                 )}`}
               >
                 {getTransactionSign(transaction.transaction_type)}
-                {Math.abs(transaction.amount || transaction.points)} pts
+                {Math.abs(transaction.points)} pts
               </div>
             </div>
           </div>

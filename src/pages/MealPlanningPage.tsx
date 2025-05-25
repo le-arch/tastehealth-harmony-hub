@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealPlanList } from "@/components/MealPlanList";
 import { CreateMealPlanDialog } from "@/components/CreateMealPlanDialog";
 import MealSearch from "@/components/MealSearch";
-import { AddToMealPlanDialog } from "@/components/AddToMealPlanDialog";
+import { AddMealToMealPlanDialog } from "@/components/AddToMealPlanDialog";
 import { supabase } from "@/lib/SupabaseClient";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -223,12 +223,17 @@ const MealPlanningPage = () => {
           onMealPlanCreated={handleCreateMealPlan}
         />
 
-        <AddToMealPlanDialog
-          open={isAddToMealPlanDialogOpen}
-          onOpenChange={setIsAddToMealPlanDialogOpen}
-          mealId={selectedMealId}
-          mealPlans={mealPlans}
-        />
+        {selectedMealPlanId && selectedMealId && (
+          <AddMealToMealPlanDialog
+            planId={selectedMealPlanId}
+            dayOfWeek="Monday"
+            mealTime="breakfast"
+            onMealAdded={() => {
+              setIsAddToMealPlanDialogOpen(false);
+              handleCreateMealPlan();
+            }}
+          />
+        )}
       </div>
     </div>
   );
