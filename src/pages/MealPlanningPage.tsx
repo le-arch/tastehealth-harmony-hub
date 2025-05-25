@@ -1,9 +1,9 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Calendar, ChefHat } from "lucide-react";
+import { Plus, Search, Calendar, ChefHat, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +23,7 @@ interface MealPlan {
 }
 
 const MealPlanningPage = () => {
+  const navigate = useNavigate();
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMealId, setSelectedMealId] = useState<string | null>(null);
@@ -48,6 +49,7 @@ const MealPlanningPage = () => {
       createFirst: "Create your first meal plan to get started",
       searchMeals: "Search for meals to add to your plans",
       selectMeal: "Select a meal to add to your meal plan",
+      backToDashboard: "Back to Dashboard",
     },
     fr: {
       title: "Planification des Repas",
@@ -60,6 +62,7 @@ const MealPlanningPage = () => {
       createFirst: "Créez votre premier plan de repas pour commencer",
       searchMeals: "Recherchez des repas à ajouter à vos plans",
       selectMeal: "Sélectionnez un repas à ajouter à votre plan de repas",
+      backToDashboard: "Retour au Tableau de Bord",
     },
   };
 
@@ -116,6 +119,10 @@ const MealPlanningPage = () => {
     setSelectedMealPlanId(mealPlanId);
   };
 
+  const handleBackToDashboard = () => {
+    navigate("/dashboard");
+  };
+
   const filteredMealPlans = mealPlans.filter((plan) =>
     plan.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -137,6 +144,18 @@ const MealPlanningPage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              variant="outline"
+              onClick={handleBackToDashboard}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {t.backToDashboard}
+            </Button>
+            <div className="flex-1" />
+          </div>
+          
           <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center justify-center">
             <ChefHat className="h-8 w-8 mr-3 text-green-600" />
             {t.title}

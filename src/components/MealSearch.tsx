@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
 } from "@/services/mealService";
 import { Search, X } from "lucide-react";
 import { supabase } from "@/lib/SupabaseClient";
+import MealDetail from "./MealDetail";
 
 interface MealSearchProps {
   onSelectMeal: (mealId: string) => void;
@@ -36,6 +38,7 @@ const MealSearch = ({ onSelectMeal }: MealSearchProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [subcategoryFilter, setSubcategoryFilter] = useState("");
+  const [selectedMealId, setSelectedMealId] = useState<string | null>(null);
 
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ["mealCategories"],
@@ -63,6 +66,18 @@ const MealSearch = ({ onSelectMeal }: MealSearchProps) => {
     setSubcategoryFilter("");
   };
 
+  const handleMealClick = (mealId: string) => {
+    setSelectedMealId(mealId);
+  };
+
+  const handleBackToSearch = () => {
+    setSelectedMealId(null);
+  };
+
+  const handleAddToMealPlan = (mealId: string) => {
+    onSelectMeal(mealId);
+  };
+
   const MealImage = ({ mealId }: { mealId: string }) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -76,6 +91,18 @@ const MealSearch = ({ onSelectMeal }: MealSearchProps) => {
       <img src={imageUrl} alt="Meal" className="w-full h-full object-cover" />
     );
   };
+
+  // If a meal is selected, show the meal detail
+  if (selectedMealId) {
+    return (
+      <MealDetail
+        mealId={selectedMealId}
+        onBack={handleBackToSearch}
+        onAddToMealPlan={handleAddToMealPlan}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -155,7 +182,7 @@ const MealSearch = ({ onSelectMeal }: MealSearchProps) => {
               <div
                 key={meal.id}
                 className="border rounded-md overflow-hidden hover:shadow-md transition-all cursor-pointer"
-                onClick={() => onSelectMeal(meal.id)}
+                onClick={() => handleMealClick(meal.id)}
               >
                 <div className="h-48 bg-gray-600 relative">
                   {meal.image_url ? (
