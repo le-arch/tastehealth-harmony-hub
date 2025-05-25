@@ -75,6 +75,38 @@ const DUMMY_USERS: Omit<LeaderboardEntry, 'rank'>[] = [
     points: 4750,
     level: 5,
     is_dummy: true
+  },
+  {
+    user_id: 'dummy-9',
+    username: 'ProteinPro',
+    avatar_url: null,
+    points: 4200,
+    level: 5,
+    is_dummy: true
+  },
+  {
+    user_id: 'dummy-10',
+    username: 'CalorieCounter',
+    avatar_url: null,
+    points: 3800,
+    level: 4,
+    is_dummy: true
+  },
+  {
+    user_id: 'dummy-11',
+    username: 'FiberFan',
+    avatar_url: null,
+    points: 3400,
+    level: 4,
+    is_dummy: true
+  },
+  {
+    user_id: 'dummy-12',
+    username: 'VitaminVanguard',
+    avatar_url: null,
+    points: 2900,
+    level: 3,
+    is_dummy: true
   }
 ];
 

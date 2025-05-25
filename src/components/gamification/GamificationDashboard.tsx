@@ -17,6 +17,7 @@ import { supabase } from "../../lib/SupabaseClient";
 import LevelBenefits from "./LevelBenefits";
 import PointsTransactionHistory from "./PointsTransactionHistory";
 import NutritionQuest from "./NutritionQuest";
+import NutritionLeaderboard from "./NutritionLeaderboard";
 
 const GamificationDashboard: React.FC = () => {
   const [userPoints, setUserPoints] = useState<UserPoints | null>(null);
@@ -206,7 +207,7 @@ const GamificationDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Today's Quests */}
+      {/* Nutrition Quests */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         {user?.id && (
           <NutritionQuest
@@ -217,6 +218,11 @@ const GamificationDashboard: React.FC = () => {
             }}
           />
         )}
+      </div>
+
+      {/* Nutrition Leaderboard */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <NutritionLeaderboard userId={user?.id} />
       </div>
 
       {/* Active Challenges */}
