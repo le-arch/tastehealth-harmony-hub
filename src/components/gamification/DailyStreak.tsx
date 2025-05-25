@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -6,15 +7,20 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button"
 import { Flame, Check } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { recordDailyStreak, getCurrentStreak } from "@/services/streakService"
+import { supabase } from "@/lib/SupabaseClient"
+import { toast } from "sonner"
 
 interface DailyStreakProps {
   streak: number
   updateStreak: () => Promise<void>
 }
 
-const DailyStreak = ({ streak, updateStreak }: DailyStreakProps) => {
+const DailyStreak = ({ updateStreak }: DailyStreakProps) => {
+  const [streak, setStreak] = useState(0)
   const [checkedIn, setCheckedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
   const { language } = useLanguage()
 
   const translations = {
@@ -36,29 +42,51 @@ const DailyStreak = ({ streak, updateStreak }: DailyStreakProps) => {
 
   const t = translations[language as keyof typeof translations] || translations.en
 
-  // Check if user has already checked in today
   useEffect(() => {
-    const checkIfCheckedIn = async () => {
-      const lastCheckIn = localStorage.getItem("lastCheckIn")
-      if (lastCheckIn) {
-        const today = new Date().toDateString()
-        setCheckedIn(lastCheckIn === today)
+    const initializeStreak = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          setUserId(user.id)
+          const currentStreak = await getCurrentStreak(user.id)
+          setStreak(currentStreak)
+          
+          // Check if user has already checked in today
+          const today = new Date().toDateString()
+          const lastCheckIn = localStorage.getItem(`lastCheckIn_${user.id}`)
+          setCheckedIn(lastCheckIn === today)
+        }
+      } catch (error) {
+        console.error('Error initializing streak:', error)
       }
     }
 
-    checkIfCheckedIn()
+    initializeStreak()
   }, [])
 
   const handleCheckIn = async () => {
-    if (checkedIn) return
+    if (checkedIn || !userId) return
 
     setIsLoading(true)
     try {
-      await updateStreak()
-      setCheckedIn(true)
-      localStorage.setItem("lastCheckIn", new Date().toDateString())
+      const result = await recordDailyStreak(userId)
+      
+      if (result.success) {
+        setStreak(result.streakCount)
+        setCheckedIn(true)
+        const today = new Date().toDateString()
+        localStorage.setItem(`lastCheckIn_${userId}`, today)
+        
+        // Call the parent update function
+        await updateStreak()
+        
+        toast.success(`Streak updated! You're on a ${result.streakCount} day streak!`)
+      } else {
+        toast.info("You've already checked in today!")
+      }
     } catch (error) {
       console.error("Error checking in:", error)
+      toast.error("Failed to update streak")
     } finally {
       setIsLoading(false)
     }

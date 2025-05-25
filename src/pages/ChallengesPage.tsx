@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import ProfileSidebar from "../components/profile/ProfileSidebar";
 import ChallengeCreator from "@/components/ChallengeCreator";
 import ChallengesList from "@/components/gamification/ChallengeList";
+import ExploreChallenges from "@/components/gamification/ExploreChallenges";
 import { useScreenSize } from "@/utils/mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -223,7 +224,7 @@ const ChallengesPage: React.FC = () => {
           
           <TabsContent value="explore">
             {userId ? (
-              <ChallengesList userId={userId} />
+              <ExploreChallenges userId={userId} />
             ) : (
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 Please log in to explore challenges.

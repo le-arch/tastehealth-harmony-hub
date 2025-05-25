@@ -1,30 +1,23 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Medal, Trophy, Crown, Users } from "lucide-react"
+import { Medal, Trophy, Crown, Users, Bot } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { supabase } from "@/lib/SupabaseClient"
+import { getLeaderboard, type LeaderboardEntry } from "@/services/leaderboardService"
 
 interface NutritionLeaderboardProps {
   userId?: string
 }
 
-interface LeaderboardEntry {
-  user_id: string
-  username: string
-  avatar_url: string | null
-  points: number
-  level: number
-  rank: number
-}
-
 const NutritionLeaderboard = ({ userId }: NutritionLeaderboardProps) => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [userRank, setUserRank] = useState<LeaderboardEntry | null>(null)
-  const [timeframe, setTimeframe] = useState<"weekly" | "monthly" | "alltime">("weekly")
+  const [timeframe, setTimeframe] = useState<"weekly" | "monthly" | "alltime">("alltime")
+  const [isLoading, setIsLoading] = useState(true)
   const { language } = useLanguage()
 
   const translations = {
@@ -39,6 +32,7 @@ const NutritionLeaderboard = ({ userId }: NutritionLeaderboardProps) => {
       points: "Points",
       yourRank: "Your Rank",
       loading: "Loading leaderboard...",
+      bot: "Bot"
     },
     fr: {
       title: "Classement Nutritionnel",
@@ -51,6 +45,7 @@ const NutritionLeaderboard = ({ userId }: NutritionLeaderboardProps) => {
       points: "Points",
       yourRank: "Votre Rang",
       loading: "Chargement du classement...",
+      bot: "Bot"
     },
   }
 
@@ -59,59 +54,15 @@ const NutritionLeaderboard = ({ userId }: NutritionLeaderboardProps) => {
   // Load leaderboard data
   useEffect(() => {
     const loadLeaderboard = async () => {
-      if (!userId) return
-
+      setIsLoading(true)
       try {
-        let query = supabase
-          .from("user_gamification")
-          .select(
-            `
-            user_id,
-            points,
-            level,
-            profiles:user_id (
-              username,
-              avatar_url
-            )
-          `,
-          )
-          .order("points", { ascending: false })
-          .limit(100)
-
-        // Apply timeframe filter
-        if (timeframe === "weekly") {
-          const oneWeekAgo = new Date()
-          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-          query = query.gte("last_updated", oneWeekAgo.toISOString())
-        } else if (timeframe === "monthly") {
-          const oneMonthAgo = new Date()
-          oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
-          query = query.gte("last_updated", oneMonthAgo.toISOString())
-        }
-
-        const { data, error } = await query
-
-        if (error) throw error
-
-        if (data) {
-          // Process and format leaderboard data
-          const formattedData: LeaderboardEntry[] = data.map((entry, index) => ({
-            user_id: entry.user_id,
-            username: entry.profiles?.username || `User ${entry.user_id.slice(0, 4)}`,
-            avatar_url: entry.profiles?.avatar_url,
-            points: entry.points,
-            level: entry.level,
-            rank: index + 1,
-          }))
-
-          setLeaderboard(formattedData)
-
-          // Find current user's rank
-          const currentUserRank = formattedData.find((entry) => entry.user_id === userId)
-          setUserRank(currentUserRank || null)
-        }
+        const { leaderboard: data, userRank: userRankData } = await getLeaderboard(userId)
+        setLeaderboard(data)
+        setUserRank(userRankData)
       } catch (error) {
         console.error("Error loading leaderboard:", error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -173,7 +124,12 @@ const NutritionLeaderboard = ({ userId }: NutritionLeaderboardProps) => {
         </div>
       </CardHeader>
       <CardContent>
-        {leaderboard.length === 0 ? (
+        {isLoading ? (
+          <div className="text-center py-8 text-gray-500">
+            <Users className="h-12 w-12 mx-auto text-gray-300 mb-2" />
+            <p>{t.loading}</p>
+          </div>
+        ) : leaderboard.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Users className="h-12 w-12 mx-auto text-gray-300 mb-2" />
             <p>{t.loading}</p>
@@ -202,15 +158,30 @@ const NutritionLeaderboard = ({ userId }: NutritionLeaderboardProps) => {
                       }`}
                     >
                       <td className="py-3 text-center">
-                        <div className="flex items-center">{getMedal(entry.rank) || <span>{entry.rank}</span>}</div>
+                        <div className="flex items-center justify-center">
+                          {getMedal(entry.rank) || <span>{entry.rank}</span>}
+                        </div>
                       </td>
                       <td className="py-3">
                         <div className="flex items-center">
                           <Avatar className="h-8 w-8 mr-2">
                             <AvatarImage src={entry.avatar_url || ""} />
-                            <AvatarFallback>{entry.username.charAt(0).toUpperCase()}</AvatarFallback>
+                            <AvatarFallback className={entry.is_dummy ? "bg-blue-100" : ""}>
+                              {entry.is_dummy ? (
+                                <Bot className="h-4 w-4 text-blue-600" />
+                              ) : (
+                                entry.username.charAt(0).toUpperCase()
+                              )}
+                            </AvatarFallback>
                           </Avatar>
-                          <span className="font-medium">{entry.username}</span>
+                          <div className="flex items-center gap-1">
+                            <span className="font-medium">{entry.username}</span>
+                            {entry.is_dummy && (
+                              <span className="text-xs bg-blue-100 text-blue-600 px-1 py-0.5 rounded">
+                                {t.bot}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td className="py-3 text-right">{entry.level}</td>
