@@ -196,14 +196,20 @@ const MealDetail = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="overview">{t.overview}</TabsTrigger>
+          <TabsTrigger value="nutrition">{t.nutrition}</TabsTrigger>
+          <TabsTrigger value="recipe">{t.recipe}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
           <div>
             <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
               {meal.meal_name}
             </h1>
             <div className="flex flex-wrap gap-2 mb-4">
-              <span className="bg-gray-100 px-3 py-1 rounded-full text-sm font-medium text-gray-900">
+              <span className="bg-gray-100 px-3 py-1 rounded-full text-sm font-medium text-gray-900 dark:text-gray-900">
                 {meal.category_name}
               </span>
               <span className="bg-th-green-100 text-th-green-700 px-3 py-1 rounded-full text-sm font-medium">
@@ -222,190 +228,159 @@ const MealDetail = ({
               </div>
             </div>
           </div>
+        </TabsContent>
 
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="overview">{t.overview}</TabsTrigger>
-              <TabsTrigger value="nutrition">{t.nutrition}</TabsTrigger>
-              <TabsTrigger value="recipe">{t.recipe}</TabsTrigger>
-            </TabsList>
+        <TabsContent value="nutrition">
+          {nutritionFacts && (
+            <Card>
+              <CardHeader className="bg-gray-50">
+                <CardTitle className="text-lg">{t.nutritionFacts}</CardTitle>
+                <p className="text-sm text-gray-500">
+                  {t.servingSize}: {nutritionFacts.serving_size}
+                </p>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <table className="w-full text-sm">
+                  <tbody>
+                    <tr className="border-b">
+                      <td className="py-2 font-bold">{t.calories}</td>
+                      <td className="py-2 text-right">
+                        {nutritionFacts.calories}
+                      </td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">
+                        <span className="font-bold">Total Fat</span>{" "}
+                        {nutritionFacts.total_fat}
+                      </td>
+                      <td className="py-2 text-right">
+                        {nutritionFacts.total_fat}
+                      </td>
+                    </tr>
+                    <tr className="border-b pl-4">
+                      <td className="py-2 pl-4">Saturated Fat</td>
+                      <td className="py-2 text-right">
+                        {nutritionFacts.saturated_fat}
+                      </td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2 pl-4">Trans Fat</td>
+                      <td className="py-2 text-right">
+                        {nutritionFacts.trans_fat}
+                      </td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">
+                        <span className="font-bold">Cholesterol</span>
+                      </td>
+                      <td className="py-2 text-right">
+                        {nutritionFacts.cholesterol}
+                      </td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">
+                        <span className="font-bold">Sodium</span>
+                      </td>
+                      <td className="py-2 text-right">
+                        {nutritionFacts.sodium}
+                      </td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">
+                        <span className="font-bold">Total Carbohydrate</span>
+                      </td>
+                      <td className="py-2 text-right">
+                        {nutritionFacts.total_carbohydrate}
+                      </td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2 pl-4">Dietary Fiber</td>
+                      <td className="py-2 text-right">
+                        {nutritionFacts.dietary_fiber}
+                      </td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2 pl-4">Total Sugars</td>
+                      <td className="py-2 text-right">
+                        {nutritionFacts.total_sugars}
+                      </td>
+                    </tr>
+                    {nutritionFacts.added_sugars && (
+                      <tr className="border-b">
+                        <td className="py-2 pl-8">Added Sugars</td>
+                        <td className="py-2 text-right">
+                          {nutritionFacts.added_sugars}
+                        </td>
+                      </tr>
+                    )}
+                    <tr className="border-b">
+                      <td className="py-2">
+                        <span className="font-bold">{t.protein}</span>
+                      </td>
+                      <td className="py-2 text-right">
+                        {nutritionFacts.protein}
+                      </td>
+                    </tr>
 
-            <TabsContent value="overview" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t.overview}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium">{t.calories}:</span> {nutritionFacts?.calories || t.notAvailable}
-                    </div>
-                    <div>
-                      <span className="font-medium">{t.protein}:</span> {nutritionFacts?.protein || t.notAvailable}
-                    </div>
-                    <div>
-                      <span className="font-medium">{t.carbs}:</span> {nutritionFacts?.total_carbohydrate || t.notAvailable}
-                    </div>
-                    <div>
-                      <span className="font-medium">{t.fat}:</span> {nutritionFacts?.total_fat || t.notAvailable}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="nutrition" className="space-y-4">
-              {nutritionFacts && (
-                <Card>
-                  <CardHeader className="bg-gray-50">
-                    <CardTitle className="text-lg">{t.nutritionFacts}</CardTitle>
-                    <p className="text-sm text-gray-500">
-                      {t.servingSize}: {nutritionFacts.serving_size}
-                    </p>
-                  </CardHeader>
-                  <CardContent className="pt-4">
-                    <table className="w-full text-sm">
-                      <tbody>
-                        <tr className="border-b">
-                          <td className="py-2 font-bold">{t.calories}</td>
-                          <td className="py-2 text-right">
-                            {nutritionFacts.calories}
-                          </td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-2">
-                            <span className="font-bold">Total Fat</span>
-                          </td>
-                          <td className="py-2 text-right">
-                            {nutritionFacts.total_fat}
-                          </td>
-                        </tr>
-                        <tr className="border-b pl-4">
-                          <td className="py-2 pl-4">Saturated Fat</td>
-                          <td className="py-2 text-right">
-                            {nutritionFacts.saturated_fat}
-                          </td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-2 pl-4">Trans Fat</td>
-                          <td className="py-2 text-right">
-                            {nutritionFacts.trans_fat}
-                          </td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-2">
-                            <span className="font-bold">Cholesterol</span>
-                          </td>
-                          <td className="py-2 text-right">
-                            {nutritionFacts.cholesterol}
-                          </td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-2">
-                            <span className="font-bold">Sodium</span>
-                          </td>
-                          <td className="py-2 text-right">
-                            {nutritionFacts.sodium}
-                          </td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-2">
-                            <span className="font-bold">Total Carbohydrate</span>
-                          </td>
-                          <td className="py-2 text-right">
-                            {nutritionFacts.total_carbohydrate}
-                          </td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-2 pl-4">Dietary Fiber</td>
-                          <td className="py-2 text-right">
-                            {nutritionFacts.dietary_fiber}
-                          </td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="py-2 pl-4">Total Sugars</td>
-                          <td className="py-2 text-right">
-                            {nutritionFacts.total_sugars}
-                          </td>
-                        </tr>
-                        {nutritionFacts.added_sugars && (
-                          <tr className="border-b">
-                            <td className="py-2 pl-8">Added Sugars</td>
-                            <td className="py-2 text-right">
-                              {nutritionFacts.added_sugars}
-                            </td>
+                    {nutritionFacts.additional_nutrients &&
+                      Object.entries(nutritionFacts.additional_nutrients).map(
+                        ([key, value]) => (
+                          <tr key={key} className="border-b">
+                            <td className="py-2">{key.replace(/_/g, " ")}</td>
+                            <td className="py-2 text-right">{value}</td>
                           </tr>
-                        )}
-                        <tr className="border-b">
-                          <td className="py-2">
-                            <span className="font-bold">{t.protein}</span>
-                          </td>
-                          <td className="py-2 text-right">
-                            {nutritionFacts.protein}
-                          </td>
-                        </tr>
-
-                        {nutritionFacts.additional_nutrients &&
-                          Object.entries(nutritionFacts.additional_nutrients).map(
-                            ([key, value]) => (
-                              <tr key={key} className="border-b">
-                                <td className="py-2">{key.replace(/_/g, " ")}</td>
-                                <td className="py-2 text-right">{value as string}</td>
-                              </tr>
-                            )
-                          )}
-                      </tbody>
-                    </table>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            <TabsContent value="recipe" className="space-y-4">
-              {recipe && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t.recipe}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <h3 className="font-medium mb-2">{t.ingredients}</h3>
-                      {recipe.ingredients && recipe.ingredients.length > 0 ? (
-                        <ul className="list-disc pl-5 space-y-1 text-gray-700">
-                          {recipe.ingredients.map((ingredient, index) => (
-                            <li
-                              key={index}
-                              className="text-gray-700 dark:text-gray-100"
-                            >
-                              {ingredient.quantity && `${ingredient.quantity} `}
-                              {ingredient.name}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-gray-500">No ingredients listed.</p>
+                        )
                       )}
-                    </div>
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
 
-                    <div>
-                      <h3 className="font-medium mb-2">{t.instructions}</h3>
-                      {recipe.instructions ? (
-                        <p className="text-gray-700 dark:text-gray-100 whitespace-pre-line">
-                          {recipe.instructions}
-                        </p>
-                      ) : (
-                        <p className="text-gray-100 dark:text-gray-100">
-                          No instructions provided.
-                        </p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
+        <TabsContent value="recipe">
+          {recipe && (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t.recipe}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h3 className="font-medium mb-2">{t.ingredients}</h3>
+                  {recipe.ingredients && recipe.ingredients.length > 0 ? (
+                    <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                      {recipe.ingredients.map((ingredient, index) => (
+                        <li
+                          key={index}
+                          className="text-gray-700 dark:text-gray-100"
+                        >
+                          {ingredient.quantity && `${ingredient.quantity} `}
+                          {ingredient.ingredient_name || ingredient.name || 'Ingredient'}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500">No ingredients listed.</p>
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-2">{t.instructions}</h3>
+                  {recipe.instructions ? (
+                    <p className="text-gray-700 dark:text-gray-100 whitespace-pre-line">
+                      {recipe.instructions}
+                    </p>
+                  ) : (
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No instructions provided.
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

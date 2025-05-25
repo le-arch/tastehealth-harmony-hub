@@ -1,131 +1,161 @@
-import React from 'react';
-import { createNotification } from "@/services/notificationService";
 
-// Sample notification data for different types
-const sampleNotifications = {
-  meal: [
-    {
-      title: "Meal Plan Reminder",
-      message:
-        "Don't forget to prepare your lunch according to your meal plan today!",
-    },
-    {
-      title: "New Recipe Available",
-      message:
-        "We've added a new healthy recipe that matches your preferences. Check it out!",
-    },
-    {
-      title: "Meal Tracking Reminder",
-      message:
-        "You haven't logged your breakfast today. Did you forget to track it?",
-    },
-  ],
-  water: [
-    {
-      title: "Hydration Reminder",
-      message: "You're 3 cups behind your daily water goal. Time to hydrate!",
-    },
-    {
-      title: "Hydration Goal Achieved",
-      message: "Congratulations! You've reached your daily water intake goal.",
-    },
-    {
-      title: "Hydration Streak",
-      message: "You've maintained your hydration goals for 5 days in a row!",
-    },
-  ],
-  exercise: [
-    {
-      title: "Workout Reminder",
-      message: "It's time for your scheduled workout. Get moving!",
-    },
-    {
-      title: "Exercise Goal Achieved",
-      message: "Great job! You've reached your weekly exercise goal.",
-    },
-    {
-      title: "New Workout Plan",
-      message: "We've updated your workout plan based on your progress.",
-    },
-  ],
-  sleep: [
-    {
-      title: "Sleep Schedule Reminder",
-      message: "Time to prepare for bed to meet your sleep goal tonight.",
-    },
-    {
-      title: "Sleep Quality Improved",
-      message: "Your sleep quality has improved by 15% this week!",
-    },
-    {
-      title: "Sleep Goal Achieved",
-      message: "You've met your sleep goal for 3 consecutive nights!",
-    },
-  ],
-  achievement: [
-    {
-      title: "New Badge Unlocked",
-      message:
-        "You've earned the 'Nutrition Expert' badge for consistent healthy eating!",
-    },
-    {
-      title: "Weekly Challenge Completed",
-      message: "Congratulations on completing this week's nutrition challenge!",
-    },
-    {
-      title: "Milestone Reached",
-      message: "You've logged 50 meals in the app! Keep up the great work!",
-    },
-  ],
-  system: [
-    {
-      title: "App Update Available",
-      message: "A new version of the app is available with exciting features!",
-    },
-    {
-      title: "Profile Completion",
-      message:
-        "Your profile is 80% complete. Add more details to get personalized recommendations.",
-    },
-    {
-      title: "Weekly Summary Ready",
-      message: "Your weekly health and nutrition summary is now available.",
-    },
-  ],
-};
+import { supabase } from '@/lib/SupabaseClient';
 
-/**
- * Generate a random notification of a specific type
- */
-export const generateRandomNotification = async (
-  type: keyof typeof sampleNotifications
-): Promise<boolean> => {
-  const notifications = sampleNotifications[type];
-  const randomIndex = Math.floor(Math.random() * notifications.length);
-  const { title, message } = notifications[randomIndex];
+export interface NotificationData {
+  type: 'meal' | 'hydration' | 'exercise' | 'streak' | 'challenge' | 'achievement';
+  title: string;
+  message: string;
+  data?: any;
+}
 
-  return await createNotification(title, message, type);
-};
+class NotificationGenerator {
+  private static instance: NotificationGenerator;
+  
+  private constructor() {}
+  
+  public static getInstance(): NotificationGenerator {
+    if (!NotificationGenerator.instance) {
+      NotificationGenerator.instance = new NotificationGenerator();
+    }
+    return NotificationGenerator.instance;
+  }
 
-/**
- * Generate a set of random notifications for testing
- */
-export const generateSampleNotifications = async (
-  count = 5
-): Promise<boolean> => {
-  try {
-    const types = Object.keys(sampleNotifications) as Array<
-      keyof typeof sampleNotifications
-    >;
+  async generateMealReminder(userId: string): Promise<boolean> {
+    const reminders = [
+      {
+        title: "Time for Breakfast! 🍳",
+        message: "Start your day with a nutritious breakfast. Don't forget to log it!",
+      },
+      {
+        title: "Lunch Break! 🥗",
+        message: "Time for a healthy lunch. Remember to include vegetables!",
+      },
+      {
+        title: "Dinner Time! 🍽️",
+        message: "Enjoy a balanced dinner. Don't forget to track your meal!",
+      }
+    ];
 
-    for (let i = 0; i < count; i++) {
-      const randomType = types[Math.floor(Math.random() * types.length)];
-      await generateRandomNotification(randomType);
+    const randomReminder = reminders[Math.floor(Math.random() * reminders.length)];
+    
+    return this.createNotification(userId, {
+      type: 'meal',
+      title: randomReminder.title,
+      message: randomReminder.message,
+      data: { timestamp: new Date().toISOString() }
+    });
+  }
+
+  async generateHydrationReminder(userId: string): Promise<boolean> {
+    const reminders = [
+      {
+        title: "Stay Hydrated! 💧",
+        message: "Time to drink some water. Your body will thank you!",
+      },
+      {
+        title: "Water Break! 🚰",
+        message: "Don't forget to stay hydrated throughout the day.",
+      }
+    ];
+
+    const randomReminder = reminders[Math.floor(Math.random() * reminders.length)];
+    
+    return this.createNotification(userId, {
+      type: 'hydration',
+      title: randomReminder.title,
+      message: randomReminder.message,
+      data: { timestamp: new Date().toISOString() }
+    });
+  }
+
+  async generateStreakCelebration(userId: string, streakDays: number): Promise<boolean> {
+    let title = "Great Job! 🔥";
+    let message = `You're on a ${streakDays} day streak! Keep it going!`;
+
+    if (streakDays >= 7) {
+      title = "Week Streak! 🌟";
+      message = `Amazing! You've maintained a ${streakDays} day streak!`;
+    } else if (streakDays >= 30) {
+      title = "Month Streak! 🏆";
+      message = `Incredible! ${streakDays} days of consistency!`;
     }
 
-    return true;
-  } catch (error) {
-    console.error("Error generating sample notifications:", error);
-    return false;
+    return this.createNotification(userId, {
+      type: 'streak',
+      title,
+      message,
+      data: { streakDays, timestamp: new Date().toISOString() }
+    });
   }
-};
+
+  async generateChallengeNotification(userId: string, challengeTitle: string): Promise<boolean> {
+    return this.createNotification(userId, {
+      type: 'challenge',
+      title: "New Challenge Available! 🎯",
+      message: `Check out the new challenge: ${challengeTitle}`,
+      data: { challengeTitle, timestamp: new Date().toISOString() }
+    });
+  }
+
+  async generateAchievementNotification(userId: string, achievementName: string): Promise<boolean> {
+    return this.createNotification(userId, {
+      type: 'achievement',
+      title: "Achievement Unlocked! 🏅",
+      message: `Congratulations! You've earned: ${achievementName}`,
+      data: { achievementName, timestamp: new Date().toISOString() }
+    });
+  }
+
+  private async createNotification(userId: string, notificationData: NotificationData): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: userId,
+          type: notificationData.type,
+          title: notificationData.title,
+          message: notificationData.message,
+          data: notificationData.data || {},
+          is_read: false
+        });
+
+      if (error) {
+        console.error('Error creating notification:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error in createNotification:', error);
+      return false;
+    }
+  }
+
+  async generateDailyMotivation(userId: string): Promise<boolean> {
+    const motivations = [
+      {
+        title: "Daily Motivation 💪",
+        message: "Every healthy choice you make today is an investment in your future self!",
+      },
+      {
+        title: "You've Got This! 🌟",
+        message: "Small steps every day lead to big changes. Keep going!",
+      },
+      {
+        title: "Healthy Habits 🌱",
+        message: "Building healthy habits one day at a time. You're doing great!",
+      }
+    ];
+
+    const randomMotivation = motivations[Math.floor(Math.random() * motivations.length)];
+    
+    return this.createNotification(userId, {
+      type: 'meal',
+      title: randomMotivation.title,
+      message: randomMotivation.message,
+      data: { type: 'motivation', timestamp: new Date().toISOString() }
+    });
+  }
+}
+
+export default NotificationGenerator;

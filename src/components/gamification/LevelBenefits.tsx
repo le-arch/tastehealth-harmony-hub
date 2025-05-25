@@ -1,174 +1,193 @@
-"use client";
 
-import type React from "react";
-import { useEffect, useState } from "react";
-import {
-  type LevelBenefit,
-  type UserLevelBenefit,
-  gamificationService,
-} from "../../services/gamificationService";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Star, Gift, Crown, Zap } from 'lucide-react';
+import { supabase } from '@/lib/SupabaseClient';
 
 interface LevelBenefitsProps {
   userId: string;
 }
 
-export const LevelBenefits: React.FC<LevelBenefitsProps> = ({ userId }) => {
-  const [benefits, setBenefits] = useState<LevelBenefit[]>([]);
-  const [userBenefits, setUserBenefits] = useState<UserLevelBenefit[]>([]);
-  const [userLevel, setUserLevel] = useState(1);
+interface UserLevel {
+  level: number;
+  total_points: number;
+  points_to_next_level: number;
+}
+
+interface LevelBenefit {
+  level: number;
+  title: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
+}
+
+const LevelBenefits: React.FC<LevelBenefitsProps> = ({ userId }) => {
+  const [userLevel, setUserLevel] = useState<UserLevel>({ level: 1, total_points: 0, points_to_next_level: 100 });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [allBenefits, userUnlockedBenefits, userPoints] =
-          await Promise.all([
-            gamificationService.getLevelBenefits(userId),
-            gamificationService.getUserLevelBenefits(userId),
-            gamificationService.getUserPoints(userId),
-          ]);
+  const levelBenefits: LevelBenefit[] = [
+    {
+      level: 1,
+      title: "Welcome Badge",
+      description: "Get started with your nutrition journey",
+      icon: "star",
+      unlocked: true
+    },
+    {
+      level: 2,
+      title: "Streak Tracker",
+      description: "Track daily nutrition streaks",
+      icon: "zap",
+      unlocked: userLevel.level >= 2
+    },
+    {
+      level: 3,
+      title: "Meal Planner",
+      description: "Access advanced meal planning features",
+      icon: "gift",
+      unlocked: userLevel.level >= 3
+    },
+    {
+      level: 5,
+      title: "Nutrition Expert",
+      description: "Unlock premium nutrition insights",
+      icon: "crown",
+      unlocked: userLevel.level >= 5
+    },
+    {
+      level: 7,
+      title: "Community Leader",
+      description: "Access to exclusive challenges",
+      icon: "crown",
+      unlocked: userLevel.level >= 7
+    },
+    {
+      level: 10,
+      title: "Master Nutritionist",
+      description: "All features unlocked",
+      icon: "crown",
+      unlocked: userLevel.level >= 10
+    }
+  ];
 
-        setBenefits(allBenefits);
-        setUserBenefits(userUnlockedBenefits);
-        setUserLevel(userPoints.current_level);
+  useEffect(() => {
+    const fetchUserLevel = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_points')
+          .select('current_level, total_points, points_to_next_level')
+          .eq('user_id', userId)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching user level:', error);
+          return;
+        }
+
+        if (data) {
+          setUserLevel({
+            level: data.current_level,
+            total_points: data.total_points,
+            points_to_next_level: data.points_to_next_level
+          });
+        }
       } catch (error) {
-        console.error("Error fetching level benefits:", error);
+        console.error('Error in fetchUserLevel:', error);
       } finally {
         setLoading(false);
       }
     };
 
     if (userId) {
-      fetchData();
+      fetchUserLevel();
     }
   }, [userId]);
 
-  const handleUnlockBenefit = async (benefitId: string) => {
-    try {
-      const newBenefit = await gamificationService.unlockLevelBenefit(
-        userId,
-        benefitId
-      );
-      setUserBenefits([...userBenefits, newBenefit]);
-    } catch (error) {
-      console.error("Error unlocking benefit:", error);
-      alert("Could not unlock benefit. " + (error as Error).message);
+  const getIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'star': return <Star className="h-5 w-5" />;
+      case 'zap': return <Zap className="h-5 w-5" />;
+      case 'gift': return <Gift className="h-5 w-5" />;
+      case 'crown': return <Crown className="h-5 w-5" />;
+      default: return <Star className="h-5 w-5" />;
     }
-  };
-
-  const handleUseBenefit = async (benefitId: string) => {
-    try {
-      await gamificationService.getLevelBenefits(userId, benefitId); //Corrected the function call here.
-      // Refresh user benefits
-      const updatedBenefits = await gamificationService.getUserLevelBenefits(
-        userId
-      );
-      setUserBenefits(updatedBenefits);
-    } catch (error) {
-      console.error("Error using benefit:", error);
-      alert("Could not use benefit. " + (error as Error).message);
-    }
-  };
-
-  const isUnlocked = (benefitId: string) => {
-    return userBenefits.some(
-      (ub) => ub.level_benefit_id === benefitId && ub.status === "unlocked"
-    );
-  };
-
-  const isUsed = (benefitId: string) => {
-    return userBenefits.some(
-      (ub) => ub.level_benefit_id === benefitId && ub.status === "used"
-    );
   };
 
   if (loading) {
-    return <div className="p-4 text-center">Loading level benefits...</div>;
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
-      <h2 className="text-xl font-bold mb-4">Level Benefits</h2>
-      <p className="text-gray-600 mb-4">
-        Your current level: <span className="font-semibold">{userLevel}</span>
-      </p>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Crown className="h-5 w-5 text-amber-500" />
+            Level Progress
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">Level {userLevel.level}</span>
+              <span className="text-sm text-gray-500">{userLevel.total_points} points</span>
+            </div>
+            <Progress 
+              value={userLevel.points_to_next_level > 0 ? 
+                ((userLevel.total_points / (userLevel.total_points + userLevel.points_to_next_level)) * 100) : 100
+              } 
+              className="h-2" 
+            />
+            <p className="text-xs text-gray-500">
+              {userLevel.points_to_next_level > 0 ? 
+                `${userLevel.points_to_next_level} points to level ${userLevel.level + 1}` :
+                'Max level reached!'
+              }
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div className="space-y-4">
-        {benefits.map((benefit) => {
-          const unlocked = isUnlocked(benefit.id);
-          const used = isUsed(benefit.id);
-          const canUnlock = userLevel >= benefit.level_required;
-
-          return (
-            <div
-              key={benefit.id}
-              className={`border rounded-lg p-4 transition-all ${
-                unlocked
-                  ? "border-green-500 bg-green-50"
-                  : used
-                  ? "border-gray-300 bg-gray-50 opacity-70"
-                  : canUnlock
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-300"
-              }`}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-semibold text-lg">{benefit.name}</h3>
-                  <p className="text-gray-600 text-sm">{benefit.description}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Required level:{" "}
-                    <span className="font-medium">
-                      {benefit.level_required}
-                    </span>
-                  </p>
-
-                  {benefit.benefit_data.points_cost && (
-                    <p className="text-xs text-gray-500">
-                      Cost:{" "}
-                      <span className="font-medium">
-                        {benefit.benefit_data.points_cost} points
-                      </span>
-                    </p>
-                  )}
+      <div className="grid gap-3">
+        {levelBenefits.map((benefit) => (
+          <Card key={benefit.level} className={benefit.unlocked ? 'border-green-200 bg-green-50' : 'border-gray-200'}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-full ${benefit.unlocked ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                    {getIcon(benefit.icon)}
+                  </div>
+                  <div>
+                    <h4 className="font-medium">{benefit.title}</h4>
+                    <p className="text-sm text-gray-600">{benefit.description}</p>
+                  </div>
                 </div>
-
-                <div>
-                  {used ? (
-                    <span className="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-xs">
-                      Used
-                    </span>
-                  ) : unlocked ? (
-                    <button
-                      onClick={() => handleUseBenefit(benefit.id)}
-                      className="px-3 py-1 bg-green-600 text-white rounded-full text-xs hover:bg-green-700 transition-colors"
-                    >
-                      Use Benefit
-                    </button>
-                  ) : canUnlock ? (
-                    <button
-                      onClick={() => handleUnlockBenefit(benefit.id)}
-                      className="px-3 py-1 bg-blue-600 text-white rounded-full text-xs hover:bg-blue-700 transition-colors"
-                    >
-                      Unlock
-                    </button>
-                  ) : (
-                    <span className="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-xs">
-                      Locked
-                    </span>
+                <div className="flex items-center gap-2">
+                  <Badge variant={benefit.unlocked ? 'default' : 'secondary'}>
+                    Level {benefit.level}
+                  </Badge>
+                  {benefit.unlocked && (
+                    <Badge variant="outline" className="text-green-600 border-green-600">
+                      Unlocked
+                    </Badge>
                   )}
                 </div>
               </div>
-            </div>
-          );
-        })}
-
-        {benefits.length === 0 && (
-          <p className="text-center text-gray-500 py-4">
-            No level benefits available yet.
-          </p>
-        )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );
