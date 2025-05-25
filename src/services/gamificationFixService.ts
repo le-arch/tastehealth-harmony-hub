@@ -1,5 +1,4 @@
-
-import { supabase } from "../integrations/supabase/client";
+import { supabase } from "../lib/SupabaseClient";
 
 export const fixGamificationData = async (): Promise<{
   success: boolean;

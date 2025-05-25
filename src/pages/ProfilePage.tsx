@@ -49,8 +49,6 @@ import {
   updateUserProfile,
   UserProfile,
 } from "@/services/profileService";
-import { useLanguage } from '@/contexts/LanguageContext';
-import { LanguageSelector } from '@/components/settings/LanguageSelector';
 //import TasteHealthLoader from '@/components/TastehealthLoader';
 
 const formSchema = z.object({
@@ -70,70 +68,6 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   //const [isLoading, setIsLoading] = useState(false);
-    const { language, setLanguage } = useLanguage();
-
-  const translations = {
-    en: {
-      pageTitle: "Profile",
-      personalInfo: "Personal Information",
-      firstName: "First Name",
-      lastName: "Last Name",
-      email: "Email",
-      phone: "Phone Number",
-      username: "Username",
-      healthMetrics: "Health Metrics",
-      age: "Age",
-      height: "Height (cm)",
-      weight: "Weight (kg)",
-      gender: "Gender",
-      activityLevel: "Activity Level",
-      nutritionPreferences: "Nutrition Preferences",
-      healthGoals: "Health Goals",
-      dietaryRestrictions: "Dietary Restrictions",
-      allergies: "Allergies",
-      calorieGoal: "Daily Calorie Goal",
-      languagePreference: "Language Preference",
-      english: "English",
-      french: "French",
-      saveChanges: "Save Changes",
-      profileUpdated: "Profile Updated",
-      profileUpdateSuccess: "Your profile has been successfully updated",
-      notAuthenticated: "You need to be logged in to view this page",
-      errorLoading: "Error loading profile",
-      errorUpdating: "Error updating profile"
-    },
-    fr: {
-      pageTitle: "Profil",
-      personalInfo: "Informations Personnelles",
-      firstName: "Prénom",
-      lastName: "Nom",
-      email: "Email",
-      phone: "Numéro de Téléphone",
-      username: "Nom d'Utilisateur",
-      healthMetrics: "Mesures de Santé",
-      age: "Âge",
-      height: "Taille (cm)",
-      weight: "Poids (kg)",
-      gender: "Genre",
-      activityLevel: "Niveau d'Activité",
-      nutritionPreferences: "Préférences Nutritionnelles",
-      healthGoals: "Objectifs de Santé",
-      dietaryRestrictions: "Restrictions Alimentaires",
-      allergies: "Allergies",
-      calorieGoal: "Objectif Calorique Quotidien",
-      languagePreference: "Préférence de Langue",
-      english: "Anglais",
-      french: "Français",
-      saveChanges: "Sauvegarder les Modifications",
-      profileUpdated: "Profil Mis à Jour",
-      profileUpdateSuccess: "Votre profil a été mis à jour avec succès",
-      notAuthenticated: "Vous devez être connecté pour voir cette page",
-      errorLoading: "Erreur lors du chargement du profil",
-      errorUpdating: "Erreur lors de la mise à jour du profil"
-    }
-  };
-
-  const t = translations[language as keyof typeof translations] || translations.en;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

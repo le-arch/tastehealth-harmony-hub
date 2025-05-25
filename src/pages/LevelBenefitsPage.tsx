@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from "react";
@@ -57,20 +56,26 @@ const LevelBenefitsPage: React.FC = () => {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 dark:bg-gray-900">
       <ProfileSidebar activePage="Level Benefits" />
-      <div className={`flex-1 p-4 sm:p-6 md:p-8 ${isMobile ? '' : 'md:ml-64'}`}>
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Level Benefits</h1>
+      <div className={`flex-1 p-4 sm:p-6 md:p-8 ${isMobile ? "" : "md:ml-64"}`}>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">
+          Level Benefits
+        </h1>
 
         {userPoints && (
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-4 sm:p-6 mb-6 sm:mb-8">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold">Level {userPoints.level}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold">
+                  Level {userPoints.level}
+                </h2>
                 <p className="opacity-90">
                   {userPoints.points_to_next_level} points to next level
                 </p>
               </div>
               <div className="text-right mt-2 sm:mt-0">
-                <p className="text-2xl sm:text-3xl font-bold">{userPoints.total_points}</p>
+                <p className="text-2xl sm:text-3xl font-bold">
+                  {userPoints.total_points}
+                </p>
                 <p className="opacity-90">Total Points</p>
               </div>
             </div>

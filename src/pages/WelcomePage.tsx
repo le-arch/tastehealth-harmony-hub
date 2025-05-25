@@ -12,6 +12,7 @@ import {
   Award,
   Clock,
   PieChart,
+  Flame,
 } from "lucide-react";
 
 const WelcomePage = () => {
@@ -97,7 +98,7 @@ const WelcomePage = () => {
               <div className="relative w-full max-w-md">
                 <div className="absolute inset-0 bg-th-green-500 rounded-full blur-3xl opacity-20"></div>
                 <img
-                  src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  src="https://plus.unsplash.com/premium_photo-1673108852141-e8c3c22a4a22?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   alt="Healthy food"
                   className="relative rounded-3xl shadow-xl object-cover w-full aspect-[3/4]"
                 />
@@ -138,7 +139,7 @@ const WelcomePage = () => {
               {/* Feature 2 */}
               <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                 <div className="h-12 w-12 bg-th-green-100 rounded-full flex items-center justify-center mb-4">
-                  <Activity className="h-6 w-6 text-th-green-600" />
+                  <Activity className="h-6 w-6 text-red-500" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">
                   Progress Tracking
@@ -166,7 +167,7 @@ const WelcomePage = () => {
               {/* Feature 4 */}
               <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                 <div className="h-12 w-12 bg-th-green-100 rounded-full flex items-center justify-center mb-4">
-                  <Award className="h-6 w-6 text-th-green-600" />
+                  <Award className="h-6 w-6 text-yellow-900" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">
                   Rewards & Achievements
@@ -192,7 +193,7 @@ const WelcomePage = () => {
               {/* Feature 6 */}
               <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                 <div className="h-12 w-12 bg-th-green-100 rounded-full flex items-center justify-center mb-4">
-                  <PieChart className="h-6 w-6 text-th-green-600" />
+                  <Flame className="h-6 w-6 text-yellow-500" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">
                   Nutrition Insights
@@ -219,7 +220,7 @@ const WelcomePage = () => {
       )}
 
       {/* Footer */}
-      <footer className="bg-th-green-900 text-white py-8 px-4">
+      {/* <footer className="bg-th-green-900 text-white py-8 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-6 md:mb-0">
@@ -292,7 +293,7 @@ const WelcomePage = () => {
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };

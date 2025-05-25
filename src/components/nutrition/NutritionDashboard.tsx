@@ -10,7 +10,7 @@ import HydrationTracker from "./HydrationTracker";
 import NutritionProgressWheel from "./NutritionProgressWheel";
 import { ChefHat, LayoutDashboard, Award, Pencil, Trophy } from "lucide-react";
 import { useScreenSize } from "@/utils/mobile";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/SupabaseClient";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";

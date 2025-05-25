@@ -10,7 +10,7 @@ import MealMoodTracker from '@/components/MealMoodTracker';
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/SupabaseClient';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import ChallengeCreator from '../components/ChallengeCreator';

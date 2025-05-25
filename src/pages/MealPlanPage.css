@@ -434,24 +434,24 @@
   .meal-name {
     font-size: 12px;
   }
-  
+
   .meal-plan-content {
     padding: 12px;
   }
-  
+
   .plan-selector {
     gap: 8px;
   }
-  
+
   .plan-selector select {
     margin: 0;
   }
-  
+
   .card-scroll-container {
     margin: 0 -12px;
     padding: 0 12px;
   }
-  
+
   .header-actions {
     flex-wrap: wrap;
     justify-content: flex-end;
@@ -469,7 +469,7 @@
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .header-actions {
     width: 100%;
     justify-content: space-between;
@@ -487,7 +487,7 @@
     display: flex;
     gap: 8px;
   }
-  
+
   .meal-plan-grid {
     margin: 0 -12px;
     width: calc(100% + 24px);

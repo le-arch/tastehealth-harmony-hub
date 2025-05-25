@@ -10,7 +10,7 @@ import { NutritionProvider } from "../src/contexts/NutritionContext";
 import Layout from "./components/Layout";
 //import TasteHealthLoader from "../src/components/TastehealthLoader"
 // Import viewport height utility
-//import { useViewportHeight } from "./hooks/use-mobile";
+import { useResponsive } from "../src/hooks/use-responsive";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -53,6 +53,7 @@ function App() {
   //     document.head.appendChild(meta);
   //   }
   // }, []);
+  useResponsive();
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
@@ -98,7 +99,6 @@ function App() {
                       <Route path="/meal-plan" element={<MealPlanPage/>} />
                       <Route path="/challenges" element={<ChallengesPage />} />
                       <Route path="/benefits" element={<LevelBenefitsPage />} />
-                
                       {/* Catch-all route */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>

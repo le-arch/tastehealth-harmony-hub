@@ -484,7 +484,7 @@ export const gamificationService = {
   },
 
   // Level Benefits
-  async getLevelBenefits(): Promise<LevelBenefit[]> {
+  async getLevelBenefits(userId: string, benefitId: string): Promise<LevelBenefit[]> {
     const { data, error } = await supabase
       .from("level_benefits")
       .select("*")

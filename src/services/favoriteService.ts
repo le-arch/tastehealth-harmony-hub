@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/SupabaseClient";
 import { toast } from "sonner";
 
 // Define the Favorite type

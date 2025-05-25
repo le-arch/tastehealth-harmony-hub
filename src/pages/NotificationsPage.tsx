@@ -17,6 +17,7 @@ import {
   deleteAllNotifications,
   type Notification,
 } from "@/services/notificationService"
+import { useScreenSize } from "@/utils/mobile";
 
 const NotificationsPage = () => {
   const navigate = useNavigate()
@@ -24,7 +25,7 @@ const NotificationsPage = () => {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
-
+  const { isMobile, isTablet } = useScreenSize();
   const translations = {
     en: {
       title: "Notifications",
@@ -206,15 +207,15 @@ const NotificationsPage = () => {
     <div className="flex space-y-6 bg-gray-50 dark:bg-gray-900">
       <ProfileSidebar activePage="notifications" />
 
-      <div className="sm:ml-64 p-4">
-        <div className="p-4 max-w-5xl mx-auto">
+      <div className={`flex-1 p-4 sm:p-6 md:p-8 ${isMobile ? "" : "md:ml-64"}`}>
+        <div className="grid">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t.title}</h1>
               <p className="text-gray-500 dark:text-gray-400">{t.subTitle}</p>
             </div>
 
-            <div className="flex space-x-2">
+            <div className="flex-1 space-x-2">
               <Button variant="outline" size="sm" onClick={handleRefresh} title={t.refresh}>
                 <RefreshCw className="h-4 w-4 mr-1" />
                 {t.refresh}

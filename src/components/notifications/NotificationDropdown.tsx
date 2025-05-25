@@ -43,7 +43,6 @@ const NotificationDropdown = () => {
     },
     fr: {
       notifications: "Notifications",
-      noNotifications: "Notifications",
       noNotifications: "Aucune notification",
       markAllRead: "Tout marquer comme lu",
       viewAll: "Voir toutes les notifications",

@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client"
+import { supabase } from "@/lib/SupabaseClient"
 
 export interface NutritionChallenge {
   id: string

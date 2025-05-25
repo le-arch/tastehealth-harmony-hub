@@ -6,7 +6,7 @@ import { supabase } from "@/lib/SupabaseClient";
 export const getMealImagePublicUrl = async (mealId: string): Promise<string | null> => {
   // Fetch the meal row
   const { data: meal, error } = await supabase
-    .from("meals")
+    .from("meal")
     .select("image_url")
     .eq("id", mealId)
     .single();

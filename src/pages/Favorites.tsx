@@ -160,7 +160,7 @@ export default function Favorites() {
                   {filteredFavorites.map((favorite) => (
                     <Card
                       key={favorite.id}
-                      className="overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-200 min-w-[240px] sm:min-w-[280px]"
+                      className="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-200 min-w-[240px] sm:min-w-[280px]"
                     >
                       <div
                         className="relative cursor-pointer"
@@ -190,7 +190,7 @@ export default function Favorites() {
                       </div>
 
                       <CardContent
-                        className="flex-grow cursor-pointer"
+                        className="p-3 flex-grow cursor-pointer"
                         onClick={() => viewMealDetails(favorite.meal_id)}
                       >
                         <h3 className="text-base sm:text-lg font-semibold mb-2 line-clamp-1">
@@ -297,7 +297,7 @@ export default function Favorites() {
                         className="w-full"
                       >
                         <Plus className="mr-2 h-4 w-4" />
-                        Add to Meal Plan
+                        Add
                       </Button>
                     </CardFooter>
                   </Card>
