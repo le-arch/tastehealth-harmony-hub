@@ -51,7 +51,7 @@ const translations = {
   en: {
     title: "Nutrition Quests",
     available: "Available Quests",
-    active: "Active Quests",
+    active: "Active Quests", 
     completed: "Completed Quests",
     start: "Start Quest",
     continue: "Continue",
@@ -108,7 +108,6 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
   const [availableQuests, setAvailableQuests] = useState<Quest[]>([]);
   const [activeQuests, setActiveQuests] = useState<UserQuest[]>([]);
   const [completedQuests, setCompletedQuests] = useState<UserQuest[]>([]);
-  const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"available" | "active" | "completed">("available");
   const { language } = useLanguage();
@@ -121,11 +120,16 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
       
       setIsLoading(true);
       try {
+        console.log("Loading nutrition quests for user:", userId);
+
         // Fetch available quests from nutrition_quests table
         const { data: questsData, error: questsError } = await supabase
           .from("nutrition_quests")
           .select("*")
           .eq("active", true);
+
+        console.log("Quests data:", questsData);
+        console.log("Quests error:", questsError);
 
         if (questsError) {
           console.error("Error loading quests:", questsError);
@@ -135,21 +139,90 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
         // Fetch user's quest progress
         const { data: userQuestsData, error: userQuestsError } = await supabase
           .from("user_nutrition_quests")
-          .select("*, nutrition_quests(*)")
+          .select(`
+            *,
+            quest:quest_id (
+              id,
+              title,
+              description,
+              points,
+              difficulty,
+              category,
+              icon,
+              is_daily,
+              reset_frequency,
+              active
+            )
+          `)
           .eq("user_id", userId);
+
+        console.log("User quests data:", userQuestsData);
+        console.log("User quests error:", userQuestsError);
 
         if (userQuestsError) {
           console.error("Error loading user quests:", userQuestsError);
           return;
         }
 
+        // Map nutrition_quests to Quest interface
+        const mappedQuests: Quest[] = (questsData || []).map(quest => ({
+          id: quest.id,
+          title: quest.title,
+          description: quest.description,
+          points: quest.points,
+          difficulty: quest.difficulty,
+          category: quest.category,
+          requirements: quest.requirements || {},
+          icon: quest.icon,
+          is_daily: quest.is_daily,
+          reset_frequency: quest.reset_frequency,
+          active: quest.active,
+          created_at: quest.created_at,
+          updated_at: quest.updated_at
+        }));
+
         // Separate active and completed quests
-        const activeUserQuests = userQuestsData?.filter(uq => !uq.completed) || [];
-        const completedUserQuests = userQuestsData?.filter(uq => uq.completed) || [];
+        const activeUserQuests = userQuestsData?.filter(uq => !uq.completed).map(uq => ({
+          ...uq,
+          quest: uq.quest ? {
+            id: uq.quest.id,
+            title: uq.quest.title,
+            description: uq.quest.description,
+            points: uq.quest.points,
+            difficulty: uq.quest.difficulty,
+            category: uq.quest.category,
+            requirements: {},
+            icon: uq.quest.icon,
+            is_daily: uq.quest.is_daily,
+            reset_frequency: uq.quest.reset_frequency,
+            active: uq.quest.active
+          } : undefined
+        })) || [];
+
+        const completedUserQuests = userQuestsData?.filter(uq => uq.completed).map(uq => ({
+          ...uq,
+          quest: uq.quest ? {
+            id: uq.quest.id,
+            title: uq.quest.title,
+            description: uq.quest.description,
+            points: uq.quest.points,
+            difficulty: uq.quest.difficulty,
+            category: uq.quest.category,
+            requirements: {},
+            icon: uq.quest.icon,
+            is_daily: uq.quest.is_daily,
+            reset_frequency: uq.quest.reset_frequency,
+            active: uq.quest.active
+          } : undefined
+        })) || [];
 
         // Filter available quests (exclude those already started)
         const startedQuestIds = new Set(userQuestsData?.map(uq => uq.quest_id) || []);
-        const filteredAvailableQuests = questsData?.filter(quest => !startedQuestIds.has(quest.id)) || [];
+        const filteredAvailableQuests = mappedQuests.filter(quest => !startedQuestIds.has(quest.id));
+
+        console.log("Filtered available quests:", filteredAvailableQuests);
+        console.log("Active user quests:", activeUserQuests);
+        console.log("Completed user quests:", completedUserQuests);
 
         setAvailableQuests(filteredAvailableQuests);
         setActiveQuests(activeUserQuests);
@@ -419,7 +492,7 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             }`}
           >
-            {t.available}
+            {t.available} ({availableQuests.length})
           </button>
           <button
             onClick={() => setActiveTab("active")}

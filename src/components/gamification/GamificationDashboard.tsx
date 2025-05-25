@@ -118,21 +118,25 @@ const GamificationDashboard: React.FC = () => {
     }
   };
 
-  // Handle quest completion
-  const handleQuestCompletion = async (questId: string, points: number) => {
+  // Enhanced addPoints function that integrates with gamificationService
+  const addPoints = async (points: number, reason: string) => {
     if (!user?.id) return;
 
-    // Award points for completing the quest
-    await gamificationService.awardPoints(
-      user.id,
-      points,
-      "Completed daily quest",
-      questId,
-      "quest"
-    );
+    try {
+      // Use the gamificationService to award points
+      await gamificationService.awardPoints(
+        user.id,
+        points,
+        reason,
+        undefined,
+        "quest"
+      );
 
-    // Refresh user data
-    fetchUserData();
+      // Refresh user data to reflect changes
+      await fetchUserData();
+    } catch (error) {
+      console.error("Error awarding points:", error);
+    }
   };
 
   if (loading) {
@@ -209,21 +213,33 @@ const GamificationDashboard: React.FC = () => {
 
       {/* Nutrition Quests */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-2xl font-bold mb-4">Nutrition Quests</h2>
         {user?.id && (
-          <NutritionQuest
-            userId={user.id}
-            addPoints={async (points, reason) => {
-              await gamificationService.awardPoints(user.id, points, reason);
-              fetchUserData();
-            }}
-          />
+          <NutritionQuest userId={user.id} addPoints={addPoints} />
         )}
       </div>
 
       {/* Nutrition Leaderboard */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-2xl font-bold mb-4">Leaderboard</h2>
         <NutritionLeaderboard userId={user?.id} />
       </div>
+
+      {/* Level Benefits */}
+      {userId && (
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-bold mb-4">Level Benefits</h2>
+          <LevelBenefits userId={userId} />
+        </div>
+      )}
+
+      {/* Points Transaction History */}
+      {userId && (
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-bold mb-4">Points History</h2>
+          <PointsTransactionHistory userId={userId} limit={10} />
+        </div>
+      )}
 
       {/* Active Challenges */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -408,20 +424,6 @@ const GamificationDashboard: React.FC = () => {
           </button>
         )}
       </div>
-
-      {userId && (
-        <>
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">Level Benefits</h2>
-            <LevelBenefits userId={userId} />
-          </div>
-
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">Points History</h2>
-            <PointsTransactionHistory userId={userId} limit={5} />
-          </div>
-        </>
-      )}
     </div>
   );
 };
