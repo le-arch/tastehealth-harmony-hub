@@ -1,24 +1,29 @@
 
 "use client";
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import {
-  MapIcon,
-  Clock,
-  Award,
-  CheckCircle,
-  Circle,
-  ArrowLeft,
-  Play,
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Compass, 
+  Play, 
+  CheckCircle, 
+  Clock, 
+  Star,
   Trophy,
+  Target,
+  Zap
 } from "lucide-react";
-import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/lib/SupabaseClient";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { toast } from "sonner";
 
 interface NutritionQuestProps {
   userId?: string;
-  addPoints: (points: number, reason: string) => Promise<void>;
+  addPoints?: (points: number, reason: string) => void;
 }
 
 interface Quest {
@@ -28,13 +33,11 @@ interface Quest {
   points: number;
   difficulty: string;
   category: string;
+  icon: string | null;
   requirements: any;
-  icon?: string | null;
   is_daily: boolean;
   reset_frequency: string;
   active: boolean;
-  created_at?: string;
-  updated_at?: string;
 }
 
 interface UserQuest {
@@ -43,512 +46,389 @@ interface UserQuest {
   quest_id: string;
   completed: boolean;
   started_at: string;
-  completed_at?: string;
-  quest?: Quest;
+  completed_at: string | null;
 }
 
-const translations = {
-  en: {
-    title: "Nutrition Quests",
-    available: "Available Quests",
-    active: "Active Quests", 
-    completed: "Completed Quests",
-    start: "Start Quest",
-    continue: "Continue",
-    complete: "Complete Quest",
-    claim: "Claim Rewards",
-    difficulty: "Difficulty",
-    duration: "Duration",
-    days: "days",
-    rewards: "Rewards",
-    points: "points",
-    steps: "Steps",
-    progress: "Progress",
-    questStarted: "Quest started!",
-    questCompleted: "Quest completed!",
-    rewardsEarned: "Rewards earned",
-    timeLeft: "Time left",
-    noActiveQuests: "No active quests. Start a new quest from the Available tab!",
-    noAvailableQuests: "No available quests at the moment. Check back later!",
-    noCompletedQuests: "You haven't completed any quests yet. Complete quests to earn rewards!",
-    back: "Back to quests",
-    completeStep: "Complete Step",
-    playToEarn: "Play to Earn Points!",
-  },
-  fr: {
-    title: "Quêtes Nutritionnelles",
-    available: "Quêtes Disponibles",
-    active: "Quêtes Actives",
-    completed: "Quêtes Terminées",
-    start: "Commencer la Quête",
-    continue: "Continuer",
-    complete: "Terminer la Quête",
-    claim: "Réclamer Récompenses",
-    difficulty: "Difficulté",
-    duration: "Durée",
-    days: "jours",
-    rewards: "Récompenses",
-    points: "points",
-    steps: "Étapes",
-    progress: "Progrès",
-    questStarted: "Quête commencée !",
-    questCompleted: "Quête terminée !",
-    rewardsEarned: "Récompenses gagnées",
-    timeLeft: "Temps restant",
-    noActiveQuests: "Pas de quêtes actives. Commencez une nouvelle quête depuis l'onglet Disponibles !",
-    noAvailableQuests: "Pas de quêtes disponibles pour le moment. Revenez plus tard !",
-    noCompletedQuests: "Vous n'avez pas encore terminé de quêtes. Complétez des quêtes pour gagner des récompenses !",
-    back: "Retour aux quêtes",
-    completeStep: "Compléter l'étape",
-    playToEarn: "Jouez pour Gagner des Points !",
-  },
-};
-
 const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
-  const [availableQuests, setAvailableQuests] = useState<Quest[]>([]);
-  const [activeQuests, setActiveQuests] = useState<UserQuest[]>([]);
-  const [completedQuests, setCompletedQuests] = useState<UserQuest[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"available" | "active" | "completed">("available");
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [userQuests, setUserQuests] = useState<UserQuest[]>([]);
+  const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
-  const t = translations[language as keyof typeof translations] || translations.en;
 
-  // Load quests
-  useEffect(() => {
-    const loadQuests = async () => {
-      if (!userId) return;
-      
-      setIsLoading(true);
-      try {
-        console.log("Loading nutrition quests for user:", userId);
-
-        // Fetch available quests from nutrition_quests table
-        const { data: questsData, error: questsError } = await supabase
-          .from("nutrition_quests")
-          .select("*")
-          .eq("active", true);
-
-        console.log("Quests data:", questsData);
-        console.log("Quests error:", questsError);
-
-        if (questsError) {
-          console.error("Error loading quests:", questsError);
-          return;
-        }
-
-        // Fetch user's quest progress
-        const { data: userQuestsData, error: userQuestsError } = await supabase
-          .from("user_nutrition_quests")
-          .select(`
-            *,
-            quest:quest_id (
-              id,
-              title,
-              description,
-              points,
-              difficulty,
-              category,
-              icon,
-              is_daily,
-              reset_frequency,
-              active
-            )
-          `)
-          .eq("user_id", userId);
-
-        console.log("User quests data:", userQuestsData);
-        console.log("User quests error:", userQuestsError);
-
-        if (userQuestsError) {
-          console.error("Error loading user quests:", userQuestsError);
-          return;
-        }
-
-        // Map nutrition_quests to Quest interface
-        const mappedQuests: Quest[] = (questsData || []).map(quest => ({
-          id: quest.id,
-          title: quest.title,
-          description: quest.description,
-          points: quest.points,
-          difficulty: quest.difficulty,
-          category: quest.category,
-          requirements: quest.requirements || {},
-          icon: quest.icon,
-          is_daily: quest.is_daily,
-          reset_frequency: quest.reset_frequency,
-          active: quest.active,
-          created_at: quest.created_at,
-          updated_at: quest.updated_at
-        }));
-
-        // Separate active and completed quests
-        const activeUserQuests = userQuestsData?.filter(uq => !uq.completed).map(uq => ({
-          ...uq,
-          quest: uq.quest ? {
-            id: uq.quest.id,
-            title: uq.quest.title,
-            description: uq.quest.description,
-            points: uq.quest.points,
-            difficulty: uq.quest.difficulty,
-            category: uq.quest.category,
-            requirements: {},
-            icon: uq.quest.icon,
-            is_daily: uq.quest.is_daily,
-            reset_frequency: uq.quest.reset_frequency,
-            active: uq.quest.active
-          } : undefined
-        })) || [];
-
-        const completedUserQuests = userQuestsData?.filter(uq => uq.completed).map(uq => ({
-          ...uq,
-          quest: uq.quest ? {
-            id: uq.quest.id,
-            title: uq.quest.title,
-            description: uq.quest.description,
-            points: uq.quest.points,
-            difficulty: uq.quest.difficulty,
-            category: uq.quest.category,
-            requirements: {},
-            icon: uq.quest.icon,
-            is_daily: uq.quest.is_daily,
-            reset_frequency: uq.quest.reset_frequency,
-            active: uq.quest.active
-          } : undefined
-        })) || [];
-
-        // Filter available quests (exclude those already started)
-        const startedQuestIds = new Set(userQuestsData?.map(uq => uq.quest_id) || []);
-        const filteredAvailableQuests = mappedQuests.filter(quest => !startedQuestIds.has(quest.id));
-
-        console.log("Filtered available quests:", filteredAvailableQuests);
-        console.log("Active user quests:", activeUserQuests);
-        console.log("Completed user quests:", completedUserQuests);
-
-        setAvailableQuests(filteredAvailableQuests);
-        setActiveQuests(activeUserQuests);
-        setCompletedQuests(completedUserQuests);
-      } catch (error) {
-        console.error("Error loading quests:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadQuests();
-  }, [userId]);
-
-  // Start a quest
-  const startQuest = async (quest: Quest) => {
-    if (!userId) return;
-    
-    try {
-      const { error } = await supabase
-        .from("user_nutrition_quests")
-        .insert({
-          user_id: userId,
-          quest_id: quest.id,
-          completed: false,
-          started_at: new Date().toISOString()
-        });
-
-      if (error) {
-        console.error("Error starting quest:", error);
-        return;
-      }
-
-      toast.success(t.questStarted, {
-        description: quest.title,
-      });
-
-      // Refresh quests
-      const updatedAvailable = availableQuests.filter(q => q.id !== quest.id);
-      const newActiveQuest: UserQuest = {
-        id: `temp-${quest.id}`,
-        user_id: userId,
-        quest_id: quest.id,
-        completed: false,
-        started_at: new Date().toISOString(),
-        quest: quest
-      };
-
-      setAvailableQuests(updatedAvailable);
-      setActiveQuests([...activeQuests, newActiveQuest]);
-
-      const audio = new Audio("/sounds/quest-start.mp3");
-      audio.play().catch((e) => console.log("Audio play failed:", e));
-    } catch (error) {
-      console.error("Error starting quest:", error);
+  const translations = {
+    en: {
+      title: "Nutrition Quests",
+      startQuest: "Start Quest",
+      completeQuest: "Complete Quest",
+      completed: "Completed",
+      inProgress: "In Progress",
+      available: "Available",
+      points: "points",
+      difficulty: "Difficulty",
+      category: "Category",
+      daily: "Daily",
+      weekly: "Weekly",
+      easy: "Easy",
+      medium: "Medium", 
+      hard: "Hard",
+      loading: "Loading quests...",
+      questStarted: "Quest started successfully!",
+      questCompleted: "Quest completed! Points awarded.",
+      alreadyStarted: "Quest already started",
+      alreadyCompleted: "Quest already completed today"
+    },
+    fr: {
+      title: "Quêtes Nutritionnelles",
+      startQuest: "Commencer la Quête",
+      completeQuest: "Terminer la Quête", 
+      completed: "Terminé",
+      inProgress: "En Cours",
+      available: "Disponible",
+      points: "points",
+      difficulty: "Difficulté",
+      category: "Catégorie",
+      daily: "Quotidien",
+      weekly: "Hebdomadaire",
+      easy: "Facile",
+      medium: "Moyen",
+      hard: "Difficile",
+      loading: "Chargement des quêtes...",
+      questStarted: "Quête commencée avec succès !",
+      questCompleted: "Quête terminée ! Points attribués.",
+      alreadyStarted: "Quête déjà commencée",
+      alreadyCompleted: "Quête déjà terminée aujourd'hui"
     }
   };
 
-  // Complete a quest
-  const completeQuest = async (userQuest: UserQuest) => {
-    if (!userId || !userQuest.quest) return;
+  const t = translations[language as keyof typeof translations] || translations.en;
+
+  useEffect(() => {
+    if (userId) {
+      fetchQuests();
+      fetchUserQuests();
+    }
+  }, [userId]);
+
+  const fetchQuests = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('nutrition_quests')
+        .select('*')
+        .eq('active', true)
+        .order('points', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching quests:', error);
+        return;
+      }
+
+      setQuests(data || []);
+    } catch (error) {
+      console.error('Error in fetchQuests:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserQuests = async () => {
+    if (!userId) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_nutrition_quests')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (error) {
+        console.error('Error fetching user quests:', error);
+        return;
+      }
+
+      setUserQuests(data || []);
+    } catch (error) {
+      console.error('Error in fetchUserQuests:', error);
+    }
+  };
+
+  const startQuest = async (questId: string) => {
+    if (!userId) return;
+
+    // Check if quest is already started
+    const existingUserQuest = userQuests.find(
+      uq => uq.quest_id === questId && !uq.completed
+    );
+
+    if (existingUserQuest) {
+      toast.info(t.alreadyStarted);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('user_nutrition_quests')
+        .insert({
+          user_id: userId,
+          quest_id: questId,
+          completed: false,
+          started_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error starting quest:', error);
+        toast.error('Failed to start quest');
+        return;
+      }
+
+      setUserQuests(prev => [...prev, data]);
+      toast.success(t.questStarted);
+    } catch (error) {
+      console.error('Error in startQuest:', error);
+      toast.error('Failed to start quest');
+    }
+  };
+
+  const completeQuest = async (questId: string, questPoints: number, questTitle: string) => {
+    if (!userId) return;
+
+    const userQuest = userQuests.find(
+      uq => uq.quest_id === questId && !uq.completed
+    );
+
+    if (!userQuest) {
+      toast.error('Quest not started');
+      return;
+    }
+
+    // Check if it's a daily quest and already completed today
+    const quest = quests.find(q => q.id === questId);
+    if (quest?.is_daily) {
+      const today = new Date().toISOString().split('T')[0];
+      const completedToday = userQuests.find(
+        uq => uq.quest_id === questId && 
+        uq.completed && 
+        uq.completed_at?.split('T')[0] === today
+      );
+
+      if (completedToday) {
+        toast.info(t.alreadyCompleted);
+        return;
+      }
+    }
 
     try {
       const { error } = await supabase
-        .from("user_nutrition_quests")
+        .from('user_nutrition_quests')
         .update({
           completed: true,
           completed_at: new Date().toISOString()
         })
-        .eq("user_id", userId)
-        .eq("quest_id", userQuest.quest_id);
+        .eq('id', userQuest.id);
 
       if (error) {
-        console.error("Error completing quest:", error);
+        console.error('Error completing quest:', error);
+        toast.error('Failed to complete quest');
         return;
       }
 
-      // Award points
-      await addPoints(userQuest.quest.points, `Completed quest: ${userQuest.quest.title}`);
-
-      toast.success(t.questCompleted, {
-        description: `${t.rewardsEarned}: ${userQuest.quest.points} ${t.points}`,
-      });
-
       // Update local state
-      const updatedActiveQuests = activeQuests.filter(q => q.quest_id !== userQuest.quest_id);
-      const completedQuest = { ...userQuest, completed: true, completed_at: new Date().toISOString() };
+      setUserQuests(prev => 
+        prev.map(uq => 
+          uq.id === userQuest.id 
+            ? { ...uq, completed: true, completed_at: new Date().toISOString() }
+            : uq
+        )
+      );
 
-      setActiveQuests(updatedActiveQuests);
-      setCompletedQuests([...completedQuests, completedQuest]);
+      // Award points
+      if (addPoints) {
+        addPoints(questPoints, `Completed quest: ${questTitle}`);
+      }
 
-      const audio = new Audio("/sounds/quest-complete.mp3");
-      audio.play().catch((e) => console.log("Audio play failed:", e));
+      toast.success(t.questCompleted);
+
+      // If it's a daily quest, allow starting again
+      if (quest?.is_daily) {
+        fetchUserQuests();
+      }
     } catch (error) {
-      console.error("Error completing quest:", error);
+      console.error('Error in completeQuest:', error);
+      toast.error('Failed to complete quest');
     }
   };
 
-  // Get difficulty class
-  const getDifficultyClass = (difficulty: string) => {
+  const getQuestStatus = (quest: Quest) => {
+    const userQuest = userQuests.find(uq => uq.quest_id === quest.id);
+    
+    if (!userQuest) return 'available';
+    
+    if (quest.is_daily) {
+      const today = new Date().toISOString().split('T')[0];
+      const completedToday = userQuests.find(
+        uq => uq.quest_id === quest.id && 
+        uq.completed && 
+        uq.completed_at?.split('T')[0] === today
+      );
+      
+      if (completedToday) return 'completed';
+      return 'available'; // Can restart daily quests
+    }
+    
+    if (userQuest.completed) return 'completed';
+    return 'in_progress';
+  };
+
+  const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
-      case "easy":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
-      case "medium":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
-      case "hard":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
+      case 'easy': return 'bg-green-100 text-green-700 border-green-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'hard': return 'bg-red-100 text-red-700 border-red-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
 
-  // Render quest card
-  const renderAvailableQuestCard = (quest: Quest) => (
-    <motion.div
-      key={quest.id}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className="border rounded-lg p-4 hover:border-primary transition-colors"
-    >
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="font-medium">{quest.title}</h3>
-        <div className={`text-xs px-2 py-0.5 rounded-full ${getDifficultyClass(quest.difficulty)}`}>
-          {quest.difficulty}
-        </div>
-      </div>
-      <p className="text-sm text-gray-500 mb-3 line-clamp-2">
-        {quest.description}
-      </p>
-      <div className="flex justify-between items-center text-xs text-gray-500 mb-3">
-        <span className="flex items-center">
-          <Award className="h-3 w-3 mr-1" />
-          {quest.points} {t.points}
-        </span>
-        <span>Category: {quest.category}</span>
-      </div>
-      <button
-        onClick={() => startQuest(quest)}
-        className="w-full mt-2 bg-primary text-white py-2 px-4 rounded-md text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-      >
-        <Play className="h-4 w-4" />
-        {t.start}
-      </button>
-    </motion.div>
-  );
-
-  // Render active quest card
-  const renderActiveQuestCard = (userQuest: UserQuest) => {
-    if (!userQuest.quest) return null;
-
-    return (
-      <motion.div
-        key={userQuest.id}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="border rounded-lg p-4 hover:border-primary transition-colors"
-      >
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="font-medium">{userQuest.quest.title}</h3>
-          <div className={`text-xs px-2 py-0.5 rounded-full ${getDifficultyClass(userQuest.quest.difficulty)}`}>
-            {userQuest.quest.difficulty}
-          </div>
-        </div>
-        <p className="text-sm text-gray-500 mb-3 line-clamp-2">
-          {userQuest.quest.description}
-        </p>
-        <div className="flex justify-between items-center text-xs text-gray-500 mb-3">
-          <span className="flex items-center">
-            <Award className="h-3 w-3 mr-1" />
-            {userQuest.quest.points} {t.points}
-          </span>
-          <span>Category: {userQuest.quest.category}</span>
-        </div>
-        <button
-          onClick={() => completeQuest(userQuest)}
-          className="w-full mt-2 bg-green-500 text-white py-2 px-4 rounded-md text-sm hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
-        >
-          <Trophy className="h-4 w-4" />
-          {t.complete}
-        </button>
-      </motion.div>
-    );
-  };
-
-  // Render completed quest card
-  const renderCompletedQuestCard = (userQuest: UserQuest) => {
-    if (!userQuest.quest) return null;
-
-    return (
-      <motion.div
-        key={userQuest.id}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="border rounded-lg p-4 hover:border-primary transition-colors opacity-75"
-      >
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="font-medium">{userQuest.quest.title}</h3>
-          <div className={`text-xs px-2 py-0.5 rounded-full ${getDifficultyClass(userQuest.quest.difficulty)}`}>
-            {userQuest.quest.difficulty}
-          </div>
-        </div>
-        <p className="text-sm text-gray-500 mb-3 line-clamp-2">
-          {userQuest.quest.description}
-        </p>
-        <div className="flex justify-between items-center text-xs text-gray-500 mb-2">
-          <div className="flex items-center text-green-500">
-            <CheckCircle className="h-4 w-4 mr-1" />
-            <span>{t.completed}</span>
-          </div>
-          <div className="flex items-center">
-            <Award className="h-3 w-3 mr-1" />
-            <span>{userQuest.quest.points} {t.points}</span>
-          </div>
-        </div>
-      </motion.div>
-    );
-  };
-
-  // Render empty state
-  const renderEmptyState = (type: "available" | "active" | "completed") => {
-    let message = "";
-
-    switch (type) {
-      case "available":
-        message = t.noAvailableQuests;
-        break;
-      case "active":
-        message = t.noActiveQuests;
-        break;
-      case "completed":
-        message = t.noCompletedQuests;
-        break;
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-100 text-green-700 border-green-200';
+      case 'in_progress': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'available': return 'bg-gray-100 text-gray-700 border-gray-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
-
-    return (
-      <div className="flex flex-col items-center justify-center py-10 text-center">
-        <MapIcon className="h-12 w-12 text-gray-300 dark:text-gray-600 mb-3" />
-        <p className="text-gray-500 dark:text-gray-400">{message}</p>
-        {type === "active" && (
-          <button
-            onClick={() => setActiveTab("available")}
-            className="mt-4 text-primary hover:underline text-sm"
-          >
-            {t.available}
-          </button>
-        )}
-      </div>
-    );
   };
+
+  const getQuestIcon = (category: string, icon: string | null) => {
+    if (icon) {
+      // You could map specific icons here
+      return <Star className="h-5 w-5" />;
+    }
+    
+    switch (category.toLowerCase()) {
+      case 'hydration': return <Zap className="h-5 w-5 text-blue-500" />;
+      case 'nutrition': return <Target className="h-5 w-5 text-green-500" />;
+      case 'exercise': return <Trophy className="h-5 w-5 text-orange-500" />;
+      default: return <Compass className="h-5 w-5 text-purple-500" />;
+    }
+  };
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-24 bg-gray-200 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-      <div className="p-4 border-b dark:border-gray-700">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">{t.title}</h2>
-          <div className="text-sm text-gray-500">{t.playToEarn}</div>
-        </div>
-      </div>
-
-      <div className="p-4 border-b dark:border-gray-700">
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setActiveTab("available")}
-            className={`px-3 py-1 rounded-full text-sm ${
-              activeTab === "available"
-                ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-            }`}
-          >
-            {t.available} ({availableQuests.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("active")}
-            className={`px-3 py-1 rounded-full text-sm ${
-              activeTab === "active"
-                ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-            }`}
-          >
-            {t.active} ({activeQuests.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("completed")}
-            className={`px-3 py-1 rounded-full text-sm ${
-              activeTab === "completed"
-                ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-            }`}
-          >
-            {t.completed} ({completedQuests.length})
-          </button>
-        </div>
-      </div>
-
-      {isLoading ? (
-        <div className="flex justify-center py-10">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      ) : (
-        <div className="p-4">
-          {activeTab === "available" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {availableQuests.length > 0
-                ? availableQuests.map(renderAvailableQuestCard)
-                : renderEmptyState("available")}
-            </div>
-          )}
-
-          {activeTab === "active" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {activeQuests.length > 0
-                ? activeQuests.map(renderActiveQuestCard)
-                : renderEmptyState("active")}
-            </div>
-          )}
-
-          {activeTab === "completed" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {completedQuests.length > 0
-                ? completedQuests.map(renderCompletedQuestCard)
-                : renderEmptyState("completed")}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Compass className="h-5 w-5 text-purple-500" />
+          {t.title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {quests.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <Compass className="h-12 w-12 mx-auto text-gray-300 mb-2" />
+            <p>No quests available at the moment.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {quests.map((quest) => {
+              const status = getQuestStatus(quest);
+              return (
+                <motion.div
+                  key={quest.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="border rounded-lg p-4 hover:shadow-md transition-all"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-full bg-purple-100">
+                        {getQuestIcon(quest.category, quest.icon)}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium mb-1">{quest.title}</h4>
+                        <p className="text-sm text-gray-600 mb-2">{quest.description}</p>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="outline" className={getDifficultyColor(quest.difficulty)}>
+                            {t[quest.difficulty.toLowerCase() as keyof typeof t] || quest.difficulty}
+                          </Badge>
+                          <Badge variant="outline" className="bg-purple-100 text-purple-700 border-purple-200">
+                            {quest.category}
+                          </Badge>
+                          {quest.is_daily && (
+                            <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200">
+                              {t.daily}
+                            </Badge>
+                          )}
+                          <Badge variant="outline" className={getStatusColor(status)}>
+                            {t[status as keyof typeof t] || status}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium text-amber-600 mb-2">
+                        +{quest.points} {t.points}
+                      </div>
+                      {status === 'available' && (
+                        <Button
+                          size="sm"
+                          onClick={() => startQuest(quest.id)}
+                          className="bg-purple-600 hover:bg-purple-700"
+                        >
+                          <Play className="h-4 w-4 mr-1" />
+                          {t.startQuest}
+                        </Button>
+                      )}
+                      {status === 'in_progress' && (
+                        <Button
+                          size="sm"
+                          onClick={() => completeQuest(quest.id, quest.points, quest.title)}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          {t.completeQuest}
+                        </Button>
+                      )}
+                      {status === 'completed' && quest.is_daily && (
+                        <Button
+                          size="sm"
+                          onClick={() => startQuest(quest.id)}
+                          variant="outline"
+                        >
+                          <Clock className="h-4 w-4 mr-1" />
+                          {t.startQuest}
+                        </Button>
+                      )}
+                      {status === 'completed' && !quest.is_daily && (
+                        <Badge className="bg-green-100 text-green-700 border-green-200">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          {t.completed}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

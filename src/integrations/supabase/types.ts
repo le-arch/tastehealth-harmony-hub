@@ -492,6 +492,7 @@ export type Database = {
         Row: {
           category_id: string | null
           created_at: string
+          description: string | null
           id: string
           image_url: string | null
           meal_name: string
@@ -501,6 +502,7 @@ export type Database = {
         Insert: {
           category_id?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           image_url?: string | null
           meal_name: string
@@ -510,6 +512,7 @@ export type Database = {
         Update: {
           category_id?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           image_url?: string | null
           meal_name?: string
@@ -617,7 +620,6 @@ export type Database = {
       nutrition_facts: {
         Row: {
           added_sugars: string | null
-          additional_nutrients: Json | null
           calcium: string | null
           calories: string | null
           cholesterol: string | null
@@ -649,7 +651,6 @@ export type Database = {
         }
         Insert: {
           added_sugars?: string | null
-          additional_nutrients?: Json | null
           calcium?: string | null
           calories?: string | null
           cholesterol?: string | null
@@ -681,7 +682,6 @@ export type Database = {
         }
         Update: {
           added_sugars?: string | null
-          additional_nutrients?: Json | null
           calcium?: string | null
           calories?: string | null
           cholesterol?: string | null

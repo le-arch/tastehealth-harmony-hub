@@ -1,377 +1,327 @@
-"use client";
 
-import { Button } from "@/components/ui/button";
+"use client";
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Star, Gift, Crown, Zap, Award, Lock } from "lucide-react";
 import { supabase } from "@/lib/SupabaseClient";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface NutritionBadgesProps {
   userId?: string;
-  addPoints: (points: number, reason: string) => Promise<void>;
+  addPoints?: (points: number, reason: string) => void;
 }
 
-interface BadgeType {
-  id: string;
-  name: string;
+interface UserLevel {
+  level: number;
+  total_points: number;
+  points_to_next_level: number;
+}
+
+interface LevelBenefit {
+  level: number;
+  title: string;
   description: string;
   icon: string;
-  category: string;
-  rarity: string;
-  points: number;
-  requirement_count: number;
-  active: boolean;
-  created_at?: string;
-  // Fields from user_badges
   unlocked: boolean;
-  progress?: number;
-  total?: number;
-  unlocked_at?: string;
-  is_equipped?: boolean;
+  badgeType: 'achievement' | 'milestone' | 'skill' | 'special';
 }
 
 const NutritionBadges = ({ userId, addPoints }: NutritionBadgesProps) => {
-  const [badges, setBadges] = useState<BadgeType[]>([]);
-  const [selectedBadge, setSelectedBadge] = useState<BadgeType | null>(null);
-  const [showUnlockAnimation, setShowUnlockAnimation] = useState(false);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [userLevel, setUserLevel] = useState<UserLevel>({ level: 1, total_points: 0, points_to_next_level: 100 });
+  const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
 
   const translations = {
     en: {
       title: "Nutrition Badges",
-      all: "All",
-      locked: "Locked",
+      achievement: "Achievement",
+      milestone: "Milestone", 
+      skill: "Skill",
+      special: "Special",
       unlocked: "Unlocked",
+      locked: "Locked",
       progress: "Progress",
-      badgeUnlocked: "Badge Unlocked!",
-      earnedPoints: "You earned",
-      points: "points",
-      continue: "Continue",
+      level: "Level",
+      loading: "Loading badges..."
     },
     fr: {
       title: "Badges Nutritionnels",
-      all: "Tous",
-      locked: "Verrouillés",
-      unlocked: "Déverrouillés",
+      achievement: "Réalisation",
+      milestone: "Étape",
+      skill: "Compétence", 
+      special: "Spécial",
+      unlocked: "Débloqué",
+      locked: "Verrouillé",
       progress: "Progrès",
-      badgeUnlocked: "Badge Déverrouillé !",
-      earnedPoints: "Vous avez gagné",
-      points: "points",
-      continue: "Continuer",
-    },
-  };
-
-  const t =
-    translations[language as keyof typeof translations] || translations.en;
-
-  // Load badges
-  useEffect(() => {
-    const loadBadges = async () => {
-      if (!userId) return;
-
-      try {
-        // Get all available badges
-        const { data: badgesData, error: badgesError } = await supabase
-          .from("badges")
-          .select("*")
-          .eq("active", true)
-          .order("rarity", { ascending: false });
-
-        if (badgesError) throw badgesError;
-
-        // Get user's unlocked badges
-        const { data: userBadges, error: userBadgesError } = await supabase
-          .from("user_badges")
-          .select("badge_id, progress, total, unlocked_at, is_equipped")
-          .eq("user_id", userId);
-
-        if (userBadgesError) throw userBadgesError;
-
-        // Combine data
-        const userBadgesMap = new Map();
-        userBadges?.forEach((ub) => {
-          userBadgesMap.set(ub.badge_id, {
-            unlocked: !!ub.unlocked_at,
-            progress: ub.progress || 0,
-            total: ub.total || 1,
-            unlocked_at: ub.unlocked_at,
-            is_equipped: ub.is_equipped || false,
-          });
-        });
-
-        const processedBadges = badgesData?.map((badge) => {
-          const userBadge = userBadgesMap.get(badge.id);
-          return {
-            ...badge,
-            unlocked: userBadge?.unlocked || false,
-            progress: userBadge?.progress || 0,
-            total: userBadge?.total || badge.requirement_count || 1,
-            unlocked_at: userBadge?.unlocked_at,
-            is_equipped: userBadge?.is_equipped || false,
-          };
-        });
-
-        setBadges(processedBadges || []);
-
-        // Extract unique categories
-        const uniqueCategories = Array.from(
-          new Set(processedBadges?.map((badge) => badge.category) || [])
-        );
-        setCategories(uniqueCategories);
-      } catch (error) {
-        console.error("Error loading badges:", error);
-      }
-    };
-
-    loadBadges();
-  }, [userId]);
-
-  // Filter badges by category
-  const filteredBadges = badges.filter(
-    (badge) => activeCategory === "all" || badge.category === activeCategory
-  );
-
-  // Handle badge click
-  const handleBadgeClick = (badge: BadgeType) => {
-    setSelectedBadge(badge);
-  };
-
-  // Get badge rarity class
-  const getBadgeRarityClass = (rarity: string) => {
-    switch (rarity.toLowerCase()) {
-      case "common":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
-      case "uncommon":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
-      case "rare":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
-      case "legendary":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
+      level: "Niveau",
+      loading: "Chargement des badges..."
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center text-lg font-medium">
-            <Badge className="h-5 w-5 mr-2 text-purple-500" />
-            {t.title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Category filters */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            <button
-              onClick={() => setActiveCategory("all")}
-              className={`px-3 py-1 text-sm rounded-full ${
-                activeCategory === "all"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-              }`}
-            >
-              {t.all}
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`px-3 py-1 text-sm rounded-full ${
-                  activeCategory === category
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+  const t = translations[language as keyof typeof translations] || translations.en;
 
-          {/* Badges grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {filteredBadges.map((badge) => (
-              <motion.div
-                key={badge.id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleBadgeClick(badge)}
-                className={`relative cursor-pointer rounded-lg p-4 flex flex-col items-center text-center ${
-                  badge.unlocked
-                    ? "bg-primary/10 border border-primary/30"
-                    : "bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                <div
-                  className={`text-2xl mb-2 ${
-                    badge.unlocked ? "opacity-100" : "opacity-50"
-                  }`}
-                >
-                  {badge.icon}
-                </div>
-                <div className="font-medium text-sm">{badge.name}</div>
-                {badge.progress !== undefined && badge.total !== undefined && (
-                  <div className="w-full mt-2">
-                    <div className="h-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary rounded-full"
-                        style={{
-                          width: `${Math.min(
-                            100,
-                            (badge.progress / badge.total) * 100
-                          )}%`,
-                        }}
-                      ></div>
-                    </div>
-                    <div className="text-xs mt-1 text-gray-500">
-                      {badge.progress}/{badge.total}
-                    </div>
-                  </div>
-                )}
-                {!badge.unlocked && (
-                  <div className="absolute top-2 right-2">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  </div>
-                )}
-                <div
-                  className={`absolute bottom-2 right-2 text-xs px-1.5 py-0.5 rounded-full ${getBadgeRarityClass(
-                    badge.rarity
-                  )}`}
-                >
-                  {badge.rarity}
-                </div>
-              </motion.div>
-            ))}
+  // Generate badges based on level benefits
+  const levelBenefits: LevelBenefit[] = [
+    {
+      level: 1,
+      title: "Welcome Badge",
+      description: "Started your nutrition journey",
+      icon: "star",
+      unlocked: userLevel.level >= 1,
+      badgeType: 'milestone'
+    },
+    {
+      level: 2,
+      title: "Streak Tracker",
+      description: "Unlocked daily nutrition streaks",
+      icon: "zap",
+      unlocked: userLevel.level >= 2,
+      badgeType: 'skill'
+    },
+    {
+      level: 3,
+      title: "Meal Planner",
+      description: "Access to advanced meal planning",
+      icon: "gift",
+      unlocked: userLevel.level >= 3,
+      badgeType: 'skill'
+    },
+    {
+      level: 4,
+      title: "Progress Tracker",
+      description: "Advanced progress tracking unlocked",
+      icon: "star",
+      unlocked: userLevel.level >= 4,
+      badgeType: 'achievement'
+    },
+    {
+      level: 5,
+      title: "Nutrition Expert",
+      description: "Premium nutrition insights unlocked",
+      icon: "crown",
+      unlocked: userLevel.level >= 5,
+      badgeType: 'special'
+    },
+    {
+      level: 6,
+      title: "Health Guru",
+      description: "Mastered basic nutrition principles",
+      icon: "star",
+      unlocked: userLevel.level >= 6,
+      badgeType: 'achievement'
+    },
+    {
+      level: 7,
+      title: "Community Leader",
+      description: "Access to exclusive challenges",
+      icon: "crown",
+      unlocked: userLevel.level >= 7,
+      badgeType: 'special'
+    },
+    {
+      level: 8,
+      title: "Wellness Warrior",
+      description: "Advanced wellness features unlocked",
+      icon: "zap",
+      unlocked: userLevel.level >= 8,
+      badgeType: 'skill'
+    },
+    {
+      level: 9,
+      title: "Nutrition Mentor",
+      description: "Help others on their journey",
+      icon: "gift",
+      unlocked: userLevel.level >= 9,
+      badgeType: 'achievement'
+    },
+    {
+      level: 10,
+      title: "Master Nutritionist",
+      description: "All features unlocked - Ultimate mastery",
+      icon: "crown",
+      unlocked: userLevel.level >= 10,
+      badgeType: 'special'
+    }
+  ];
+
+  useEffect(() => {
+    const fetchUserLevel = async () => {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('user_points')
+          .select('current_level, total_points, points_to_next_level')
+          .eq('user_id', userId)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching user level:', error);
+          return;
+        }
+
+        if (data) {
+          setUserLevel({
+            level: data.current_level,
+            total_points: data.total_points,
+            points_to_next_level: data.points_to_next_level
+          });
+        }
+      } catch (error) {
+        console.error('Error in fetchUserLevel:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserLevel();
+  }, [userId]);
+
+  const getIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'star': return <Star className="h-5 w-5" />;
+      case 'zap': return <Zap className="h-5 w-5" />;
+      case 'gift': return <Gift className="h-5 w-5" />;
+      case 'crown': return <Crown className="h-5 w-5" />;
+      default: return <Award className="h-5 w-5" />;
+    }
+  };
+
+  const getBadgeColor = (badgeType: string, unlocked: boolean) => {
+    if (!unlocked) return 'bg-gray-100 text-gray-400 border-gray-200';
+    
+    switch (badgeType) {
+      case 'achievement': return 'bg-blue-100 text-blue-600 border-blue-200';
+      case 'milestone': return 'bg-green-100 text-green-600 border-green-200';
+      case 'skill': return 'bg-purple-100 text-purple-600 border-purple-200';
+      case 'special': return 'bg-yellow-100 text-yellow-600 border-yellow-200';
+      default: return 'bg-gray-100 text-gray-600 border-gray-200';
+    }
+  };
+
+  const getBadgeTypeLabel = (badgeType: string) => {
+    return t[badgeType as keyof typeof t] || badgeType;
+  };
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-24 bg-gray-200 rounded"></div>
+              ))}
+            </div>
           </div>
         </CardContent>
       </Card>
+    );
+  }
 
-      {/* Badge detail modal */}
-      {selectedBadge && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          onClick={() => {
-            setSelectedBadge(null);
-            setShowUnlockAnimation(false);
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {showUnlockAnimation ? (
-              <div className="text-center">
+  const unlockedBadges = levelBenefits.filter(badge => badge.unlocked);
+  const lockedBadges = levelBenefits.filter(badge => !badge.unlocked);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Award className="h-5 w-5 text-amber-500" />
+          {t.title}
+        </CardTitle>
+        <div className="text-sm text-gray-500">
+          {unlockedBadges.length} of {levelBenefits.length} badges unlocked
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Progress Bar */}
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">{t.level} {userLevel.level}</span>
+            <span className="text-sm text-gray-500">{userLevel.total_points} points</span>
+          </div>
+          <Progress 
+            value={userLevel.points_to_next_level > 0 ? 
+              ((userLevel.total_points / (userLevel.total_points + userLevel.points_to_next_level)) * 100) : 100
+            } 
+            className="h-2" 
+          />
+          <p className="text-xs text-gray-500">
+            {userLevel.points_to_next_level > 0 ? 
+              `${userLevel.points_to_next_level} points to level ${userLevel.level + 1}` :
+              'Max level reached!'
+            }
+          </p>
+        </div>
+
+        {/* Unlocked Badges */}
+        {unlockedBadges.length > 0 && (
+          <div className="space-y-3">
+            <h4 className="font-medium text-green-600">{t.unlocked} ({unlockedBadges.length})</h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {unlockedBadges.map((badge) => (
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: [0, 1.2, 1] }}
-                  transition={{ duration: 0.5 }}
-                  className="text-6xl mb-4 mx-auto"
+                  key={badge.level}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className={`p-3 rounded-lg border-2 ${getBadgeColor(badge.badgeType, badge.unlocked)} cursor-pointer hover:shadow-md transition-all`}
                 >
-                  {selectedBadge.icon}
+                  <div className="flex flex-col items-center text-center space-y-2">
+                    <div className={`p-2 rounded-full ${getBadgeColor(badge.badgeType, badge.unlocked)}`}>
+                      {getIcon(badge.icon)}
+                    </div>
+                    <div>
+                      <h5 className="font-medium text-xs">{badge.title}</h5>
+                      <p className="text-xs opacity-75">{badge.description}</p>
+                      <Badge variant="outline" className="mt-1 text-xs">
+                        {getBadgeTypeLabel(badge.badgeType)}
+                      </Badge>
+                    </div>
+                  </div>
                 </motion.div>
-                <motion.h3
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-2xl font-bold mb-2"
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Locked Badges */}
+        {lockedBadges.length > 0 && (
+          <div className="space-y-3">
+            <h4 className="font-medium text-gray-500">{t.locked} ({lockedBadges.length})</h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {lockedBadges.slice(0, 4).map((badge) => (
+                <div
+                  key={badge.level}
+                  className={`p-3 rounded-lg border-2 ${getBadgeColor(badge.badgeType, badge.unlocked)} opacity-60`}
                 >
-                  {t.badgeUnlocked}
-                </motion.h3>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="text-lg mb-2"
-                >
-                  {selectedBadge.name}
-                </motion.p>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.7 }}
-                  className="text-sm text-gray-500 mb-4"
-                >
-                  {selectedBadge.description}
-                </motion.p>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.9 }}
-                  className="text-amber-500 font-bold mb-6"
-                >
-                  {t.earnedPoints} {selectedBadge.points} {t.points}!
-                </motion.div>
-                <Button onClick={() => setShowUnlockAnimation(false)}>
-                  {t.continue}
-                </Button>
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center mb-4">
-                  <div className="text-4xl mr-4">{selectedBadge.icon}</div>
-                  <div>
-                    <h3 className="text-xl font-bold">{selectedBadge.name}</h3>
-                    <div
-                      className={`text-xs px-2 py-0.5 rounded-full inline-block ${getBadgeRarityClass(
-                        selectedBadge.rarity
-                      )}`}
-                    >
-                      {selectedBadge.rarity}
+                  <div className="flex flex-col items-center text-center space-y-2">
+                    <div className="p-2 rounded-full bg-gray-100">
+                      <Lock className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <div>
+                      <h5 className="font-medium text-xs">{badge.title}</h5>
+                      <p className="text-xs opacity-75">{badge.description}</p>
+                      <Badge variant="outline" className="mt-1 text-xs">
+                        {t.level} {badge.level}
+                      </Badge>
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  {selectedBadge.description}
-                </p>
-                {selectedBadge.progress !== undefined &&
-                  selectedBadge.total !== undefined && (
-                    <div className="mb-4">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>{t.progress}</span>
-                        <span>
-                          {selectedBadge.progress}/{selectedBadge.total}
-                        </span>
-                      </div>
-                      <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full"
-                          style={{
-                            width: `${Math.min(
-                              100,
-                              (selectedBadge.progress / selectedBadge.total) *
-                                100
-                            )}%`,
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  )}
-                <div className="text-sm text-gray-500 mb-4">
-                  {t.earnedPoints}: {selectedBadge.points} {t.points}
-                </div>
-                <div className="flex justify-end">
-                  <Button
-                    variant="outline"
-                    onClick={() => setSelectedBadge(null)}
-                  >
-                    {t.continue}
-                  </Button>
-                </div>
-              </>
-            )}
-          </motion.div>
-        </div>
-      )}
-    </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
