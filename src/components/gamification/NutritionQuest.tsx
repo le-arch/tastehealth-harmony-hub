@@ -75,7 +75,8 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
       questStarted: "Quest started successfully!",
       questCompleted: "Quest completed! Points awarded.",
       alreadyStarted: "Quest already started",
-      alreadyCompleted: "Quest already completed today"
+      alreadyCompleted: "Quest already completed today",
+      noQuests: "No quests available at the moment."
     },
     fr: {
       title: "Quêtes Nutritionnelles",
@@ -96,15 +97,16 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
       questStarted: "Quête commencée avec succès !",
       questCompleted: "Quête terminée ! Points attribués.",
       alreadyStarted: "Quête déjà commencée",
-      alreadyCompleted: "Quête déjà terminée aujourd'hui"
+      alreadyCompleted: "Quête déjà terminée aujourd'hui",
+      noQuests: "Aucune quête disponible pour le moment."
     }
   };
 
   const t = translations[language as keyof typeof translations] || translations.en;
 
   useEffect(() => {
+    fetchQuests();
     if (userId) {
-      fetchQuests();
       fetchUserQuests();
     }
   }, [userId]);
@@ -122,6 +124,7 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
         return;
       }
 
+      console.log('Fetched quests:', data);
       setQuests(data || []);
     } catch (error) {
       console.error('Error in fetchQuests:', error);
@@ -134,8 +137,9 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
     if (!userId) return;
 
     try {
+      // First check if user_nutrition_quests table exists, if not create user quest records
       const { data, error } = await supabase
-        .from('user_nutrition_quests')
+        .from('user_quests')
         .select('*')
         .eq('user_id', userId);
 
@@ -151,7 +155,10 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
   };
 
   const startQuest = async (questId: string) => {
-    if (!userId) return;
+    if (!userId) {
+      toast.error('Please log in to start quests');
+      return;
+    }
 
     // Check if quest is already started
     const existingUserQuest = userQuests.find(
@@ -165,11 +172,10 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
 
     try {
       const { data, error } = await supabase
-        .from('user_nutrition_quests')
+        .from('user_quests')
         .insert({
           user_id: userId,
           quest_id: questId,
-          completed: false,
           started_at: new Date().toISOString()
         })
         .select()
@@ -201,27 +207,11 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
       return;
     }
 
-    // Check if it's a daily quest and already completed today
-    const quest = quests.find(q => q.id === questId);
-    if (quest?.is_daily) {
-      const today = new Date().toISOString().split('T')[0];
-      const completedToday = userQuests.find(
-        uq => uq.quest_id === questId && 
-        uq.completed && 
-        uq.completed_at?.split('T')[0] === today
-      );
-
-      if (completedToday) {
-        toast.info(t.alreadyCompleted);
-        return;
-      }
-    }
-
     try {
+      // Update quest as completed
       const { error } = await supabase
-        .from('user_nutrition_quests')
+        .from('user_quests')
         .update({
-          completed: true,
           completed_at: new Date().toISOString()
         })
         .eq('id', userQuest.id);
@@ -230,6 +220,11 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
         console.error('Error completing quest:', error);
         toast.error('Failed to complete quest');
         return;
+      }
+
+      // Award points using the gamification service
+      if (addPoints) {
+        addPoints(questPoints, `Completed quest: ${questTitle}`);
       }
 
       // Update local state
@@ -241,17 +236,10 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
         )
       );
 
-      // Award points
-      if (addPoints) {
-        addPoints(questPoints, `Completed quest: ${questTitle}`);
-      }
-
       toast.success(t.questCompleted);
 
-      // If it's a daily quest, allow starting again
-      if (quest?.is_daily) {
-        fetchUserQuests();
-      }
+      // Refresh user quests
+      fetchUserQuests();
     } catch (error) {
       console.error('Error in completeQuest:', error);
       toast.error('Failed to complete quest');
@@ -259,6 +247,8 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
   };
 
   const getQuestStatus = (quest: Quest) => {
+    if (!userId) return 'available';
+    
     const userQuest = userQuests.find(uq => uq.quest_id === quest.id);
     
     if (!userQuest) return 'available';
@@ -267,15 +257,15 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
       const today = new Date().toISOString().split('T')[0];
       const completedToday = userQuests.find(
         uq => uq.quest_id === quest.id && 
-        uq.completed && 
-        uq.completed_at?.split('T')[0] === today
+        uq.completed_at && 
+        uq.completed_at.split('T')[0] === today
       );
       
       if (completedToday) return 'completed';
-      return 'available'; // Can restart daily quests
+      return userQuest.completed_at ? 'available' : 'in_progress';
     }
     
-    if (userQuest.completed) return 'completed';
+    if (userQuest.completed_at) return 'completed';
     return 'in_progress';
   };
 
@@ -299,7 +289,6 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
 
   const getQuestIcon = (category: string, icon: string | null) => {
     if (icon) {
-      // You could map specific icons here
       return <Star className="h-5 w-5" />;
     }
     
@@ -341,7 +330,7 @@ const NutritionQuest = ({ userId, addPoints }: NutritionQuestProps) => {
         {quests.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Compass className="h-12 w-12 mx-auto text-gray-300 mb-2" />
-            <p>No quests available at the moment.</p>
+            <p>{t.noQuests}</p>
           </div>
         ) : (
           <div className="space-y-3">

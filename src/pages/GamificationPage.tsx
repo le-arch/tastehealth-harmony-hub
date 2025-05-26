@@ -3,15 +3,19 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/SupabaseClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, Trophy, Award } from "lucide-react";
+import { Star, Trophy, Award, Target } from "lucide-react";
 import { toast } from "sonner";
 import gamificationService from "@/services/gamificationService";
 import { useScreenSize } from "@/utils/mobile";
-import DailyQuests from "@/components/gamification/DailyQuest";
+import NutritionQuest from "@/components/gamification/NutritionQuest";
+import NutritionLeaderboard from "@/components/gamification/NutritionLeaderboard";
+import NutritionBadges from "@/components/gamification/NutritionBadges";
+import PointsTransactionHistory from "@/components/gamification/PointsTransactionHistory";
 
 const GamificationPage: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [userPoints, setUserPoints] = useState<number>(0);
+  const [userLevel, setUserLevel] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { isMobile, isTablet } = useScreenSize();
 
@@ -28,6 +32,7 @@ const GamificationPage: React.FC = () => {
           );
           if (pointsData) {
             setUserPoints(pointsData.total_points || 0);
+            setUserLevel(pointsData.current_level || 1);
           }
         }
       } catch (error) {
@@ -50,12 +55,12 @@ const GamificationPage: React.FC = () => {
         reason
       );
       
-      // Since awardPoints returns a string (transaction ID), we need to handle it differently
       if (result) {
         // Update the displayed points
         const pointsData = await gamificationService.getUserPoints(userId);
         if (pointsData) {
           setUserPoints(pointsData.total_points || 0);
+          setUserLevel(pointsData.current_level || 1);
         }
 
         toast.success(`You earned ${points} points for ${reason}!`);
@@ -68,12 +73,20 @@ const GamificationPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto py-6 px-4 sm:px-6">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            Nutrition Gamification
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Complete quests, earn points, and climb the leaderboard!
+          </p>
+        </div>
+
         {/* Points overview */}
-        <div
-          className={`grid grid-cols-1 ${
-            isTablet ? "md:grid-cols-2" : "md:grid-cols-3"
-          } gap-4 sm:gap-6 mb-6 sm:mb-8`}
-        >
+        <div className={`grid grid-cols-1 ${
+          isTablet ? "md:grid-cols-2" : "md:grid-cols-4"
+        } gap-4 sm:gap-6 mb-6 sm:mb-8`}>
           <Card className="h-full">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -82,9 +95,9 @@ const GamificationPage: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{userPoints}</p>
+              <p className="text-3xl font-bold text-yellow-600">{userPoints.toLocaleString()}</p>
               <p className="text-sm text-gray-500">
-                Complete quests to earn more
+                Total points earned
               </p>
             </CardContent>
           </Card>
@@ -93,20 +106,32 @@ const GamificationPage: React.FC = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Trophy className="h-5 w-5 text-blue-500" />
+                Your Level
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-blue-600">{userLevel}</p>
+              <p className="text-sm text-gray-500">
+                Current level
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Target className="h-5 w-5 text-green-500" />
                 Active Quests
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-500">
-                Complete daily quests to earn rewards and improve your nutrition
-                habits
+                Complete nutrition quests to earn rewards and improve your health
               </p>
             </CardContent>
           </Card>
 
-          <Card
-            className={`h-full ${isTablet ? "col-span-2 md:col-span-1" : ""}`}
-          >
+          <Card className="h-full">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Award className="h-5 w-5 text-purple-500" />
@@ -115,19 +140,42 @@ const GamificationPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-500">
-                Unlock achievements by completing quests and meeting nutrition
-                goals
+                Unlock badges and achievements by completing goals
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Quests and other content */}
-        <div className="space-y-6">
-          <DailyQuests onQuestComplete={function (questId: string, points: number): Promise<void> {
-            return handlePointsEarned(points, "Quest completion");
-          } } />
+        {/* Main content grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Nutrition Quests */}
+          <div className="space-y-6">
+            <NutritionQuest 
+              userId={userId} 
+              addPoints={handlePointsEarned}
+            />
+          </div>
+
+          {/* Nutrition Badges */}
+          <div className="space-y-6">
+            <NutritionBadges 
+              userId={userId} 
+              addPoints={handlePointsEarned}
+            />
+          </div>
         </div>
+
+        {/* Leaderboard */}
+        <div className="mb-8">
+          <NutritionLeaderboard userId={userId} />
+        </div>
+
+        {/* Points History */}
+        {userId && (
+          <div className="mb-8">
+            <PointsTransactionHistory userId={userId} limit={15} />
+          </div>
+        )}
       </div>
     </div>
   );

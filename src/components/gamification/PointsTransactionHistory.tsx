@@ -1,137 +1,184 @@
 
 "use client";
 
-import type React from "react";
-import { useEffect, useState } from "react";
-import gamificationService, {
-  type PointsTransaction,
-} from "../../services/gamificationService";
-import { format } from "date-fns";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  Trophy, 
+  Target, 
+  Calendar,
+  Coins
+} from "lucide-react";
+import { supabase } from "@/lib/SupabaseClient";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PointsTransactionHistoryProps {
   userId: string;
   limit?: number;
 }
 
-export const PointsTransactionHistory: React.FC<
-  PointsTransactionHistoryProps
-> = ({ userId, limit = 10 }) => {
+interface PointsTransaction {
+  id: string;
+  points: number;
+  transaction_type: string;
+  reason: string;
+  created_at: string;
+  reference_type?: string;
+}
+
+const PointsTransactionHistory = ({ userId, limit = 20 }: PointsTransactionHistoryProps) => {
   const [transactions, setTransactions] = useState<PointsTransaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
+  const { language } = useLanguage();
+
+  const translations = {
+    en: {
+      title: "Points History",
+      earned: "Earned",
+      spent: "Spent",
+      quest: "Quest",
+      challenge: "Challenge",
+      achievement: "Achievement",
+      daily: "Daily Activity",
+      noTransactions: "No point transactions yet",
+      loading: "Loading transactions..."
+    },
+    fr: {
+      title: "Historique des Points",
+      earned: "Gagné",
+      spent: "Dépensé",
+      quest: "Quête",
+      challenge: "Défi",
+      achievement: "Succès",
+      daily: "Activité Quotidienne",
+      noTransactions: "Aucune transaction de points encore",
+      loading: "Chargement des transactions..."
+    }
+  };
+
+  const t = translations[language as keyof typeof translations] || translations.en;
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        setLoading(true);
-        const data = await gamificationService.getPointsTransactions(
-          userId,
-          limit
-        );
+    fetchTransactions();
+  }, [userId, limit]);
 
-        if (offset === 0) {
-          setTransactions(data);
-        } else {
-          setTransactions((prev) => [...prev, ...data]);
-        }
+  const fetchTransactions = async () => {
+    if (!userId) return;
 
-        setHasMore(data.length === limit);
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (userId) {
-      fetchTransactions();
-    }
-  }, [userId, limit, offset]);
-
-  const loadMore = () => {
-    setOffset((prev) => prev + limit);
-  };
-
-  const formatDate = (dateString: string) => {
     try {
-      return format(new Date(dateString), "MMM d, yyyy h:mm a");
-    } catch (e) {
-      return dateString;
+      const { data, error } = await supabase
+        .from('points_transactions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.error('Error fetching transactions:', error);
+        return;
+      }
+
+      setTransactions(data || []);
+    } catch (error) {
+      console.error('Error in fetchTransactions:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getTransactionColor = (type: string, amount: number) => {
-    if (type === "earn") return "text-green-600";
-    if (type === "spend") return "text-red-600";
-    if (type === "refund") return "text-blue-600";
-    return amount >= 0 ? "text-green-600" : "text-red-600";
+  const getTransactionIcon = (referenceType?: string, transactionType?: string) => {
+    if (referenceType === 'quest') return <Target className="h-4 w-4" />;
+    if (referenceType === 'challenge') return <Trophy className="h-4 w-4" />;
+    if (referenceType === 'achievement') return <Trophy className="h-4 w-4" />;
+    if (transactionType === 'earn') return <TrendingUp className="h-4 w-4" />;
+    return <Coins className="h-4 w-4" />;
   };
 
-  const getTransactionSign = (type: string) => {
-    if (type === "earn" || type === "refund") return "+";
-    if (type === "spend") return "-";
-    return "";
+  const getTransactionColor = (transactionType: string, points: number) => {
+    if (transactionType === 'earn' || points > 0) {
+      return 'text-green-600';
+    }
+    return 'text-red-600';
   };
 
-  if (loading && transactions.length === 0) {
+  const getTransactionBadgeColor = (referenceType?: string) => {
+    switch (referenceType) {
+      case 'quest': return 'bg-purple-100 text-purple-700 border-purple-200';
+      case 'challenge': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'achievement': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="p-4 text-center">Loading transaction history...</div>
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center py-8 text-gray-500">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-2"></div>
+            <p>{t.loading}</p>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
-      <h2 className="text-xl font-bold mb-4 text-gray-500 dark:text-gray-700 ">Points Transaction History</h2>
-
-      <div className="space-y-2">
-        {transactions.map((transaction) => (
-          <div
-            key={transaction.id}
-            className="border-b border-gray-200 py-3 last:border-0"
-          >
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="font-medium">{transaction.reason}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-100">
-                  {formatDate(transaction.created_at)}
-                </p>
-                {transaction.reference_type && (
-                  <p className="text-xs text-gray-500">
-                    {transaction.reference_type.replace("_", " ")}
-                  </p>
-                )}
-              </div>
-              <div
-                className={`font-semibold ${getTransactionColor(
-                  transaction.transaction_type,
-                  transaction.points
-                )}`}
-              >
-                {getTransactionSign(transaction.transaction_type)}
-                {Math.abs(transaction.points)} pts
-              </div>
-            </div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <TrendingUp className="h-5 w-5 text-green-500" />
+          {t.title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {transactions.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <Coins className="h-12 w-12 mx-auto text-gray-300 mb-2" />
+            <p>{t.noTransactions}</p>
           </div>
-        ))}
-
-        {transactions.length === 0 && (
-          <p className="text-center text-gray-500 py-4">No transactions yet.</p>
+        ) : (
+          <div className="space-y-3">
+            {transactions.map((transaction, index) => (
+              <motion.div
+                key={transaction.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-full ${getTransactionColor(transaction.transaction_type, transaction.points) === 'text-green-600' ? 'bg-green-100' : 'bg-red-100'}`}>
+                    {getTransactionIcon(transaction.reference_type, transaction.transaction_type)}
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">{transaction.reason}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-gray-500 flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(transaction.created_at).toLocaleDateString()}
+                      </span>
+                      {transaction.reference_type && (
+                        <Badge variant="outline" className={`text-xs ${getTransactionBadgeColor(transaction.reference_type)}`}>
+                          {t[transaction.reference_type as keyof typeof t] || transaction.reference_type}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className={`font-bold ${getTransactionColor(transaction.transaction_type, transaction.points)}`}>
+                  {transaction.points > 0 ? '+' : ''}{transaction.points}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         )}
-      </div>
-
-      {hasMore && (
-        <div className="mt-4 text-center">
-          <button
-            onClick={loadMore}
-            disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-          >
-            {loading ? "Loading..." : "Load More"}
-          </button>
-        </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

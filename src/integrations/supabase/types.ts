@@ -1127,41 +1127,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_nutrition_quests: {
-        Row: {
-          completed: boolean
-          completed_at: string | null
-          id: string
-          quest_id: string
-          started_at: string | null
-          user_id: string
-        }
-        Insert: {
-          completed?: boolean
-          completed_at?: string | null
-          id?: string
-          quest_id: string
-          started_at?: string | null
-          user_id: string
-        }
-        Update: {
-          completed?: boolean
-          completed_at?: string | null
-          id?: string
-          quest_id?: string
-          started_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_nutrition_quests_quest_id_fkey"
-            columns: ["quest_id"]
-            isOneToOne: false
-            referencedRelation: "nutrition_quests"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_points: {
         Row: {
           created_at: string | null
