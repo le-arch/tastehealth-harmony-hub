@@ -4,6 +4,8 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { supabase } from "../integrations/supabase/client";
 import NutritionGamificationSystem from "../components/gamification/NutritionGamificationSystem";
+import ProgressGuard from "@/components/ProgressGuard";
+import progressionService from "@/services/progressionService";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
@@ -24,6 +26,7 @@ const NutritionGamePage: React.FC = () => {
         } = await supabase.auth.getUser();
         if (user) {
           setUserId(user.id);
+          await progressionService.advanceProgression(user.id, 'nutrition_game_played');
         }
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -54,10 +57,11 @@ const NutritionGamePage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-4 sm:py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">
-        Nutrition Game Center
-      </h1>
+    <ProgressGuard requiredStage="game" currentPageName="Nutrition Game">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">
+          Nutrition Game Center
+        </h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
         <ScrollableTabsList>
@@ -107,7 +111,8 @@ const NutritionGamePage: React.FC = () => {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </ProgressGuard>
   );
 };
 

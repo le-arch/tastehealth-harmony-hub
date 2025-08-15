@@ -7,8 +7,49 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.3 (519615d)"
+  }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          points: number | null
+          requirements: Json | null
+          tier: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          points?: number | null
+          requirements?: Json | null
+          tier?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          points?: number | null
+          requirements?: Json | null
+          tier?: string | null
+        }
+        Relationships: []
+      }
       app_feedback: {
         Row: {
           comment: string | null
@@ -148,6 +189,7 @@ export type Database = {
           days_completed: number
           id: string
           last_completed_at: string
+          streak: string | null
           total_days: number
           updated_at: string
           user_id: string
@@ -158,6 +200,7 @@ export type Database = {
           days_completed?: number
           id?: string
           last_completed_at?: string
+          streak?: string | null
           total_days: number
           updated_at?: string
           user_id: string
@@ -168,6 +211,7 @@ export type Database = {
           days_completed?: number
           id?: string
           last_completed_at?: string
+          streak?: string | null
           total_days?: number
           updated_at?: string
           user_id?: string
@@ -181,6 +225,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      challenges: {
+        Row: {
+          active: boolean | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          difficulty: string | null
+          icon: string | null
+          id: string
+          points: number | null
+          requirements: Json | null
+          title: string
+        }
+        Insert: {
+          active?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          icon?: string | null
+          id?: string
+          points?: number | null
+          requirements?: Json | null
+          title: string
+        }
+        Update: {
+          active?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          icon?: string | null
+          id?: string
+          points?: number | null
+          requirements?: Json | null
+          title?: string
+        }
+        Relationships: []
       }
       daily_progress: {
         Row: {
@@ -221,25 +304,34 @@ export type Database = {
       daily_streaks: {
         Row: {
           created_at: string | null
+          current_streak: number | null
           date: string
           id: string
+          longest_streak: number | null
           streak_count: number
+          streak_type: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
+          current_streak?: number | null
           date: string
           id?: string
+          longest_streak?: number | null
           streak_count?: number
+          streak_type?: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
           created_at?: string | null
+          current_streak?: number | null
           date?: string
           id?: string
+          longest_streak?: number | null
           streak_count?: number
+          streak_type?: string
           updated_at?: string | null
           user_id?: string
         }
@@ -303,6 +395,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      goal_wizard_data: {
+        Row: {
+          activity_level: string | null
+          age: number | null
+          carbs_percentage: number | null
+          created_at: string | null
+          daily_calories: number | null
+          fats_percentage: number | null
+          gender: string | null
+          goal: string | null
+          height: number | null
+          id: string
+          protein_percentage: number | null
+          updated_at: string | null
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          activity_level?: string | null
+          age?: number | null
+          carbs_percentage?: number | null
+          created_at?: string | null
+          daily_calories?: number | null
+          fats_percentage?: number | null
+          gender?: string | null
+          goal?: string | null
+          height?: number | null
+          id?: string
+          protein_percentage?: number | null
+          updated_at?: string | null
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          activity_level?: string | null
+          age?: number | null
+          carbs_percentage?: number | null
+          created_at?: string | null
+          daily_calories?: number | null
+          fats_percentage?: number | null
+          gender?: string | null
+          goal?: string | null
+          height?: number | null
+          id?: string
+          protein_percentage?: number | null
+          updated_at?: string | null
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
       }
       ingredients: {
         Row: {
@@ -721,6 +864,45 @@ export type Database = {
           },
         ]
       }
+      nutrition_leaderboard: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          id: string
+          is_bot: boolean
+          level: number
+          points: number
+          rank: number
+          updated_at: string | null
+          user_id: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string
+          is_bot?: boolean
+          level?: number
+          points?: number
+          rank: number
+          updated_at?: string | null
+          user_id: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string
+          is_bot?: boolean
+          level?: number
+          points?: number
+          rank?: number
+          updated_at?: string | null
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
       nutrition_quests: {
         Row: {
           active: boolean
@@ -773,33 +955,24 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          metadata: Json | null
           points: number
           reason: string
-          reference_id: string | null
-          reference_type: string | null
           transaction_type: string
           user_id: string
         }
         Insert: {
           created_at?: string | null
           id?: string
-          metadata?: Json | null
           points: number
           reason: string
-          reference_id?: string | null
-          reference_type?: string | null
           transaction_type: string
           user_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
-          metadata?: Json | null
           points?: number
           reason?: string
-          reference_id?: string | null
-          reference_type?: string | null
           transaction_type?: string
           user_id?: string
         }
@@ -992,34 +1165,34 @@ export type Database = {
       }
       rewards: {
         Row: {
-          achieved: boolean
-          date_achieved: string
-          description: string
-          icon: string
+          achieved: boolean | null
+          date_achieved: string | null
+          description: string | null
+          icon: string | null
           id: string
-          name: string
-          type: string
-          user_id: string
+          name: string | null
+          type: string | null
+          user_id: string | null
         }
         Insert: {
-          achieved?: boolean
-          date_achieved?: string
-          description: string
-          icon: string
+          achieved?: boolean | null
+          date_achieved?: string | null
+          description?: string | null
+          icon?: string | null
           id?: string
-          name: string
-          type: string
-          user_id: string
+          name?: string | null
+          type?: string | null
+          user_id?: string | null
         }
         Update: {
-          achieved?: boolean
-          date_achieved?: string
-          description?: string
-          icon?: string
+          achieved?: boolean | null
+          date_achieved?: string | null
+          description?: string | null
+          icon?: string | null
           id?: string
-          name?: string
-          type?: string
-          user_id?: string
+          name?: string | null
+          type?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1052,6 +1225,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          created_at: string | null
+          displayed: boolean | null
+          earned_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          created_at?: string | null
+          displayed?: boolean | null
+          earned_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          created_at?: string | null
+          displayed?: boolean | null
+          earned_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_badges: {
         Row: {
@@ -1090,6 +1298,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_challenges: {
+        Row: {
+          challenge_id: string
+          completed_at: string | null
+          created_at: string | null
+          current_step: number | null
+          id: string
+          progress: Json | null
+          started_at: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          current_step?: number | null
+          id?: string
+          progress?: Json | null
+          started_at?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          current_step?: number | null
+          id?: string
+          progress?: Json | null
+          started_at?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_gamification: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_check_in: string | null
+          last_updated: string | null
+          level: number | null
+          points: number | null
+          streak: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_check_in?: string | null
+          last_updated?: string | null
+          level?: number | null
+          points?: number | null
+          streak?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_check_in?: string | null
+          last_updated?: string | null
+          level?: number | null
+          points?: number | null
+          streak?: number | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_levels: {
         Row: {
@@ -1160,8 +1437,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_progression: {
+        Row: {
+          completed_goal_wizard: boolean
+          created_at: string
+          has_points: boolean
+          joined_challenge: boolean
+          played_nutrition_game: boolean
+          stage: Database["public"]["Enums"]["progression_stage"]
+          updated_at: string
+          user_id: string
+          viewed_level_benefits: boolean
+        }
+        Insert: {
+          completed_goal_wizard?: boolean
+          created_at?: string
+          has_points?: boolean
+          joined_challenge?: boolean
+          played_nutrition_game?: boolean
+          stage?: Database["public"]["Enums"]["progression_stage"]
+          updated_at?: string
+          user_id: string
+          viewed_level_benefits?: boolean
+        }
+        Update: {
+          completed_goal_wizard?: boolean
+          created_at?: string
+          has_points?: boolean
+          joined_challenge?: boolean
+          played_nutrition_game?: boolean
+          stage?: Database["public"]["Enums"]["progression_stage"]
+          updated_at?: string
+          user_id?: string
+          viewed_level_benefits?: boolean
+        }
+        Relationships: []
+      }
       user_quests: {
         Row: {
+          completed: boolean | null
           completed_at: string | null
           current_step: number | null
           id: string
@@ -1172,6 +1486,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          completed?: boolean | null
           completed_at?: string | null
           current_step?: number | null
           id?: string
@@ -1182,6 +1497,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          completed?: boolean | null
           completed_at?: string | null
           current_step?: number | null
           id?: string
@@ -1195,8 +1511,8 @@ export type Database = {
           {
             foreignKeyName: "user_quests_quest_id_fkey"
             columns: ["quest_id"]
-            isOneToOne: false
-            referencedRelation: "quests"
+            isOneToOne: true
+            referencedRelation: "nutrition_quests"
             referencedColumns: ["id"]
           },
         ]
@@ -1260,16 +1576,39 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      advance_progression: {
+        Args: { p_event: string; p_user_id: string }
+        Returns: {
+          completed_goal_wizard: boolean
+          created_at: string
+          has_points: boolean
+          joined_challenge: boolean
+          played_nutrition_game: boolean
+          stage: Database["public"]["Enums"]["progression_stage"]
+          updated_at: string
+          user_id: string
+          viewed_level_benefits: boolean
+        }
+      }
       award_points: {
         Args: {
-          p_user_id: string
+          p_metadata?: Json
           p_points: number
           p_reason: string
           p_reference_id?: string
           p_reference_type?: string
-          p_metadata?: Json
+          p_user_id: string
         }
         Returns: string
+      }
+      award_user_points: {
+        Args: {
+          p_points: number
+          p_reason: string
+          p_transaction_type?: string
+          p_user_id: string
+        }
+        Returns: Json
       }
       calculate_bmi: {
         Args: { height_cm: number; weight_kg: number }
@@ -1284,7 +1623,7 @@ export type Database = {
         Returns: boolean
       }
       complete_challenge_task: {
-        Args: { p_user_id: string; p_challenge_id: string }
+        Args: { p_challenge_id: string; p_user_id: string }
         Returns: boolean
       }
       create_app_feedback_table: {
@@ -1293,11 +1632,11 @@ export type Database = {
       }
       create_nutrition_challenge: {
         Args: {
-          p_user_id: string
+          p_difficulty_level: number
+          p_duration_days: number
           p_name: string
           p_types: string[]
-          p_duration_days: number
-          p_difficulty_level: number
+          p_user_id: string
         }
         Returns: string
       }
@@ -1313,27 +1652,44 @@ export type Database = {
         Args: { image_path: string }
         Returns: string
       }
+      get_user_challenges_with_progress: {
+        Args: { p_user_id: string }
+        Returns: {
+          challenge_id: string
+          challenge_name: string
+          challenge_types: string[]
+          completed_today: boolean
+          created_at: string
+          days_completed: number
+          days_remaining: number
+          difficulty_level: number
+          duration_days: number
+          is_complete: boolean
+          last_completed_at: string
+          progress_percentage: number
+          streak: number
+          total_days: number
+        }[]
+      }
+      mark_challenge_completed: {
+        Args: { p_challenge_id: string; p_user_id: string }
+        Returns: Json
+      }
       record_points_transaction: {
-        Args:
-          | {
-              p_user_id: string
-              p_points: number
-              p_transaction_type: string
-              p_reason: string
-              p_reference_id?: string
-              p_reference_type?: string
-              p_metadata?: Json
-            }
-          | {
-              p_user_id: string
-              p_points: number
-              p_transaction_type: string
-              p_reason: string
-              p_reference_id?: string
-              p_reference_type?: string
-              p_metadata?: Json
-            }
+        Args: {
+          p_metadata?: Json
+          p_points: number
+          p_reason: string
+          p_reference_id?: string
+          p_reference_type?: string
+          p_transaction_type: string
+          p_user_id: string
+        }
         Returns: string
+      }
+      sync_challenge_progress: {
+        Args: { p_user_id: string }
+        Returns: number
       }
       update_daily_progress: {
         Args: { user_id_param: string }
@@ -1341,7 +1697,13 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      progression_stage:
+        | "goals"
+        | "game"
+        | "points"
+        | "challenges"
+        | "level"
+        | "complete"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1349,21 +1711,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -1381,14 +1747,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -1404,14 +1772,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -1427,14 +1797,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -1442,20 +1814,31 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      progression_stage: [
+        "goals",
+        "game",
+        "points",
+        "challenges",
+        "level",
+        "complete",
+      ],
+    },
   },
 } as const

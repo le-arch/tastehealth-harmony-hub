@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNutrition } from "../contexts/NutritionContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -165,12 +166,19 @@ const GoalWizard = () => {
     await saveNutritionGoal(goals);
     setShowConfetti(true);
 
+    // Advance progression after completing goal wizard
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const progressionService = await import('@/services/progressionService');
+      await progressionService.default.advanceProgression(user.id, 'goal_wizard_completed');
+    }
+
     toast.success("Goals saved successfully!", {
-      description: "Your nutrition goals have been updated.",
+      description: "Your nutrition goals have been updated. You can now play the nutrition game!",
     });
 
     setTimeout(() => {
-      navigate("/dashboard");
+      navigate("/games");
     }, 3000);
   };
 

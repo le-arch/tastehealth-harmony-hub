@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/SupabaseClient";
 import PointsTransactionHistory from "../components/gamification/PointsTransactionHistory";
 import ProfileSidebar from "../components/profile/ProfileSidebar";
+import ProgressGuard from "@/components/ProgressGuard";
 import { useScreenSize } from "@/utils/mobile";
 const PointsTransactionsPage: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
@@ -49,7 +50,8 @@ const PointsTransactionsPage: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+    <ProgressGuard requiredStage="points" currentPageName="Points History">
+      <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       <ProfileSidebar activePage="Points History" />
       <div className={`flex-1 p-4 sm:p-6 md:p-8 ${isMobile ? "" : "md:ml-64"}`}>
         <h1 className="text-3xl font-bold mb-6">Points Transactions</h1>
@@ -61,7 +63,8 @@ const PointsTransactionsPage: React.FC = () => {
 
         <PointsTransactionHistory userId={userId} limit={20} />
       </div>
-    </div>
+      </div>
+    </ProgressGuard>
   );
 };
 
