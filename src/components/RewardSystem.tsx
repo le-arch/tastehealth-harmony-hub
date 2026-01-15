@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import Confetti from "@/components/Confetti";
 import { Trophy, Award, Star, Gift, Crown } from "lucide-react";
-import { supabase } from "@/lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 

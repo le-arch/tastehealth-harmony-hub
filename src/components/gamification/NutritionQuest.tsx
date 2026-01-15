@@ -17,7 +17,7 @@ import {
   Target,
   Zap
 } from "lucide-react";
-import { supabase } from "@/lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 

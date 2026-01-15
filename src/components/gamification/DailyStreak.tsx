@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Flame, Check } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { recordDailyStreak, getCurrentStreak } from "@/services/streakService"
-import { supabase } from "@/lib/SupabaseClient"
+import { supabase } from "@/integrations/supabase/client"
 import { toast } from "sonner"
 
 interface DailyStreakProps {

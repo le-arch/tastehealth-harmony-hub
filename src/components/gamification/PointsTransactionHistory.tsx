@@ -13,7 +13,7 @@ import {
   Calendar,
   Coins
 } from "lucide-react";
-import { supabase } from "@/lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PointsTransactionHistoryProps {

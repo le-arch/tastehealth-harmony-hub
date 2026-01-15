@@ -1,7 +1,7 @@
 
 import type React from "react";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, Trophy, Award, Target } from "lucide-react";
 import { toast } from "sonner";

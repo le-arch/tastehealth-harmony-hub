@@ -3,7 +3,7 @@
 
 import type React from "react";
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import LevelBenefits from "../components/gamification/LevelBenefits";
 import gamificationService from "../services/gamificationService";
 import ProfileSidebar from "../components/profile/ProfileSidebar";

@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Fetches the image_url for a meal and returns the public URL from Supabase Storage.

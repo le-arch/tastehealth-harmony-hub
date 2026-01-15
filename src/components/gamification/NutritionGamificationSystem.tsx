@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import ProfileSidebar from "../profile/ProfileSidebar";
 import RewardSystem from "../RewardSystem";
 import NutritionProgressWheel from "../nutrition/NutritionProgressWheel";
