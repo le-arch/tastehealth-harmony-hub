@@ -11,7 +11,7 @@ import gamificationService, {
   type UserBadge,
   type NutritionStreak,
 } from "../../services/gamificationService";
-import { supabase } from "../../lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 
 // Add imports for the new components
 import LevelBenefits from "./LevelBenefits";

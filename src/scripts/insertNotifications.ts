@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/SupabaseClient"
+import { supabase } from "@/integrations/supabase/client"
 import type { NotificationType } from "@/services/notificationService"
 
 // Sample notification data for different types

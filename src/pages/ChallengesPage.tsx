@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
-import { supabase } from "@/lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Trophy, Calendar, Star, Crown, Timer } from "lucide-react";

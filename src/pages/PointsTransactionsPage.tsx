@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import PointsTransactionHistory from "../components/gamification/PointsTransactionHistory";
 import ProfileSidebar from "../components/profile/ProfileSidebar";
 import ProgressGuard from "@/components/ProgressGuard";

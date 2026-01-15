@@ -10,7 +10,7 @@ import { Calendar, Trophy, Users, Clock, Target } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { createNutritionChallenge, getUserChallenges, type NutritionChallenge } from "@/services/challengeService";
-import { supabase } from "@/lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ExploreChallenge {
   id: string;

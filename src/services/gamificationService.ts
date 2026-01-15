@@ -1,5 +1,5 @@
 
-import { supabase } from '@/lib/SupabaseClient';
+import { supabase } from "@/integrations/supabase/client";
 
 export interface UserPoints {
   id: string;

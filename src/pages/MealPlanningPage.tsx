@@ -12,7 +12,7 @@ import { MealPlanList } from "@/components/MealPlanList";
 import { CreateMealPlanDialog } from "@/components/CreateMealPlanDialog";
 import MealSearch from "@/components/MealSearch";
 import { AddMealToMealPlanDialog } from "@/components/AddToMealPlanDialog";
-import { supabase } from "@/lib/SupabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface MealPlan {
