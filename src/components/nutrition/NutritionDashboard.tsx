@@ -142,7 +142,7 @@ const NutritionDashboard = () => {
   };
 
   return (
-    <div className="p-3 sm:p-6 space-y-6 sm:space-y-6 max-w-7xl mx-auto">
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
           {t.title}
@@ -171,7 +171,7 @@ const NutritionDashboard = () => {
           </TabsTrigger>
         </ScrollableTabsList>
 
-        <TabsContent value="dailyTools" className="space-y-4">
+        <TabsContent value="dailyTools" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <Card>
               <CardHeader>
