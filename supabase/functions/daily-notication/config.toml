@@ -1,6 +1,0 @@
-# Whether the function should be invoked with each request
-on_request = false
-
-# Schedule the function to run at a specific interval
-# This will run the function every day at midnight UTC
-schedule = "0 0 * * *"

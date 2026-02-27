@@ -11,6 +11,7 @@ import { MealPlanList } from "@/components/MealPlanList";
 import { CreateMealPlanDialog } from "@/components/CreateMealPlanDialog";
 import MealSearch from "@/components/MealSearch";
 import { useLanguage } from "@/contexts/LanguageContext";
+import {ProfileSidebar } from "@/components/profile/ProfileSidebar";
 
 const MealPlanningPage = () => {
   const navigate = useNavigate();
@@ -32,9 +33,7 @@ const MealPlanningPage = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <Button variant="outline" onClick={() => navigate("/dashboard")} className="flex items-center gap-2"><ArrowLeft className="h-4 w-4" />{t.backToDashboard}</Button>
-          </div>
+          <ProfileSidebar />
           <h1 className="text-4xl font-bold mb-2 flex items-center justify-center"><ChefHat className="h-8 w-8 mr-3 text-green-600" />{t.title}</h1>
           <p className="text-muted-foreground">{t.subtitle}</p>
         </motion.div>

@@ -1,6 +1,0 @@
-# This configuration file enables the Edge Function to run on a schedule
-# The cron expression "*/30 * * * *" means "run every 30 minutes"
-
-[functions.auto-generate-notifications]
-schedule = "*/30 * * * *"
-verify_jwt = false

@@ -1,6 +1,0 @@
-# This is a sample config.toml file for the Supabase Edge Function.
-# When deployed, this file will be used to configure the function.
-
-# The function will be triggered by a scheduled event.
-# This is set to run every day at midnight UTC.
-schedule = "0 0 * * *"
