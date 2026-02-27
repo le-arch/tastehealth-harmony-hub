@@ -1,6 +1,5 @@
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -9,12 +8,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Calendar, Ruler, Weight, Users, Activity, Target, Flame } from "lucide-react";
+import { User } from "lucide-react";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import GenderSelect from "@/components/profile/GenderSelect";
 import ActivityLevelSelect from "@/components/profile/ActivityLevelSelect";
 import HealthGoalsSelect from "@/components/profile/HealthGoalsSelect";
 import DietaryRestrictionsSelect from "@/components/profile/DietaryRestrictionsSelect";
+import { getLS, setLS, LS_KEYS, ProfileData } from "@/utils/localStorage";
 
 const formSchema = z.object({
   age: z.string().min(1, "Age is required"), height: z.string().min(1, "Height is required"),
@@ -24,17 +24,22 @@ const formSchema = z.object({
 });
 
 const ProfilePage = () => {
-  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const saved = getLS<ProfileData | null>(LS_KEYS.PROFILE, null);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { age: "", height: "", weight: "", gender: "", activityLevel: "", healthGoals: "", dietaryRestrictions: "", allergies: "", calorieGoal: "" },
+    defaultValues: saved || { age: "", height: "", weight: "", gender: "", activityLevel: "", healthGoals: "", dietaryRestrictions: "", allergies: "", calorieGoal: "" },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    toast.success("Profile saved (local only)!");
+    setLS(LS_KEYS.PROFILE, values);
+    toast.success("Profile saved!");
     setIsEditing(false);
   };
+
+  const profileData = saved || form.getValues();
+  const hasData = saved && saved.age;
 
   return (
     <div className="min-h-screen flex">
@@ -69,10 +74,20 @@ const ProfilePage = () => {
                     <Button type="submit" className="w-full">Save Profile</Button>
                   </form>
                 </Form>
+              ) : hasData ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-3 border rounded-lg"><span className="text-sm text-muted-foreground">Age</span><p className="font-medium">{saved.age}</p></div>
+                  <div className="p-3 border rounded-lg"><span className="text-sm text-muted-foreground">Gender</span><p className="font-medium capitalize">{saved.gender}</p></div>
+                  <div className="p-3 border rounded-lg"><span className="text-sm text-muted-foreground">Height</span><p className="font-medium">{saved.height} cm</p></div>
+                  <div className="p-3 border rounded-lg"><span className="text-sm text-muted-foreground">Weight</span><p className="font-medium">{saved.weight} kg</p></div>
+                  <div className="p-3 border rounded-lg"><span className="text-sm text-muted-foreground">Activity Level</span><p className="font-medium capitalize">{saved.activityLevel}</p></div>
+                  <div className="p-3 border rounded-lg"><span className="text-sm text-muted-foreground">Calorie Goal</span><p className="font-medium">{saved.calorieGoal} kcal/day</p></div>
+                  <div className="p-3 border rounded-lg col-span-full"><span className="text-sm text-muted-foreground">Health Goals</span><p className="font-medium capitalize">{saved.healthGoals}</p></div>
+                  {saved.dietaryRestrictions && <div className="p-3 border rounded-lg col-span-full"><span className="text-sm text-muted-foreground">Dietary Restrictions</span><p className="font-medium">{saved.dietaryRestrictions}</p></div>}
+                </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   <p>Click "Edit Profile" to enter your information.</p>
-                  <p className="text-sm mt-2">Database features have been removed - data is not persisted.</p>
                 </div>
               )}
             </CardContent>

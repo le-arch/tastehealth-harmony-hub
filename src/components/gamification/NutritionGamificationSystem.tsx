@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
@@ -19,17 +18,15 @@ import NutritionBadges from "./NutritionBadges";
 import NutritionLeaderboard from "./NutritionLeaderboard";
 import NutritionQuest from "./NutritionQuest";
 import { useScreenSize } from "@/utils/mobile";
+import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
 
-interface NutritionGamificationSystemProps {
-  userId?: string;
-  standalone?: boolean;
-}
+interface NutritionGamificationSystemProps { userId?: string; standalone?: boolean; }
 
 const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGamificationSystemProps) => {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [userPoints, setUserPoints] = useState(0);
-  const [userLevel, setUserLevel] = useState(1);
-  const [streak, setStreak] = useState(0);
+  const [userPoints, setUserPoints] = useState(getLS<number>(LS_KEYS.POINTS, 0));
+  const [userLevel, setUserLevel] = useState(getLS<number>(LS_KEYS.LEVEL, 1));
+  const [streak, setStreak] = useState(getLS<number>(LS_KEYS.STREAK, 0));
   const { language } = useLanguage();
   const { isMobile } = useScreenSize();
 
@@ -38,7 +35,22 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
     : { title: "Nutrition Game Center", dashboard: "Dashboard", challenges: "Challenges", rewards: "Rewards", badges: "Badges", leaderboard: "Leaderboard", quests: "Quests", yourPoints: "Your Points", pointsNeeded: "Points needed for next level" };
 
   const getPointsForNextLevel = (level: number) => Math.floor(100 * Math.pow(1.5, level - 1));
-  const addPoints = async (points: number, reason: string) => { setUserPoints(p => p + points); };
+
+  const addPoints = async (points: number, reason: string) => {
+    const newPts = userPoints + points;
+    setUserPoints(newPts); setLS(LS_KEYS.POINTS, newPts);
+    // Check level up
+    const nextLevelPts = getPointsForNextLevel(userLevel);
+    if (newPts >= nextLevelPts) {
+      const newLevel = userLevel + 1;
+      setUserLevel(newLevel); setLS(LS_KEYS.LEVEL, newLevel);
+    }
+    // Record transaction
+    const history = getLS<PointsTransaction[]>(LS_KEYS.POINTS_HISTORY, []);
+    history.unshift({ id: crypto.randomUUID(), date: new Date().toISOString(), points, reason });
+    setLS(LS_KEYS.POINTS_HISTORY, history.slice(0, 100));
+  };
+
   const updateStreak = async () => { setStreak(s => s + 1); };
 
   const content = (

@@ -1,4 +1,6 @@
+
 import { useLanguage } from "../../contexts/LanguageContext";
+import NutritionQuest from "./NutritionQuest";
 
 interface DailyQuestsProps {
   userId?: string;
@@ -7,14 +9,8 @@ interface DailyQuestsProps {
 
 const DailyQuests = ({ userId, onQuestComplete }: DailyQuestsProps) => {
   const { language } = useLanguage();
-  const t = language === "fr" ? "Quêtes Nutritionnelles" : "Nutrition Quests";
-
-  return (
-    <div className="bg-background rounded-lg shadow-md p-6 text-center">
-      <h2 className="text-xl font-bold mb-4">{t}</h2>
-      <p className="text-muted-foreground">Database features removed.</p>
-    </div>
-  );
+  const addPoints = async (points: number, reason: string) => { await onQuestComplete(reason, points); };
+  return <NutritionQuest userId={userId} addPoints={addPoints} />;
 };
 
 export default DailyQuests;
