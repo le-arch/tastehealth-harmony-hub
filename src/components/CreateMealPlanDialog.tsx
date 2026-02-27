@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getLS, setLS, LS_KEYS, MealPlan, createEmptyWeek } from "@/utils/localStorage";
 
 interface CreateMealPlanDialogProps {
   onMealPlanCreated?: () => void;
@@ -23,9 +24,17 @@ export function CreateMealPlanDialog({ onMealPlanCreated, buttonText = "Create M
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Meal plan created (local only)!");
+    const plans = getLS<MealPlan[]>(LS_KEYS.MEAL_PLANS, []);
+    const newPlan: MealPlan = {
+      id: crypto.randomUUID(), name, description, created_at: new Date().toISOString(),
+      days: createEmptyWeek(),
+    };
+    setLS(LS_KEYS.MEAL_PLANS, [...plans, newPlan]);
+    toast.success("Meal plan created!");
     setOpen(false); setName(""); setDescription("");
     onMealPlanCreated?.();
+    // Force re-render by dispatching storage event
+    window.dispatchEvent(new Event('storage'));
   };
 
   return (
