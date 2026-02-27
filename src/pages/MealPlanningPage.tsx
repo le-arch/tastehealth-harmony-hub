@@ -31,9 +31,9 @@ const MealPlanningPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <ProfileSidebar />
       <div className="container mx-auto px-4 py-8">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-          <ProfileSidebar />
           <h1 className="text-4xl font-bold mb-2 flex items-center justify-center"><ChefHat className="h-8 w-8 mr-3 text-green-600" />{t.title}</h1>
           <p className="text-muted-foreground">{t.subtitle}</p>
         </motion.div>
