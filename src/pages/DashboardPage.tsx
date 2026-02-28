@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { ProfileSidebar } from '@/components/profile/ProfileSidebar';
 import NutritionDashboard from '@/components/nutrition/NutritionDashboard';
 import BMICalculator from '@/components/health/BMICalculator';
@@ -29,10 +30,17 @@ const DashboardPage = () => {
       <ProfileSidebar activePage="dashboard" />
       <div className={`flex-1 p-3 sm:p-4 ${isMobile ? 'mt-16' : 'md:ml-64'}`}>
         <div className="p-2 sm:p-4 max-w-6xl mx-auto">
-          <h1 className="text-xl sm:text-2xl font-bold mb-1">{t.title}</h1>
-          <p className="text-muted-foreground mb-4 sm:mb-6">{t.subtitle}</p>
-          <Tabs defaultValue="dashboard" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4 sm:space-y-6">
-            <ScrollableTabsList className="w-full max-w-3xl mx-auto">
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <h1 className="text-xl sm:text-2xl font-bold mb-1">{t.title}</h1>
+            <p className="text-muted-foreground mb-4 sm:mb-6">{t.subtitle}</p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <Tabs defaultValue="dashboard" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4 sm:space-y-6">
+              <ScrollableTabsList className="w-full max-w-3xl mx-auto">
               <TabsTrigger value="dashboard" className="flex items-center gap-2"><LayoutDashboard className="h-4 w-4" />{!isMobile && t.tabs.dashboard}</TabsTrigger>
               <TabsTrigger value="rewards" className="flex items-center gap-2"><Trophy className="h-4 w-4" />{!isMobile && t.tabs.rewards}</TabsTrigger>
               <TabsTrigger value="summary" className="flex items-center gap-2"><Calendar className="h-4 w-4" />{!isMobile && t.tabs.summary}</TabsTrigger>
@@ -44,7 +52,8 @@ const DashboardPage = () => {
             <TabsContent value="summary"><WeeklySummary /></TabsContent>
             <TabsContent value="mood"><MealMoodTracker /></TabsContent>
             <TabsContent value="challenges"><ChallengeCreator /></TabsContent>
-          </Tabs>
+              </Tabs>
+            </motion.div>
         </div>
       </div>
     </div>

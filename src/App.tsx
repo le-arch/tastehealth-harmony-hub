@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { NutritionProvider } from "../src/contexts/NutritionContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import Layout from "./components/Layout";
 //import TasteHealthLoader from "../src/components/TastehealthLoader"
 // Import viewport height utility
@@ -37,6 +38,7 @@ const PointsTransactionPage = lazy(
 const ChallengesPage = lazy(() => import("./pages/ChallengesPage"));
 const LevelBenefitsPage = lazy(() => import("./pages/LevelBenefitsPage"));
 const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
+const DailyJournalPage = lazy(() => import("./pages/DailyJournalPage"));
 
 function App() {
   // // Set up viewport height CSS variable
@@ -56,10 +58,11 @@ function App() {
   useResponsive();
   return (
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <ThemeProvider>
-          <NutritionProvider>
-            <TooltipProvider>
+      <NotificationProvider>
+        <LanguageProvider>
+          <ThemeProvider>
+            <NutritionProvider>
+              <TooltipProvider>
               <Toaster />
               <Sonner />
               <Router>
@@ -99,6 +102,7 @@ function App() {
                       <Route path="/meal-plan" element={<MealPlanPage/>} />
                       <Route path="/challenges" element={<ChallengesPage />} />
                       <Route path="/benefits" element={<LevelBenefitsPage />} />
+                      <Route path="/journal" element={<DailyJournalPage />} />
                       {/* Catch-all route */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
@@ -106,9 +110,10 @@ function App() {
                 </Layout>
               </Router>
             </TooltipProvider>
-          </NutritionProvider>
-        </ThemeProvider>
-      </LanguageProvider>
+            </NutritionProvider>
+          </ThemeProvider>
+        </LanguageProvider>
+      </NotificationProvider>
     </QueryClientProvider>
   );
 }

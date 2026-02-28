@@ -28,15 +28,52 @@ import { useScreenSize } from "@/utils/mobile";
 import MealPrepTimer from "./MealPrepTimer";
 import HydrationTracker from "./HydrationTracker";
 import NutritionProgressWheel from "./NutritionProgressWheel";
+import DailyMealSelector from "./DailyMealSelector";
 
 const NutritionDashboard = () => {
   const [dailyGoals, setDailyGoals] = useState({
-    calories: { current: 1200, target: 2000 },
-    protein: { current: 45, target: 150 },
-    carbs: { current: 120, target: 250 },
-    fat: { current: 35, target: 65 },
+    calories: { current: 0, target: 2000 },
+    protein: { current: 0, target: 150 },
+    carbs: { current: 0, target: 250 },
+    fat: { current: 0, target: 65 },
     water: { current: 6, target: 8 },
   });
+
+  // Load daily meals from localStorage and update goals
+  useEffect(() => {
+    const stored = localStorage.getItem('th_daily_meals');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        const { MEAL_DATABASE } = require('@/data/mealDatabase');
+        
+        let totalCalories = 0;
+        let totalProtein = 0;
+        let totalCarbs = 0;
+        let totalFats = 0;
+
+        parsed.forEach((item: any) => {
+          const meal = MEAL_DATABASE.find((m: any) => m.id === item.mealId);
+          if (meal) {
+            totalCalories += meal.nutrition.calories;
+            totalProtein += meal.nutrition.protein;
+            totalCarbs += meal.nutrition.carbs;
+            totalFats += meal.nutrition.fats;
+          }
+        });
+
+        setDailyGoals(prev => ({
+          ...prev,
+          calories: { ...prev.calories, current: totalCalories },
+          protein: { ...prev.protein, current: totalProtein },
+          carbs: { ...prev.carbs, current: totalCarbs },
+          fat: { ...prev.fat, current: totalFats },
+        }));
+      } catch (error) {
+        console.error('Failed to load daily meals:', error);
+      }
+    }
+  }, []);
 
   const [weeklyProgress, setWeeklyProgress] = useState({
     mealsLogged: 18,
@@ -172,42 +209,52 @@ const NutritionDashboard = () => {
         </ScrollableTabsList>
 
         <TabsContent value="dailyTools" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Timer className="h-5 w-5 mr-2 text-orange-500" />
-                  Meal Prep Timer
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <MealPrepTimer />
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <DailyMealSelector />
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Droplet className="h-5 w-5 mr-2 text-blue-500" />
-                  Hydration Tracker
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <HydrationTracker />
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center text-lg">
+                    <Gauge className="h-5 w-5 mr-2 text-green-500" />
+                    Progress Wheel
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <NutritionProgressWheel 
+                    protein={dailyGoals.protein.current}
+                    carbs={dailyGoals.carbs.current}
+                    fats={dailyGoals.fat.current}
+                  />
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Gauge className="h-5 w-5 mr-2 text-green-500" />
-                  Progress Wheel
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <NutritionProgressWheel />
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center text-lg">
+                    <Timer className="h-5 w-5 mr-2 text-orange-500" />
+                    Meal Prep Timer
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <MealPrepTimer />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center text-lg">
+                    <Droplet className="h-5 w-5 mr-2 text-blue-500" />
+                    Hydration Tracker
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <HydrationTracker />
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </TabsContent>
 

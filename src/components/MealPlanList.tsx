@@ -4,13 +4,15 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CalendarDays, Trash2, Plus, X } from 'lucide-react';
+import { CalendarDays, Trash2, Plus, X, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { getLS, setLS, LS_KEYS, MealPlan, MealPlanItem, DAYS_OF_WEEK, createEmptyWeek } from '@/utils/localStorage';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MEAL_DATABASE } from '@/data/mealDatabase';
 
 type MealCategory = 'breakfast' | 'lunch' | 'dinner' | 'snacks';
 const CATEGORIES: MealCategory[] = ['breakfast', 'lunch', 'dinner', 'snacks'];
@@ -24,6 +26,8 @@ export function MealPlanList() {
   const [addCategory, setAddCategory] = useState<MealCategory>('breakfast');
   const [addMealName, setAddMealName] = useState('');
   const [addMealCalories, setAddMealCalories] = useState('');
+  const [addMealMode, setAddMealMode] = useState<'database' | 'custom'>('database');
+  const [mealSearch, setMealSearch] = useState('');
 
   const save = (updated: MealPlan[]) => { setPlans(updated); setLS(LS_KEYS.MEAL_PLANS, updated); };
 
@@ -48,7 +52,29 @@ export function MealPlanList() {
     save(updated);
     toast.success(`${addMealName} added to ${addDay} ${addCategory}`);
     setAddMealName(''); setAddMealCalories(''); setAddOpen(false);
+    setMealSearch('');
   };
+
+  const addDatabaseMealToPlan = (dbMeal: any) => {
+    if (!plan) return;
+    const meal: MealPlanItem = { id: crypto.randomUUID(), name: dbMeal.name, calories: dbMeal.nutrition.calories };
+    const updated = plans.map(p => {
+      if (p.id !== plan.id) return p;
+      const days = { ...p.days };
+      if (!days[addDay]) days[addDay] = { breakfast: [], lunch: [], dinner: [], snacks: [] };
+      days[addDay] = { ...days[addDay], [addCategory]: [...days[addDay][addCategory], meal] };
+      return { ...p, days };
+    });
+    save(updated);
+    toast.success(`${dbMeal.name} added to ${addDay} ${addCategory}`);
+    setAddMealName(''); setAddMealCalories(''); setAddOpen(false);
+    setMealSearch('');
+  };
+
+  const filteredMeals = MEAL_DATABASE.filter(m => 
+    m.name.toLowerCase().includes(mealSearch.toLowerCase()) &&
+    m.category === addCategory
+  );
 
   const removeMeal = (day: string, category: MealCategory, mealId: string) => {
     if (!plan) return;
@@ -74,18 +100,59 @@ export function MealPlanList() {
           <h2 className="text-xl font-bold">{plan.name}</h2>
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
             <DialogTrigger asChild><Button size="sm"><Plus className="h-4 w-4 mr-1" />{t.addMeal}</Button></DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-2xl">
               <DialogHeader><DialogTitle>{t.addMeal}</DialogTitle></DialogHeader>
               <div className="space-y-4">
-                <div><Label>{t.day}</Label>
-                  <Select value={addDay} onValueChange={setAddDay}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{DAYS_OF_WEEK.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent></Select>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>{t.day}</Label>
+                    <Select value={addDay} onValueChange={setAddDay}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{DAYS_OF_WEEK.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent></Select>
+                  </div>
+                  <div><Label>{t.category}</Label>
+                    <Select value={addCategory} onValueChange={(v) => { setAddCategory(v as MealCategory); setMealSearch(''); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}</SelectContent></Select>
+                  </div>
                 </div>
-                <div><Label>{t.category}</Label>
-                  <Select value={addCategory} onValueChange={(v) => setAddCategory(v as MealCategory)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}</SelectContent></Select>
-                </div>
-                <div><Label>{t.name}</Label><Input value={addMealName} onChange={e => setAddMealName(e.target.value)} placeholder="e.g. Grilled Chicken Salad" /></div>
-                <div><Label>{t.calories}</Label><Input type="number" value={addMealCalories} onChange={e => setAddMealCalories(e.target.value)} placeholder="e.g. 450" /></div>
-                <Button onClick={addMealToPlan} disabled={!addMealName.trim()} className="w-full">{t.add}</Button>
+
+                <Tabs value={addMealMode} onValueChange={(v) => { setAddMealMode(v as 'database' | 'custom'); setAddMealName(''); setAddMealCalories(''); }}>
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="database">From Database</TabsTrigger>
+                    <TabsTrigger value="custom">Custom Meal</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="database" className="space-y-3">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input 
+                        placeholder="Search meals..." 
+                        value={mealSearch} 
+                        onChange={(e) => setMealSearch(e.target.value)} 
+                        className="pl-8"
+                      />
+                    </div>
+                    <div className="max-h-96 overflow-y-auto space-y-2 border rounded-lg p-3 bg-muted/50">
+                      {filteredMeals.length === 0 ? (
+                        <p className="text-sm text-muted-foreground text-center py-4">No meals found in this category</p>
+                      ) : (
+                        filteredMeals.map(meal => (
+                          <div key={meal.id} className="flex items-center justify-between p-2 bg-background border rounded-lg hover:bg-muted transition-colors">
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">{meal.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {meal.nutrition.calories} kcal • P: {meal.nutrition.protein}g • C: {meal.nutrition.carbs}g • F: {meal.nutrition.fats}g
+                              </p>
+                            </div>
+                            <Button size="sm" onClick={() => addDatabaseMealToPlan(meal)}>Add</Button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="custom" className="space-y-3">
+                    <div><Label>{t.name}</Label><Input value={addMealName} onChange={e => setAddMealName(e.target.value)} placeholder="e.g. Grilled Chicken Salad" /></div>
+                    <div><Label>{t.calories}</Label><Input type="number" value={addMealCalories} onChange={e => setAddMealCalories(e.target.value)} placeholder="e.g. 450" /></div>
+                    <Button onClick={addMealToPlan} disabled={!addMealName.trim()} className="w-full">{t.add}</Button>
+                  </TabsContent>
+                </Tabs>
               </div>
             </DialogContent>
           </Dialog>

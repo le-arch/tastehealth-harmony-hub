@@ -3,41 +3,14 @@
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { Link } from "react-router-dom"
-import { Bell, Check, CheckCheck, ExternalLink } from "lucide-react"
+import { Bell, Check, CheckCheck, ExternalLink, Trash2 } from "lucide-react"
+import { useNotifications } from "@/contexts/NotificationContext"
 import "./NotificationDropdown.css"
 
 const NotificationDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [unreadCount, setUnreadCount] = useState(3)
   const dropdownRef = useRef<HTMLDivElement>(null)
-
-  // Mock notifications data
-  const notifications = [
-    {
-      id: 1,
-      title: "Water Reminder",
-      message: "Don't forget to drink water! You're 2 cups behind your goal.",
-      time: "Just now",
-      type: "water",
-      isRead: false,
-    },
-    {
-      id: 2,
-      title: "New Badge Earned",
-      message: "Congratulations! You've earned the 'Protein Champion' badge.",
-      time: "2 hours ago",
-      type: "achievement",
-      isRead: false,
-    },
-    {
-      id: 3,
-      title: "Meal Plan Updated",
-      message: "Your meal plan for the week has been updated.",
-      time: "Yesterday",
-      type: "meal",
-      isRead: false,
-    },
-  ]
+  const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification } = useNotifications()
 
   useEffect(() => {
     // Close dropdown when clicking outside
@@ -57,15 +30,23 @@ const NotificationDropdown: React.FC = () => {
     setIsOpen(!isOpen)
   }
 
-  const markAsRead = (id: number, e: React.MouseEvent) => {
+  const handleMarkAsRead = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    // Mark notification as read logic
-    setUnreadCount((prev) => Math.max(prev - 1, 0))
+    markAsRead(id)
   }
 
-  const markAllAsRead = () => {
-    // Mark all notifications as read logic
-    setUnreadCount(0)
+  const getTimeAgo = (date: Date): string => {
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return "Just now"
+    if (diffMins < 60) return `${diffMins}m ago`
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffDays < 7) return `${diffDays}d ago`
+    return date.toLocaleDateString()
   }
 
   const getNotificationIcon = (type: string) => {
@@ -112,10 +93,10 @@ const NotificationDropdown: React.FC = () => {
             {notifications.length === 0 ? (
               <div className="p-4 text-center text-gray-500 dark:text-gray-400">No notifications</div>
             ) : (
-              notifications.map((notification) => (
+              notifications.slice(0, 5).map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-3 border-b border-gray-200 dark:border-gray-700 flex items-start gap-3 ${
+                  className={`p-3 border-b border-gray-200 dark:border-gray-700 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
                     notification.isRead ? "bg-gray-50 dark:bg-gray-800/50" : "bg-white dark:bg-gray-800"
                   }`}
                 >
@@ -125,18 +106,31 @@ const NotificationDropdown: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
                       <p className="font-medium text-sm text-gray-800 dark:text-gray-200">{notification.title}</p>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{notification.time}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{getTimeAgo(notification.timestamp)}</span>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{notification.message}</p>
                   </div>
-                  {!notification.isRead && (
+                  <div className="flex gap-1">
+                    {!notification.isRead && (
+                      <button
+                        className="h-6 w-6 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                        onClick={(e) => handleMarkAsRead(notification.id, e)}
+                        title="Mark as read"
+                      >
+                        <Check className="h-4 w-4" />
+                      </button>
+                    )}
                     <button
-                      className="h-6 w-6 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                      onClick={(e) => markAsRead(notification.id, e)}
+                      className="h-6 w-6 flex items-center justify-center text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        deleteNotification(notification.id)
+                      }}
+                      title="Delete notification"
                     >
-                      <Check className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4" />
                     </button>
-                  )}
+                  </div>
                 </div>
               ))
             )}

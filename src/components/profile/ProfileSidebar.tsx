@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -7,7 +7,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   LayoutDashboard, User, Calendar, LineChart, Settings, LogOut, Menu, X,
-  Heart, Trophy, Sun, Moon, Gamepad, Star, Mountain, Gift, Pencil, Bell,
+  Heart, Trophy, Sun, Moon, Gamepad, Star, Mountain, Gift, Pencil, Bell, Bookmark,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import NotificationDropdown from "@/components/notifications/NotificationDropdown";
@@ -15,7 +15,15 @@ import NotificationDropdown from "@/components/notifications/NotificationDropdow
 interface ProfileSidebarProps { activePage?: string; }
 
 export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(() => {
+    // Load initial state from localStorage for mobile
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('th_sidebar_open');
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
@@ -24,9 +32,22 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
   const currentUser = JSON.parse(localStorage.getItem('th_current_user') || 'null');
   const displayName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : 'User';
 
+  // Load profile image
+  useEffect(() => {
+    const savedImage = localStorage.getItem('th_profile_image');
+    if (savedImage) {
+      setProfileImage(savedImage);
+    }
+  }, []);
+
+  // Persist sidebar state
+  useEffect(() => {
+    localStorage.setItem('th_sidebar_open', JSON.stringify(isOpen));
+  }, [isOpen]);
+
   const t = language === 'fr'
-    ? { dashboard: "Tableau de Bord", profile: "Profil", mealPlanning: "Planification de Repas", progress: "Progrès", settings: "Paramètres", notifications: "Notifications", signOut: "Déconnexion", mealplan: "Creer des Plans", favorites: "Favoris", goals: "Assistant de but", games: "Jeu de Nutrition", challenges: "Defis", points: "Points Historique", level: "Niveau", toggleTheme: "Changer le Thème", language: "Langue" }
-    : { dashboard: "Dashboard", profile: "Profile", mealPlanning: "Meal Planning", progress: "Progress", settings: "Settings", notifications: "Notifications", signOut: "Sign Out", mealplan: "Create Plans", favorites: "Favorites", goals: "Goal Wizard", games: "Nutrition Game", challenges: "Challenges", points: "Points History", level: "Level", toggleTheme: "Toggle Theme", language: "Language" };
+    ? { dashboard: "Tableau de Bord", profile: "Profil", mealPlanning: "Planification de Repas", progress: "Progrès", settings: "Paramètres", notifications: "Notifications", signOut: "Déconnexion", mealplan: "Creer des Plans", favorites: "Favoris", goals: "Assistant de but", games: "Jeu de Nutrition", challenges: "Defis", points: "Points Historique", level: "Niveau", toggleTheme: "Changer le Thème", language: "Langue", journal: "Journal Quotidien" }
+    : { dashboard: "Dashboard", profile: "Profile", mealPlanning: "Meal Planning", progress: "Progress", settings: "Settings", notifications: "Notifications", signOut: "Sign Out", mealplan: "Create Plans", favorites: "Favorites", goals: "Goal Wizard", games: "Nutrition Game", challenges: "Challenges", points: "Points History", level: "Level", toggleTheme: "Toggle Theme", language: "Language", journal: "Daily Journal" };
 
   const navItems = [
     { path: "/dashboard", icon: <LayoutDashboard className="h-5 w-5" />, label: t.dashboard },
@@ -34,6 +55,7 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
     { path: "/meal-planning", icon: <Calendar className="h-5 w-5" />, label: t.mealPlanning },
     { path: "/progress", icon: <LineChart className="h-5 w-5" />, label: t.progress },
     { path: "/meal-plan", icon: <Pencil className="h-5 w-5" />, label: t.mealplan },
+    { path: "/journal", icon: <Bookmark className="h-5 w-5" />, label: t.journal },
     { path: "/favorites", icon: <Heart className="h-5 w-5" />, label: t.favorites },
     { path: "/goals", icon: <Trophy className="h-5 w-5" />, label: t.goals },
     { path: "/games", icon: <Gamepad className="h-5 w-5" />, label: t.games },
@@ -65,7 +87,15 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
           </div>
         </div>
         <div className="flex items-center space-x-3 mx-4 mb-4 p-3 rounded-lg bg-muted">
-          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><User className="h-5 w-5 text-primary" /></div>
+          {profileImage ? (
+            <img 
+              src={profileImage} 
+              alt={displayName} 
+              className="h-10 w-10 rounded-full object-cover flex-shrink-0"
+            />
+          ) : (
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0"><User className="h-5 w-5 text-primary" /></div>
+          )}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{displayName}</p>
             {currentUser?.email && <p className="text-xs text-muted-foreground truncate">{currentUser.email}</p>}
