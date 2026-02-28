@@ -3,17 +3,18 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster as Sonner } from "sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useQueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { NutritionProvider } from "../src/contexts/NutritionContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import Layout from "./components/Layout";
 //import TasteHealthLoader from "../src/components/TastehealthLoader"
 // Import viewport height utility
 import { useResponsive } from "../src/hooks/use-responsive";
 
 // Create a client
-const queryClient = new QueryClient();
+const queryClient = useQueryClient();
 
 // Pages
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
@@ -37,6 +38,7 @@ const PointsTransactionPage = lazy(
 const ChallengesPage = lazy(() => import("./pages/ChallengesPage"));
 const LevelBenefitsPage = lazy(() => import("./pages/LevelBenefitsPage"));
 const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
+const DailyJournalPage = lazy(() => import("./pages/DailyJournalPage"));
 
 function App() {
   // // Set up viewport height CSS variable
@@ -56,59 +58,62 @@ function App() {
   useResponsive();
   return (
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <ThemeProvider>
-          <NutritionProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <Router>
-                <Layout>
-                  <Suspense fallback={""}>
-                    <Routes>
-                      {/* Redirect root path to WelcomePage */}
-                      <Route path="/" element={<WelcomePage />} />
-                      <Route path="/welcome" element={<WelcomePage />} />
-                      <Route path="/profile" element={<ProfilePage />} />
-                      <Route
-                        path="/meal-planning"
-                        element={<MealPlanningPage />}
-                      />
-                      <Route
-                        path="/meal-plan-id"
-                        element={<MealPlanView />}
-                      />
-                      <Route path="/dashboard" element={<DashboardPage />} />
-                      <Route path="/progress" element={<ProgressPage />} />
-                      <Route path="/settings" element={<SettingsPage />} />
-                      <Route
-                        path="/notifications"
-                        element={<NotificationsPage />}
-                      />
-                      <Route path="/goals" element={<GoalWizard />} />
-                      {/* <Route path="/meal-builder" element={<MealBuilder />} /> */}
-                      <Route path="/favorites" element={<Favorites />} />
-                      <Route
-                        path="/games"
-                        element={<NutritionGamificationSystem />}
-                      />
-                      <Route
-                        path="/points"
-                        element={<PointsTransactionPage />}
-                      />
-                      <Route path="/meal-plan" element={<MealPlanPage/>} />
-                      <Route path="/challenges" element={<ChallengesPage />} />
-                      <Route path="/benefits" element={<LevelBenefitsPage />} />
-                      {/* Catch-all route */}
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </Suspense>
-                </Layout>
-              </Router>
-            </TooltipProvider>
-          </NutritionProvider>
-        </ThemeProvider>
-      </LanguageProvider>
+      <NotificationProvider>
+        <LanguageProvider>
+          <ThemeProvider>
+            <NutritionProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <Router>
+                  <Layout>
+                    <Suspense fallback={""}>
+                      <Routes>
+                        {/* Redirect root path to WelcomePage */}
+                        <Route path="/" element={<WelcomePage />} />
+                        <Route path="/welcome" element={<WelcomePage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route
+                          path="/meal-planning"
+                          element={<MealPlanningPage />}
+                        />
+                        <Route
+                          path="/meal-plan-id"
+                          element={<MealPlanView />}
+                        />
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/progress" element={<ProgressPage />} />
+                        <Route path="/settings" element={<SettingsPage />} />
+                        <Route
+                          path="/notifications"
+                          element={<NotificationsPage />}
+                        />
+                        <Route path="/goals" element={<GoalWizard />} />
+                        {/* <Route path="/meal-builder" element={<MealBuilder />} /> */}
+                        <Route path="/favorites" element={<Favorites />} />
+                        <Route
+                          path="/games"
+                          element={<NutritionGamificationSystem />}
+                        />
+                        <Route
+                          path="/points"
+                          element={<PointsTransactionPage />}
+                        />
+                        <Route path="/meal-plan" element={<MealPlanPage />} />
+                        <Route path="/challenges" element={<ChallengesPage />} />
+                        <Route path="/benefits" element={<LevelBenefitsPage />} />
+                        <Route path="/journal" element={<DailyJournalPage />} />
+                        {/* Catch-all route */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
+                  </Layout>
+                </Router>
+              </TooltipProvider>
+            </NutritionProvider>
+          </ThemeProvider>
+        </LanguageProvider>
+      </NotificationProvider>
     </QueryClientProvider>
   );
 }

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -8,8 +8,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User } from "lucide-react";
+import { User, Upload, X } from "lucide-react";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
+import { motion } from "framer-motion";
 import GenderSelect from "@/components/profile/GenderSelect";
 import ActivityLevelSelect from "@/components/profile/ActivityLevelSelect";
 import HealthGoalsSelect from "@/components/profile/HealthGoalsSelect";
@@ -25,7 +26,56 @@ const formSchema = z.object({
 
 const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const saved = getLS<ProfileData | null>(LS_KEYS.PROFILE, null);
+
+  // Load profile image on mount
+  useEffect(() => {
+    const savedImage = localStorage.getItem('th_profile_image');
+    if (savedImage) {
+      setProfileImage(savedImage);
+      setImagePreview(savedImage);
+    }
+  }, []);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB");
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64String = event.target?.result as string;
+      setImagePreview(base64String);
+      setProfileImage(base64String);
+      localStorage.setItem('th_profile_image', base64String);
+      toast.success("Profile image updated!");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeProfileImage = () => {
+    setProfileImage(null);
+    setImagePreview(null);
+    localStorage.removeItem('th_profile_image');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    toast.success("Profile image removed");
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,6 +99,66 @@ const ProfilePage = () => {
           <div className="mb-6 flex items-center">
             <h1 className="text-2xl font-semibold flex items-center"><User className="mr-2 h-6 w-6 text-primary" />Profile Management</h1>
           </div>
+          {/* Profile Image Section */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Profile Picture</CardTitle>
+              <CardDescription>Upload a profile photo (Max 5MB)</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <motion.div 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }} 
+                  className="relative"
+                >
+                  {profileImage ? (
+                    <div className="relative">
+                      <img 
+                        src={profileImage} 
+                        alt="Profile" 
+                        className="w-32 h-32 rounded-full object-cover border-4 border-primary shadow-lg"
+                      />
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute bottom-0 right-0 rounded-full"
+                        onClick={removeProfileImage}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="w-32 h-32 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-muted-foreground">
+                      <User className="h-12 w-12 text-muted-foreground opacity-50" />
+                    </div>
+                  )}
+                </motion.div>
+
+                <div className="flex-1 space-y-3">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    variant="outline"
+                    className="w-full sm:w-auto"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Photo
+                  </Button>
+                  <p className="text-sm text-muted-foreground">
+                    Supported formats: JPG, PNG, GIF, WebP. Max size: 5MB
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
