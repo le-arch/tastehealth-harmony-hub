@@ -1,23 +1,28 @@
 
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   LayoutDashboard, User, Calendar, LineChart, Settings, LogOut, Menu, X,
-  Heart, Trophy, Sun, Moon, Gamepad, Star, Mountain, Gift, Pencil,
+  Heart, Trophy, Sun, Moon, Gamepad, Star, Mountain, Gift, Pencil, Bell,
 } from "lucide-react";
 import Logo from "@/components/Logo";
+import NotificationDropdown from "@/components/notifications/NotificationDropdown";
 
 interface ProfileSidebarProps { activePage?: string; }
 
 export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
+
+  const currentUser = JSON.parse(localStorage.getItem('th_current_user') || 'null');
+  const displayName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : 'User';
 
   const t = language === 'fr'
     ? { dashboard: "Tableau de Bord", profile: "Profil", mealPlanning: "Planification de Repas", progress: "Progrès", settings: "Paramètres", notifications: "Notifications", signOut: "Déconnexion", mealplan: "Creer des Plans", favorites: "Favoris", goals: "Assistant de but", games: "Jeu de Nutrition", challenges: "Defis", points: "Points Historique", level: "Niveau", toggleTheme: "Changer le Thème", language: "Langue" }
@@ -40,6 +45,11 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
 
   const closeSidebar = () => setIsOpen(false);
 
+  const handleSignOut = () => {
+    localStorage.removeItem('th_current_user');
+    navigate('/');
+  };
+
   return (
     <>
       <div className="fixed top-4 left-4 z-50 md:hidden">
@@ -49,11 +59,17 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
       <aside className={`fixed top-0 left-0 z-50 h-full w-64 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"} bg-background border-r border-border`}>
         <div className="flex items-center justify-between p-4">
           <Link to="/dashboard" className="flex items-center" onClick={closeSidebar}><Logo size="md" /><span className="ml-2 text-xl font-bold">TH</span></Link>
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={closeSidebar}><X className="h-5 w-5" /></Button>
+          <div className="flex items-center gap-1">
+            <NotificationDropdown />
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={closeSidebar}><X className="h-5 w-5" /></Button>
+          </div>
         </div>
         <div className="flex items-center space-x-3 mx-4 mb-4 p-3 rounded-lg bg-muted">
           <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><User className="h-5 w-5 text-primary" /></div>
-          <div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">User</p></div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium truncate">{displayName}</p>
+            {currentUser?.email && <p className="text-xs text-muted-foreground truncate">{currentUser.email}</p>}
+          </div>
         </div>
         <ScrollArea className="flex-1 px-2">
           <nav className="space-y-1 pb-6">
@@ -73,7 +89,7 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
             <Button variant="ghost" size="icon" onClick={toggleTheme}>{theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}</Button>
             <select value={language} onChange={(e) => setLanguage(e.target.value)} className="text-sm bg-transparent border-none focus:ring-0"><option value="en">English</option><option value="fr">Français</option></select>
           </div>
-          <Button variant="ghost" className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={() => window.location.href = "/"}>
+          <Button variant="ghost" className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={handleSignOut}>
             <LogOut className="mr-3 h-5 w-5" />{t.signOut}
           </Button>
         </div>

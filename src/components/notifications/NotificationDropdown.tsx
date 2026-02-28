@@ -1,17 +1,38 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Bell, Check, Trash2 } from "lucide-react";
 import { getLS, setLS, LS_KEYS, Notification } from "@/utils/localStorage";
-import { Badge } from "@/components/ui/badge";
+
+const generateNotifications = (): Notification[] => {
+  const tips = [
+    { title: "Stay Hydrated!", message: "Remember to drink at least 8 glasses of water today." },
+    { title: "Time for a Snack", message: "A handful of nuts is a great protein-rich snack." },
+    { title: "Weekly Challenge", message: "Try eating 5 different colored vegetables this week." },
+    { title: "Sleep Reminder", message: "Aim for 7-8 hours of sleep for optimal health." },
+    { title: "Exercise Tip", message: "Even a 15-minute walk after meals improves digestion." },
+    { title: "Meal Prep Sunday", message: "Plan your meals for the week to eat healthier." },
+    { title: "Protein Goal", message: "Track your protein intake to build lean muscle." },
+    { title: "New Recipe Available", message: "Check out the latest healthy recipes in the meal database." },
+  ];
+  const existing = getLS<Notification[]>(LS_KEYS.NOTIFICATIONS, []);
+  if (existing.length > 0) return existing;
+  
+  const generated = tips.slice(0, 4).map((t, i) => ({
+    id: crypto.randomUUID(),
+    date: new Date(Date.now() - i * 3600000).toISOString(),
+    title: t.title,
+    message: t.message,
+    read: false,
+  }));
+  setLS(LS_KEYS.NOTIFICATIONS, generated);
+  return generated;
+};
 
 const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>(getLS(LS_KEYS.NOTIFICATIONS, [
-    { id: '1', date: new Date().toISOString(), title: 'Welcome!', message: 'Start tracking your nutrition today.', read: false },
-    { id: '2', date: new Date().toISOString(), title: 'Set your goals', message: 'Visit the Goal Wizard to set nutrition goals.', read: false },
-  ]));
+  const [notifications, setNotifications] = useState<Notification[]>(generateNotifications());
 
   const save = (updated: Notification[]) => { setNotifications(updated); setLS(LS_KEYS.NOTIFICATIONS, updated); };
   const unread = notifications.filter(n => !n.read).length;
