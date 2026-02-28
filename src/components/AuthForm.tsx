@@ -33,15 +33,60 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthenticated }) => {
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!loginData.email || !loginData.password) {
+      toast.error('Please fill in all fields');
+      return;
+    }
     setIsLoading(true);
-    toast.info('Database features have been removed');
+    // Check if user exists in localStorage
+    const storedUsers = JSON.parse(localStorage.getItem('th_users') || '[]');
+    const user = storedUsers.find((u: any) => u.email === loginData.email && u.password === loginData.password);
+    if (user) {
+      localStorage.setItem('th_current_user', JSON.stringify(user));
+      toast.success(`Welcome back, ${user.firstName}!`);
+      onAuthenticated(user);
+    } else {
+      toast.error('Invalid email or password. Please register first.');
+    }
     setIsLoading(false);
   };
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!registerData.firstName || !registerData.lastName || !registerData.email || !registerData.password) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    if (registerData.password !== registerData.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    if (registerData.password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
     setIsLoading(true);
-    toast.info('Database features have been removed');
+    const storedUsers = JSON.parse(localStorage.getItem('th_users') || '[]');
+    if (storedUsers.find((u: any) => u.email === registerData.email)) {
+      toast.error('An account with this email already exists');
+      setIsLoading(false);
+      return;
+    }
+    const newUser = {
+      id: crypto.randomUUID(),
+      firstName: registerData.firstName,
+      lastName: registerData.lastName,
+      username: registerData.username || registerData.email.split('@')[0],
+      email: registerData.email,
+      phone: registerData.phone,
+      password: registerData.password,
+      createdAt: new Date().toISOString(),
+    };
+    storedUsers.push(newUser);
+    localStorage.setItem('th_users', JSON.stringify(storedUsers));
+    localStorage.setItem('th_current_user', JSON.stringify(newUser));
+    toast.success('Account created successfully!');
+    onAuthenticated(newUser);
     setIsLoading(false);
   };
 
@@ -85,17 +130,35 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthenticated }) => {
             <form onSubmit={handleRegisterSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="first-name">First Name</Label>
+                  <Label htmlFor="first-name">First Name *</Label>
                   <Input id="first-name" name="firstName" placeholder="John" value={registerData.firstName} onChange={handleRegisterChange} required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="last-name">Last Name</Label>
+                  <Label htmlFor="last-name">Last Name *</Label>
                   <Input id="last-name" name="lastName" placeholder="Doe" value={registerData.lastName} onChange={handleRegisterChange} required />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username</Label>
+                <Input id="username" name="username" placeholder="johndoe" value={registerData.username} onChange={handleRegisterChange} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email *</Label>
                 <Input id="email" name="email" type="email" placeholder="you@example.com" value={registerData.email} onChange={handleRegisterChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" name="phone" placeholder="+1 234 567 890" value={registerData.phone} onChange={handleRegisterChange} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password *</Label>
+                  <Input id="password" name="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={registerData.password} onChange={handleRegisterChange} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm *</Label>
+                  <Input id="confirmPassword" name="confirmPassword" type={showPassword ? "text" : "password"} placeholder="••••••••" value={registerData.confirmPassword} onChange={handleRegisterChange} required />
+                </div>
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>{isLoading ? "Creating account..." : "Create Account"}</Button>
             </form>

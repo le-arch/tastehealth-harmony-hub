@@ -103,7 +103,7 @@ export interface Notification {
 
 export interface FavoriteMeal {
   id: string; name: string; calories: number; protein: number;
-  carbs: number; fats: number; imageUrl?: string;
+  carbs: number; fats: number; imageUrl?: string; category?: string;
 }
 
 export interface Reward {
