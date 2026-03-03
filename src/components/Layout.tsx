@@ -25,7 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="min-h-screen flex flex-col bg-softgreen-50 dark:bg-gray-900">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex items-center justify-between h-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
             <Utensils className="h-6 w-6 text-primary" />
             <span className="font-bold text-xl"></span>
@@ -159,7 +159,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 container py-8">{children}</main>
+      <main className="flex-1 w-full container mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
 
       {/* Notification Button (corner fixed) */}
       {/* <NotificationButton /> */}

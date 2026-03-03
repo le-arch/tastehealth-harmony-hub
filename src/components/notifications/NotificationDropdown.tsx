@@ -1,44 +1,21 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Bell, Check, Trash2 } from "lucide-react";
-import { getLS, setLS, LS_KEYS, Notification } from "@/utils/localStorage";
+import { useNotifications } from "@/contexts/NotificationContext";
 
-const generateNotifications = (): Notification[] => {
-  const tips = [
-    { title: "Stay Hydrated!", message: "Remember to drink at least 8 glasses of water today." },
-    { title: "Time for a Snack", message: "A handful of nuts is a great protein-rich snack." },
-    { title: "Weekly Challenge", message: "Try eating 5 different colored vegetables this week." },
-    { title: "Sleep Reminder", message: "Aim for 7-8 hours of sleep for optimal health." },
-    { title: "Exercise Tip", message: "Even a 15-minute walk after meals improves digestion." },
-    { title: "Meal Prep Sunday", message: "Plan your meals for the week to eat healthier." },
-    { title: "Protein Goal", message: "Track your protein intake to build lean muscle." },
-    { title: "New Recipe Available", message: "Check out the latest healthy recipes in the meal database." },
-  ];
-  const existing = getLS<Notification[]>(LS_KEYS.NOTIFICATIONS, []);
-  if (existing.length > 0) return existing;
-  
-  const generated = tips.slice(0, 4).map((t, i) => ({
-    id: crypto.randomUUID(),
-    date: new Date(Date.now() - i * 3600000).toISOString(),
-    title: t.title,
-    message: t.message,
-    read: false,
-  }));
-  setLS(LS_KEYS.NOTIFICATIONS, generated);
-  return generated;
-};
 
 const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>(generateNotifications());
-
-  const save = (updated: Notification[]) => { setNotifications(updated); setLS(LS_KEYS.NOTIFICATIONS, updated); };
-  const unread = notifications.filter(n => !n.read).length;
-  const markRead = (id: string) => save(notifications.map(n => n.id === id ? { ...n, read: true } : n));
-  const markAllRead = () => save(notifications.map(n => ({ ...n, read: true })));
-  const deleteNotif = (id: string) => save(notifications.filter(n => n.id !== id));
+  const navigate = useNavigate();
+  const { notifications, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
+  const unread = notifications.filter(n => !n.isRead).length;
+  const markRead = (id: string) => markAsRead(id);
+  const markAllRead = markAllAsRead;
+  const deleteNotif = deleteNotification;
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -49,6 +26,7 @@ const NotificationDropdown = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-4" align="end">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2 }}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold">Notifications</h3>
           {unread > 0 && <Button variant="ghost" size="sm" onClick={markAllRead}><Check className="h-3 w-3 mr-1" />Read all</Button>}
@@ -58,11 +36,11 @@ const NotificationDropdown = () => {
         ) : (
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {notifications.map(n => (
-              <div key={n.id} className={`p-2 rounded border text-sm ${n.read ? 'opacity-60' : 'bg-primary/5'}`}>
+              <div key={n.id} className={`p-2 rounded border text-sm ${n.isRead ? 'opacity-60' : 'bg-primary/5'}`}>
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{n.title}</span>
                   <div className="flex gap-1">
-                    {!n.read && <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => markRead(n.id)}><Check className="h-3 w-3" /></Button>}
+                    {!n.isRead && <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => markRead(n.id)}><Check className="h-3 w-3" /></Button>}
                     <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => deleteNotif(n.id)}><Trash2 className="h-3 w-3" /></Button>
                   </div>
                 </div>
@@ -71,6 +49,14 @@ const NotificationDropdown = () => {
             ))}
           </div>
         )}
+        {notifications.length > 0 && (
+          <div className="mt-3 text-center">
+            <Button variant="link" size="sm" onClick={() => { setIsOpen(false); navigate('/notifications'); }}>
+              View all notifications ▶
+            </Button>
+          </div>
+        )}
+        </motion.div>
       </PopoverContent>
     </Popover>
   );

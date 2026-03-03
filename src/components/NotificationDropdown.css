@@ -49,6 +49,15 @@
     display: flex;
     flex-direction: column;
   }
+
+/* on narrow screens dropdown should stretch rather than overflow */
+@media (max-width: 480px) {
+  .dropdown-content {
+    width: 100vw;
+    left: -10px; /* slightly offset to align with edge */
+    right: -10px;
+  }
+}
   
   .dropdown-content h3 {
     padding: 15px;

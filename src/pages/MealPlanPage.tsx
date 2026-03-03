@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 const MealPlanPage: React.FC = () => {
   const navigate = useNavigate();
   return (
-    <div className="page-container">
+    <div className="flex flex-col md:flex-row min-h-screen w-full">
       <ProfileSidebar />
-      <div className="content-area">
+      <div className="flex-1 p-4 md:p-6 lg:p-8">
         <h1 className="text-2xl font-bold mb-6">Meal Plans</h1>
-        <p className="text-muted-foreground text-center py-8">Manage your meal plans in the Meal Planning page.</p>
+        <p className="text-muted-foreground text-center py-8">
+          Manage your meal plans in the Meal Planning page.
+        </p>
         <div className="text-center">
           <Button onClick={() => navigate("/meal-planning")}>Go to Meal Planning</Button>
         </div>

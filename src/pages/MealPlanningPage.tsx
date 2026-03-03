@@ -11,6 +11,7 @@ import { CreateMealPlanDialog } from "@/components/CreateMealPlanDialog";
 import MealSearch from "@/components/MealSearch";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
+import { useScreenSize } from "@/utils/mobile";
 
 const MealPlanningPage = () => {
   const navigate = useNavigate();
@@ -28,14 +29,13 @@ const MealPlanningPage = () => {
     return () => window.removeEventListener('storage', handler);
   }, []);
 
+  const { isMobile } = useScreenSize();
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex">
-        {/* Sidebar - fixed width */}
-        <ProfileSidebar />
-        
-        {/* Main content - takes remaining width */}
-        <div className="flex-1 container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      <ProfileSidebar />
+      {/* Main content - takes remaining width; add top margin for mobile when sidebar may be toggled */}
+      <div className={`flex-1 container mx-auto px-4 py-8 ${isMobile ? 'mt-16' : 'md:ml-64'}`}>
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-2 flex items-center justify-center">
               <ChefHat className="h-8 w-8 mr-3 text-green-600" />
@@ -90,7 +90,7 @@ const MealPlanningPage = () => {
           </div>
         </div>
       </div>
-    </div>
+  
   );
 };
 

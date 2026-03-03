@@ -23,32 +23,73 @@ interface NotificationContextType {
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: '1',
-      title: 'Water Reminder',
-      message: "Don't forget to drink water! You're 2 cups behind your goal.",
-      type: 'water',
-      isRead: false,
-      timestamp: new Date(Date.now() - 60000),
-    },
-    {
-      id: '2',
-      title: 'New Badge Earned',
-      message: "Congratulations! You've earned the 'Protein Champion' badge.",
-      type: 'achievement',
-      isRead: false,
-      timestamp: new Date(Date.now() - 7200000),
-    },
-    {
-      id: '3',
-      title: 'Meal Plan Updated',
-      message: 'Your meal plan for the week has been updated.',
-      type: 'meal',
-      isRead: false,
-      timestamp: new Date(Date.now() - 86400000),
-    },
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>(() => {
+    // try to load persisted notifications first
+    const stored = localStorage.getItem('th_notifications');
+    if (stored) {
+      try {
+        const parsed: any[] = JSON.parse(stored);
+        return parsed.map(n => ({
+          ...n,
+          timestamp: new Date(n.timestamp),
+        }));
+      } catch {
+        // fall through to default
+      }
+    }
+
+    // default sample data (summy data) for first-time users
+    return [
+      {
+        id: '1',
+        title: 'Water Reminder',
+        message: "Don't forget to drink water! You're 2 cups behind your goal.",
+        type: 'water',
+        isRead: false,
+        timestamp: new Date(Date.now() - 60000),
+      },
+      {
+        id: '2',
+        title: 'New Badge Earned',
+        message: "Congratulations! You've earned the 'Protein Champion' badge.",
+        type: 'achievement',
+        isRead: false,
+        timestamp: new Date(Date.now() - 7200000),
+      },
+      {
+        id: '3',
+        title: 'Meal Plan Updated',
+        message: 'Your meal plan for the week has been updated.',
+        type: 'meal',
+        isRead: false,
+        timestamp: new Date(Date.now() - 86400000),
+      },
+      {
+        id: '4',
+        title: 'Achievement Unlocked!',
+        message: "You've completed 5 consecutive days of logging your meals.",
+        type: 'achievement',
+        isRead: false,
+        timestamp: new Date(Date.now() - 172800000),
+      },
+      {
+        id: '5',
+        title: 'Reminder: Step Goal',
+        message: 'You are 1,500 steps away from hitting your daily target.',
+        type: 'reminder',
+        isRead: false,
+        timestamp: new Date(Date.now() - 259200000),
+      },
+      {
+        id: '6',
+        title: 'Info',
+        message: 'New recipe suggestions are available in the meal planner.',
+        type: 'info',
+        isRead: false,
+        timestamp: new Date(Date.now() - 345600000),
+      },
+    ];
+  });
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 

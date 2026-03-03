@@ -41,7 +41,7 @@ const DailyJournalPage = () => {
 
   const t = language === 'fr'
     ? {
-      title: 'Journal Quotidien',
+      topic: 'Journal Quotidien',
       subtitle: 'Suivez votre parcours nutritionnel et votre bien-être',
       newEntry: 'Nouvelle Entrée',
       date: 'Date',
@@ -64,7 +64,7 @@ const DailyJournalPage = () => {
       terrible: 'Horrible',
     }
     : {
-      title: 'Daily Journal',
+      topic: 'Daily Journal',
       subtitle: 'Track your nutrition journey and wellness',
       newEntry: 'New Entry',
       date: 'Date',
@@ -207,10 +207,10 @@ const DailyJournalPage = () => {
             <p className="text-muted-foreground">{t.subtitle}</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             {/* Editor */}
-            <div className="lg:col-span-1 order-2 lg:order-1">
-              <Card className="sticky top-4">
+            <div className="lg:col-span-2 order-2 lg:order-1">
+              <Card className="sticky top-4 max-w-2xl mx-auto">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>{isEditing ? 'Edit Entry' : 'New Entry'}</span>
@@ -328,7 +328,7 @@ const DailyJournalPage = () => {
                           }`}
                           onClick={() => editEntry(entry)}
                         >
-                          <CardContent className="p-4">
+                          <CardContent className="p-6">
                             <div className="flex items-start justify-between mb-2">
                               <div>
                                 <div className="flex items-center gap-2 mb-1">

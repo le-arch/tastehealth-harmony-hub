@@ -7,15 +7,22 @@ import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 const MealPlanView = () => {
   const navigate = useNavigate();
   return (
-    <div className="page-container">
+    <div className="flex flex-col md:flex-row min-h-screen w-full">
       <ProfileSidebar />
-      <div className="content-area">
+      <div className="flex-1 p-4 md:p-6 lg:p-8">
         <div className="flex items-center gap-2 mb-6">
-          <Button variant="outline" size="icon" onClick={() => navigate("/meal-planning")}><ArrowLeft className="h-4 w-4" /></Button>
+          <Button variant="outline" size="icon" onClick={() => navigate("/meal-planning")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
           <h1 className="text-2xl font-bold">Meal Plan</h1>
         </div>
-        <p className="text-muted-foreground text-center py-8">View and manage meal plans from the Meal Planning page.</p>
-        <div className="text-center"><Button onClick={() => navigate("/meal-planning")}>Go to Meal Planning</Button></div>
+        <p className="text-muted-foreground text-center py-8">
+          View and manage meal plans from the Meal Planning page.
+        </p>
+        <div className="text-center">
+          <Button onClick={() => navigate("/meal-planning")}>Go to Meal Planning</Button>
+        </div>
       </div>
     </div>
   );

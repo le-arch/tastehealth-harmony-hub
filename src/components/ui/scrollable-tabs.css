@@ -2,6 +2,9 @@
 .scrollable-tabs-list {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  /* hide scrollbar
+     I prefer keeping the previous rules since they target only the element
+     and don't interfere with global layout. */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
   scroll-behavior: smooth;
@@ -59,8 +62,8 @@
 .card-scroll-container {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  /* use a thin scrollbar instead of hiding it so users know content can scroll */
+  /* default color set via scrollbar-color below for Firefox */
   scroll-behavior: smooth;
   padding-bottom: 8px;
   margin-left: -8px;
@@ -68,10 +71,21 @@
   padding-left: 8px;
   padding-right: 8px;
   width: 100%;
+  /* make the scrollbar visible but subtle */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
 }
 
+/* webkit browsers: show a small, low‑contrast thumb */
 .card-scroll-container::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  height: 4px;
+}
+.card-scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 2px;
+}
+.card-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .card-scroll-content {
@@ -85,9 +99,15 @@
 .table-scroll-container {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+  /* hide the scrollbar on tables too */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
   max-width: 100%;
   position: relative;
+}
+
+.table-scroll-container::-webkit-scrollbar {
+  display: none;
 }
 
 @media (max-width: 768px) {

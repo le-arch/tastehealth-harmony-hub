@@ -209,52 +209,77 @@ const NutritionDashboard = () => {
         </ScrollableTabsList>
 
         <TabsContent value="dailyTools" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <DailyMealSelector />
-            </div>
+          {/* vertical grid layout for daily-tool cards */}
+          <div className="grid grid-cols-1 gap-6">
+              <motion.div
+                className="w-full"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                <DailyMealSelector />
+              </motion.div>
 
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center text-lg">
-                    <Gauge className="h-5 w-5 mr-2 text-green-500" />
-                    Progress Wheel
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <NutritionProgressWheel 
-                    protein={dailyGoals.protein.current}
-                    carbs={dailyGoals.carbs.current}
-                    fats={dailyGoals.fat.current}
-                  />
-                </CardContent>
-              </Card>
+              <motion.div
+                className="w-full"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+              >
+                <Card className="w-full">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-lg">
+                      <Gauge className="h-5 w-5 mr-2 text-green-500" />
+                      Progress Wheel
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <NutritionProgressWheel 
+                      protein={dailyGoals.protein.current}
+                      carbs={dailyGoals.carbs.current}
+                      fats={dailyGoals.fat.current}
+                    />
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center text-lg">
-                    <Timer className="h-5 w-5 mr-2 text-orange-500" />
-                    Meal Prep Timer
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <MealPrepTimer />
-                </CardContent>
-              </Card>
+              <motion.div
+                className="w-full"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
+                <Card className="w-full">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-lg">
+                      <Timer className="h-5 w-5 mr-2 text-orange-500" />
+                      Meal Prep Timer
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <MealPrepTimer />
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center text-lg">
-                    <Droplet className="h-5 w-5 mr-2 text-blue-500" />
-                    Hydration Tracker
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <HydrationTracker />
-                </CardContent>
-              </Card>
-            </div>
+              <motion.div
+                className="w-full"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              >
+                <Card className="w-full">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-lg">
+                      <Droplet className="h-5 w-5 mr-2 text-blue-500" />
+                      Hydration Tracker
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <HydrationTracker />
+                  </CardContent>
+                </Card>
+              </motion.div>
           </div>
         </TabsContent>
 

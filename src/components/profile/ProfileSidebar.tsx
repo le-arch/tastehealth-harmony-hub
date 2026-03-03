@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -7,7 +8,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   LayoutDashboard, User, Calendar, LineChart, Settings, LogOut, Menu, X,
-  Heart, Trophy, Sun, Moon, Gamepad, Star, Mountain, Gift, Pencil, Bell, Bookmark,
+  Heart, Trophy, Sun, Moon, Gamepad, Star, Mountain, Gift, Bell, Bookmark,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import NotificationDropdown from "@/components/notifications/NotificationDropdown";
@@ -54,7 +55,7 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
     { path: "/profile", icon: <User className="h-5 w-5" />, label: t.profile },
     { path: "/meal-planning", icon: <Calendar className="h-5 w-5" />, label: t.mealPlanning },
     { path: "/progress", icon: <LineChart className="h-5 w-5" />, label: t.progress },
-    { path: "/meal-plan", icon: <Pencil className="h-5 w-5" />, label: t.mealplan },
+    //{ path: "/meal-plan", icon: <Pencil className="h-5 w-5" />, label: t.mealplan },
     { path: "/journal", icon: <Bookmark className="h-5 w-5" />, label: t.journal },
     { path: "/favorites", icon: <Heart className="h-5 w-5" />, label: t.favorites },
     { path: "/goals", icon: <Trophy className="h-5 w-5" />, label: t.goals },
@@ -75,7 +76,14 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
   return (
     <>
       <div className="fixed top-4 left-4 z-50 md:hidden">
-        <Button variant="outline" size="icon" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle Sidebar"><Menu className="h-6 w-6" /></Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle Sidebar"
+        >
+          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </Button>
       </div>
       {isOpen && <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={closeSidebar} />}
       <aside className={`fixed top-0 left-0 z-50 h-full w-64 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"} bg-background border-r border-border`}>
@@ -83,7 +91,6 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
           <Link to="/dashboard" className="flex items-center" onClick={closeSidebar}><Logo size="md" /><span className="ml-2 text-xl font-bold">TH</span></Link>
           <div className="flex items-center gap-1">
             <NotificationDropdown />
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={closeSidebar}><X className="h-5 w-5" /></Button>
           </div>
         </div>
         <div className="flex items-center space-x-3 mx-4 mb-4 p-3 rounded-lg bg-muted">
@@ -103,15 +110,31 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
         </div>
         <ScrollArea className="flex-1 px-2">
           <nav className="space-y-1 pb-6">
-            {navItems.map((item) => (
-              <Link key={item.path} to={item.path} onClick={closeSidebar}
-                className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                  (activePage && item.label.toLowerCase().includes(activePage.toLowerCase())) || location.pathname === item.path
-                    ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"
-                }`}>
-                <span className="mr-3">{item.icon}</span>{item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive =
+                (activePage && item.label.toLowerCase().includes(activePage.toLowerCase())) ||
+                location.pathname === item.path;
+              return (
+                <motion.div
+                  key={item.path}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <Link
+                    to={item.path}
+                    onClick={closeSidebar}
+                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <span className="mr-3">{item.icon}</span>
+                    {item.label}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </nav>
         </ScrollArea>
         <div className="mt-auto p-4 border-t border-border">

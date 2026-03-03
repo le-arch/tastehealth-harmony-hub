@@ -3,13 +3,16 @@ import React from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 const NotificationButton: React.FC = () => {
+  const navigate = useNavigate();
+  const { unreadCount } = useNotifications();
+
   const handleClick = () => {
-    toast({
-      title: "You have a new notification!",
-      description: "Check out your latest updates.",
-    });
+    // navigate to notifications page so user can see full list
+    navigate('/notifications');
   };
 
   return (
@@ -19,9 +22,14 @@ const NotificationButton: React.FC = () => {
         size="icon"
         aria-label="Notifications"
         onClick={handleClick}
-        className="bg-background shadow-lg border border-border hover:bg-accent transition-colors"
+        className="relative bg-background shadow-lg border border-border hover:bg-accent transition-colors"
       >
         <Bell className="h-6 w-6 text-primary" />
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white text-xs">
+            {unreadCount}
+          </span>
+        )}
         <span className="sr-only">Notification center</span>
       </Button>
     </div>
