@@ -8,7 +8,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   LayoutDashboard, User, Calendar, LineChart, Settings, LogOut, Menu, X,
-  Heart, Trophy, Sun, Moon, Gamepad, Star, Mountain, Gift, Bell, Bookmark,
+  Heart, Trophy, Sun, Moon, Gamepad, Star, Mountain, Gift, Pencil, Bookmark,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import NotificationDropdown from "@/components/notifications/NotificationDropdown";
@@ -63,6 +63,7 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
     { path: "/points", icon: <Star className="h-5 w-5" />, label: t.points },
     { path: "/challenges", icon: <Mountain className="h-5 w-5" />, label: t.challenges },
     { path: "/benefits", icon: <Gift className="h-5 w-5" />, label: t.level },
+    // { path: "/how-to-use", icon: <Pencil className="h-5 w-5" />, label: t.howToUse },
     { path: "/settings", icon: <Settings className="h-5 w-5" />, label: t.settings },
   ];
 

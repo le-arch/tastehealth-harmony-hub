@@ -40,6 +40,7 @@ const ChallengesPage = lazy(() => import("./pages/ChallengesPage"));
 const LevelBenefitsPage = lazy(() => import("./pages/LevelBenefitsPage"));
 const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
 const DailyJournalPage = lazy(() => import("./pages/DailyJournalPage"));
+const HowToUsePage = lazy(() => import("./pages/HowToUsePage"));
 
 function App() {
   // // Set up viewport height CSS variable
@@ -127,6 +128,7 @@ function RouteTransitionWrapper() {
         <Route path="/challenges" element={wrap(<ChallengesPage />)} />
         <Route path="/benefits" element={wrap(<LevelBenefitsPage />)} />
         <Route path="/journal" element={wrap(<DailyJournalPage />)} />
+        <Route path="/how-to-use" element={wrap(<HowToUsePage />)} />
         <Route path="*" element={wrap(<NotFound />)} />
       </Routes>
     </AnimatePresence>
