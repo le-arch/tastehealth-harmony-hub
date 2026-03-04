@@ -1,4 +1,4 @@
-# Taste Health Harmony Hub
+# TasteHealth Web Application 
 
 ## 🍎 Project Overview
 
@@ -271,7 +271,7 @@ This project is currently unlicensed. See the repository for more details.
 Have questions or need help? 
 - Check the [documentation](./docs)
 - Open an [issue](https://github.com/le-arch/tastehealth-harmony-hub/issues)
-- Contact: [your-email@example.com]
+- Contact: [basilleonora@gmail.com]
 
 ---
 
