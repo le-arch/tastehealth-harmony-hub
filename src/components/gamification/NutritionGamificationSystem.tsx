@@ -5,7 +5,7 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Zap, Award, LayoutDashboard, Target, Gift, Compass } from "lucide-react";
+import { Trophy, Zap, Award, LayoutDashboard, Target, Gift, Compass, Brain } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProfileSidebar from "../profile/ProfileSidebar";
 import RewardSystem from "../RewardSystem";
@@ -17,6 +17,7 @@ import DailyStreak from "./DailyStreak";
 import NutritionBadges from "./NutritionBadges";
 import NutritionLeaderboard from "./NutritionLeaderboard";
 import NutritionQuest from "./NutritionQuest";
+import NutritionQuiz from "./NutritionQuiz";
 import { useScreenSize } from "@/utils/mobile";
 import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
 
@@ -78,6 +79,7 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
           <TabsTrigger value="badges"><Award className="h-4 w-4" />{!isMobile && t.badges}</TabsTrigger>
           <TabsTrigger value="leaderboard"><Trophy className="h-4 w-4" />{!isMobile && t.leaderboard}</TabsTrigger>
           <TabsTrigger value="quests"><Compass className="h-4 w-4" />{!isMobile && t.quests}</TabsTrigger>
+          <TabsTrigger value="quiz"><Brain className="h-4 w-4" />{!isMobile && (language === 'fr' ? 'Quiz' : 'Quiz')}</TabsTrigger>
         </ScrollableTabsList>
         <TabsContent value="dashboard" className="space-y-4 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-1 gap-10"><NutritionProgressWheel /><MealMoodTracker /></div>
@@ -87,6 +89,7 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
         <TabsContent value="badges" className="mt-6"><NutritionBadges userId={userId} addPoints={addPoints} /></TabsContent>
         <TabsContent value="leaderboard" className="mt-6"><NutritionLeaderboard userId={userId} /></TabsContent>
         <TabsContent value="quests" className="mt-6"><NutritionQuest userId={userId} addPoints={addPoints} /></TabsContent>
+        <TabsContent value="quiz" className="mt-6"><NutritionQuiz /></TabsContent>
       </Tabs>
     </div>
   );

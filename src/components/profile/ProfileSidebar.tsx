@@ -63,7 +63,9 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
     { path: "/points", icon: <Star className="h-5 w-5" />, label: t.points },
     { path: "/challenges", icon: <Mountain className="h-5 w-5" />, label: t.challenges },
     { path: "/benefits", icon: <Gift className="h-5 w-5" />, label: t.level },
-    // { path: "/how-to-use", icon: <Pencil className="h-5 w-5" />, label: t.howToUse },
+    { path: "/how-to-use", icon: <Pencil className="h-5 w-5" />, label: language === 'fr' ? 'Guide' : 'How to Use' },
+    { path: "/cooking-videos", icon: <Pencil className="h-5 w-5" />, label: language === 'fr' ? 'Vidéos' : 'Cooking Videos' },
+    { path: "/health-tips", icon: <Heart className="h-5 w-5" />, label: language === 'fr' ? 'Conseils Santé' : 'Health Tips' },
     { path: "/settings", icon: <Settings className="h-5 w-5" />, label: t.settings },
   ];
 

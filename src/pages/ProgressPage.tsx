@@ -14,7 +14,7 @@ import CalorieTracker from '@/components/health/CalorieTracker';
 import SleepTracker from '@/components/health/SleepTracker';
 import ExerciseTracker from '@/components/health/ExerciseTracker';
 import HydrationInput from '@/components/health/HydrationInput';
-import { BarChart as BarChartIcon, TrendingUp, Trophy, History, PlusCircle, Edit, Gift, Droplet, Moon, Flame, Scale, Dumbbell } from 'lucide-react';
+import { BarChart as BarChartIcon, TrendingUp, Trophy, History, PlusCircle, Edit, Gift, Droplet, Moon, Flame, Scale, Dumbbell, Target } from 'lucide-react';
 import ChallengeCreator from '@/components/ChallengeCreator';
 import { useScreenSize } from '@/utils/mobile';
 import { getLS, LS_KEYS, CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry, BMIEntry } from '@/utils/localStorage';
@@ -27,9 +27,44 @@ const ProgressPage = () => {
   const { isMobile, isTablet } = useScreenSize();
   const isSmallScreen = isMobile || isTablet;
   
+  const [goalText, setGoalText] = useState('');
+  
   const t = language === 'fr'
-    ? { title: "Progrès & Objectifs", overview: "Vue d'ensemble", trackers: "Saisir données", rewards: "Récompenses", challenges: "Défis", history: "Historique", subtitle: "Suivez votre parcours santé", calories: "Calories", sleep: "Sommeil", exercise: "Exercice", water: "Hydratation", bmiTracker: "IMC", trackDescription: "Saisissez vos données de santé", addProgress: "Ajouter des données", editProgress: "Modifier les données" }
-    : { title: "Progress & Goals", overview: "Overview", trackers: "Track Data", rewards: "Rewards", challenges: "Challenges", history: "History", subtitle: "Track your health journey", calories: "Calories", sleep: "Sleep", exercise: "Exercise", water: "Water Intake", bmiTracker: "BMI", trackDescription: "Enter your health data to see it reflected in your charts", addProgress: "Add Progress", editProgress: "Edit Progress" };
+    ? { title: "Progrès & Objectifs", overview: "Vue d'ensemble", trackers: "Saisir données", rewards: "Récompenses", challenges: "Défis", history: "Historique", goals: "Objectifs", subtitle: "Suivez votre parcours santé", calories: "Calories", sleep: "Sommeil", exercise: "Exercice", water: "Hydratation", bmiTracker: "IMC", trackDescription: "Saisissez vos données de santé", addProgress: "Ajouter des données", editProgress: "Modifier les données" }
+    : { title: "Progress & Goals", overview: "Overview", trackers: "Track Data", rewards: "Rewards", challenges: "Challenges", history: "History", goals: "Goals", subtitle: "Track your health journey", calories: "Calories", sleep: "Sleep", exercise: "Exercise", water: "Water Intake", bmiTracker: "BMI", trackDescription: "Enter your health data to see it reflected in your charts", addProgress: "Add Progress", editProgress: "Edit Progress" };
+
+  // Goals state
+  interface SavedGoal { id: string; text: string; week: string; date: string; completed: boolean; }
+  const [savedGoals, setSavedGoals] = useState<SavedGoal[]>(() => {
+    try { return JSON.parse(localStorage.getItem('th_saved_goals') || '[]'); } catch { return []; }
+  });
+  const getWeekLabel = (d: Date) => {
+    const start = new Date(d); start.setDate(d.getDate() - d.getDay());
+    return `Week of ${start.toLocaleDateString()}`;
+  };
+  const saveGoal = () => {
+    if (!goalText.trim()) return;
+    const g: SavedGoal = { id: crypto.randomUUID(), text: goalText, week: getWeekLabel(new Date()), date: new Date().toISOString(), completed: false };
+    const updated = [g, ...savedGoals];
+    setSavedGoals(updated);
+    localStorage.setItem('th_saved_goals', JSON.stringify(updated));
+    setGoalText('');
+  };
+  const toggleGoal = (id: string) => {
+    const updated = savedGoals.map(g => g.id === id ? { ...g, completed: !g.completed } : g);
+    setSavedGoals(updated);
+    localStorage.setItem('th_saved_goals', JSON.stringify(updated));
+  };
+  const deleteGoal = (id: string) => {
+    const updated = savedGoals.filter(g => g.id !== id);
+    setSavedGoals(updated);
+    localStorage.setItem('th_saved_goals', JSON.stringify(updated));
+  };
+  const goalsByWeek = savedGoals.reduce((acc, g) => {
+    if (!acc[g.week]) acc[g.week] = [];
+    acc[g.week].push(g);
+    return acc;
+  }, {} as Record<string, SavedGoal[]>);
 
   // Build weekly history data
   const weeklyData = useMemo(() => {
@@ -100,6 +135,7 @@ const ProgressPage = () => {
               <TabsTrigger value="trackers" className="flex items-center gap-1"><TrendingUp className="h-4 w-4" />{!isSmallScreen && t.trackers}</TabsTrigger>
               <TabsTrigger value="rewards" className="flex items-center gap-1"><Gift className="h-4 w-4" />{!isSmallScreen && t.rewards}</TabsTrigger>
               <TabsTrigger value="challenges" className="flex items-center gap-1"><Trophy className="h-4 w-4" />{!isSmallScreen && t.challenges}</TabsTrigger>
+              <TabsTrigger value="goals" className="flex items-center gap-1"><Target className="h-4 w-4" />{!isSmallScreen && t.goals}</TabsTrigger>
               <TabsTrigger value="history" className="flex items-center gap-1"><History className="h-4 w-4" />{!isSmallScreen && t.history}</TabsTrigger>
             </ScrollableTabsList>
             
@@ -141,6 +177,47 @@ const ProgressPage = () => {
             
             <TabsContent value="challenges" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card><CardHeader><CardTitle>{t.challenges}</CardTitle></CardHeader><CardContent><ChallengeCreator /></CardContent></Card>
+            </TabsContent>
+
+            <TabsContent value="goals" className="space-y-4 mt-4 sm:mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Target className="h-5 w-5 text-primary" />{t.goals}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <input
+                      value={goalText}
+                      onChange={e => setGoalText(e.target.value)}
+                      placeholder="Add a new goal..."
+                      className="flex-1 px-3 py-2 border border-input rounded-md text-sm bg-background"
+                      onKeyDown={e => e.key === 'Enter' && saveGoal()}
+                    />
+                    <Button onClick={saveGoal} size="sm"><PlusCircle className="h-4 w-4 mr-1" />Add</Button>
+                  </div>
+                  {Object.keys(goalsByWeek).length === 0 ? (
+                    <div className="text-center py-8">
+                      <Target className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+                      <p className="text-muted-foreground text-sm">No goals saved yet. Add your first goal above!</p>
+                    </div>
+                  ) : (
+                    Object.entries(goalsByWeek).map(([week, goals]) => (
+                      <div key={week}>
+                        <h4 className="font-semibold text-sm text-muted-foreground mb-2">{week}</h4>
+                        <div className="space-y-2">
+                          {goals.map(g => (
+                            <div key={g.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                              <input type="checkbox" checked={g.completed} onChange={() => toggleGoal(g.id)} className="h-4 w-4 rounded" />
+                              <span className={`flex-1 text-sm ${g.completed ? 'line-through text-muted-foreground' : ''}`}>{g.text}</span>
+                              <button onClick={() => deleteGoal(g.id)} className="text-red-500 hover:text-red-700 text-xs">✕</button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
             </TabsContent>
             
             <TabsContent value="history" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">

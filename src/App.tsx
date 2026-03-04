@@ -41,6 +41,8 @@ const LevelBenefitsPage = lazy(() => import("./pages/LevelBenefitsPage"));
 const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
 const DailyJournalPage = lazy(() => import("./pages/DailyJournalPage"));
 const HowToUsePage = lazy(() => import("./pages/HowToUsePage"));
+const CookingVideosPage = lazy(() => import("./pages/CookingVideosPage"));
+const HealthTipsPage = lazy(() => import("./pages/HealthTipsPage"));
 
 function App() {
   // // Set up viewport height CSS variable
@@ -129,6 +131,8 @@ function RouteTransitionWrapper() {
         <Route path="/benefits" element={wrap(<LevelBenefitsPage />)} />
         <Route path="/journal" element={wrap(<DailyJournalPage />)} />
         <Route path="/how-to-use" element={wrap(<HowToUsePage />)} />
+        <Route path="/cooking-videos" element={wrap(<CookingVideosPage />)} />
+        <Route path="/health-tips" element={wrap(<HealthTipsPage />)} />
         <Route path="*" element={wrap(<NotFound />)} />
       </Routes>
     </AnimatePresence>

@@ -8,7 +8,9 @@ import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useScreenSize } from '@/utils/mobile';
-import { Bookmark, Calendar, Heart, Smile, Trash2, Search, Plus, Edit2 } from 'lucide-react';
+import { Bookmark, Calendar, Heart, Smile, Trash2, Search, Plus, Edit2, ChefHat } from 'lucide-react';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { TabsTrigger, ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { toast } from 'sonner';
 
 interface JournalEntry {
@@ -34,6 +36,14 @@ const DailyJournalPage = () => {
     mood: 'great',
     meals: [] as string[],
   });
+  const [activeTab, setActiveTab] = useState('journal');
+
+  // Custom recipes
+  interface CustomRecipe { id: string; name: string; ingredients: string; method: string; category: string; date: string; }
+  const [recipes, setRecipes] = useState<CustomRecipe[]>(() => {
+    try { return JSON.parse(localStorage.getItem('th_custom_recipes') || '[]'); } catch { return []; }
+  });
+  const [recipeForm, setRecipeForm] = useState({ name: '', ingredients: '', method: '', category: 'breakfast' });
 
   const { language } = useLanguage();
   const { isMobile } = useScreenSize();
@@ -207,6 +217,13 @@ const DailyJournalPage = () => {
             <p className="text-muted-foreground">{t.subtitle}</p>
           </motion.div>
 
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <ScrollableTabsList className="mb-6">
+              <TabsTrigger value="journal"><Bookmark className="h-4 w-4 mr-1" />Journal</TabsTrigger>
+              <TabsTrigger value="recipes"><ChefHat className="h-4 w-4 mr-1" />My Recipes</TabsTrigger>
+            </ScrollableTabsList>
+
+            <TabsContent value="journal">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             {/* Editor */}
             <div className="lg:col-span-2 order-2 lg:order-1">
@@ -367,6 +384,88 @@ const DailyJournalPage = () => {
               )}
             </div>
           </div>
+            </TabsContent>
+
+            <TabsContent value="recipes">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Recipe Form */}
+                <Card>
+                  <CardHeader><CardTitle className="flex items-center gap-2"><ChefHat className="h-5 w-5 text-primary" />Add Your Recipe</CardTitle></CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Recipe Name</label>
+                      <Input value={recipeForm.name} onChange={e => setRecipeForm({...recipeForm, name: e.target.value})} placeholder="My special recipe..." className="mt-1" />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Category</label>
+                      <select value={recipeForm.category} onChange={e => setRecipeForm({...recipeForm, category: e.target.value})} className="w-full mt-1 px-3 py-2 border border-input rounded-md text-sm bg-background">
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="snacks">Snacks</option>
+                        <option value="drinks">Drinks</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Ingredients</label>
+                      <Textarea value={recipeForm.ingredients} onChange={e => setRecipeForm({...recipeForm, ingredients: e.target.value})} placeholder="One ingredient per line..." rows={4} className="mt-1" />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Method</label>
+                      <Textarea value={recipeForm.method} onChange={e => setRecipeForm({...recipeForm, method: e.target.value})} placeholder="Step by step instructions..." rows={4} className="mt-1" />
+                    </div>
+                    <Button onClick={() => {
+                      if (!recipeForm.name.trim()) { toast.error('Please enter a recipe name'); return; }
+                      const newRecipe: CustomRecipe = { id: crypto.randomUUID(), ...recipeForm, date: new Date().toISOString() };
+                      const updated = [newRecipe, ...recipes];
+                      setRecipes(updated);
+                      localStorage.setItem('th_custom_recipes', JSON.stringify(updated));
+                      setRecipeForm({ name: '', ingredients: '', method: '', category: 'breakfast' });
+                      toast.success('Recipe saved!');
+                    }} className="w-full"><Plus className="h-4 w-4 mr-2" />Save Recipe</Button>
+                  </CardContent>
+                </Card>
+
+                {/* Recipe List */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-lg">My Recipes ({recipes.length})</h3>
+                  {recipes.length === 0 ? (
+                    <Card><CardContent className="py-8 text-center"><ChefHat className="h-10 w-10 mx-auto text-muted-foreground mb-2" /><p className="text-muted-foreground text-sm">No recipes yet. Add your first recipe!</p></CardContent></Card>
+                  ) : (
+                    recipes.map(r => (
+                      <Card key={r.id}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h4 className="font-semibold">{r.name}</h4>
+                              <span className="text-xs text-muted-foreground capitalize bg-muted px-2 py-0.5 rounded">{r.category}</span>
+                            </div>
+                            <Button variant="ghost" size="sm" onClick={() => {
+                              const updated = recipes.filter(x => x.id !== r.id);
+                              setRecipes(updated);
+                              localStorage.setItem('th_custom_recipes', JSON.stringify(updated));
+                              toast.success('Recipe deleted');
+                            }} className="text-red-500"><Trash2 className="h-4 w-4" /></Button>
+                          </div>
+                          <div className="mt-3 space-y-2">
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground">Ingredients:</p>
+                              <p className="text-sm whitespace-pre-line">{r.ingredients}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground">Method:</p>
+                              <p className="text-sm whitespace-pre-line">{r.method}</p>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">{new Date(r.date).toLocaleDateString()}</p>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
