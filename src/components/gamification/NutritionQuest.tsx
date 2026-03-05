@@ -8,6 +8,7 @@ import { Compass, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import { getLS, setLS, LS_KEYS } from "@/utils/localStorage";
+import Confetti from "@/components/Confetti";
 
 interface Quest {
   id: string; name: string; description: string; target: number; progress: number; points: number; completed: boolean;
@@ -24,6 +25,7 @@ interface NutritionQuestProps { userId?: string; addPoints?: (points: number, re
 const NutritionQuest = ({ addPoints }: NutritionQuestProps) => {
   const { language } = useLanguage();
   const [quests, setQuests] = useState<Quest[]>(getLS('th_quests_active', DEFAULT_QUESTS));
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const save = (updated: Quest[]) => { setQuests(updated); setLS('th_quests_active', updated); };
 
@@ -36,7 +38,9 @@ const NutritionQuest = ({ addPoints }: NutritionQuestProps) => {
         addPoints?.(q.points, q.name);
         const pts = getLS<number>(LS_KEYS.POINTS, 0);
         setLS(LS_KEYS.POINTS, pts + q.points);
-        toast.success(`Quest complete! +${q.points} points`);
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3500);
+        toast.success(`Quest complete! +${q.points} points 🎉`);
       }
       return { ...q, progress: newProgress, completed };
     });
@@ -46,30 +50,33 @@ const NutritionQuest = ({ addPoints }: NutritionQuestProps) => {
   const resetQuests = () => { save(DEFAULT_QUESTS); toast.success("Quests reset!"); };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span className="flex items-center gap-2"><Compass className="h-5 w-5 text-purple-500" />{language === 'fr' ? "Quêtes Nutritionnelles" : "Nutrition Quests"}</span>
-          <Button size="sm" variant="outline" onClick={resetQuests}>Reset</Button>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {quests.map(q => (
-          <div key={q.id} className={`p-3 border rounded-lg ${q.completed ? 'bg-green-50 dark:bg-green-950' : ''}`}>
-            <div className="flex items-center justify-between mb-1">
-              <div>
-                <span className="font-medium">{q.name}</span>
-                <Badge variant="secondary" className="ml-2 text-xs">{q.points} pts</Badge>
+    <>
+      <Confetti active={showConfetti} />
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span className="flex items-center gap-2"><Compass className="h-5 w-5 text-purple-500" />{language === 'fr' ? "Quêtes Nutritionnelles" : "Nutrition Quests"}</span>
+            <Button size="sm" variant="outline" onClick={resetQuests}>Reset</Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {quests.map(q => (
+            <div key={q.id} className={`p-3 border rounded-lg ${q.completed ? 'bg-green-50 dark:bg-green-950' : ''}`}>
+              <div className="flex items-center justify-between mb-1">
+                <div>
+                  <span className="font-medium">{q.name}</span>
+                  <Badge variant="secondary" className="ml-2 text-xs">{q.points} pts</Badge>
+                </div>
+                {q.completed ? <Check className="h-5 w-5 text-green-600" /> : <Button size="sm" onClick={() => advance(q.id)}>+1</Button>}
               </div>
-              {q.completed ? <Check className="h-5 w-5 text-green-600" /> : <Button size="sm" onClick={() => advance(q.id)}>+1</Button>}
+              <p className="text-xs text-muted-foreground mb-2">{q.description}</p>
+              <Progress value={(q.progress / q.target) * 100} className="h-1.5" />
+              <span className="text-xs text-muted-foreground">{q.progress}/{q.target}</span>
             </div>
-            <p className="text-xs text-muted-foreground mb-2">{q.description}</p>
-            <Progress value={(q.progress / q.target) * 100} className="h-1.5" />
-            <span className="text-xs text-muted-foreground">{q.progress}/{q.target}</span>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
+          ))}
+        </CardContent>
+      </Card>
+    </>
   );
 };
 
