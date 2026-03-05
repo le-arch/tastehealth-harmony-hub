@@ -9,26 +9,16 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
-import {
-  Activity,
-  Target,
-  TrendingUp,
-  Calendar,
-  Award,
-  Flame,
-  Droplet,
-  Utensils,
-  Timer,
-  Gauge,
-  Trophy,
-  Wrench
-} from "lucide-react";
+import { Activity, Target, TrendingUp, Calendar, Award, Flame, Droplet, Utensils, Timer, Gauge, Trophy, Wrench } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useScreenSize } from "@/utils/mobile";
 import MealPrepTimer from "./MealPrepTimer";
 import HydrationTracker from "./HydrationTracker";
 import NutritionProgressWheel from "./NutritionProgressWheel";
 import DailyMealSelector from "./DailyMealSelector";
+import { getLS, LS_KEYS, Challenge } from "@/utils/localStorage";
+import { MEAL_DATABASE } from "@/data/mealDatabase";
+import { Badge } from "@/components/ui/badge";
 
 const NutritionDashboard = () => {
   const [dailyGoals, setDailyGoals] = useState({
@@ -39,19 +29,15 @@ const NutritionDashboard = () => {
     water: { current: 6, target: 8 },
   });
 
-  // Load daily meals from localStorage and update goals
-  useEffect(() => {
+  const [mealNutrition, setMealNutrition] = useState({ protein: 0, carbs: 0, fats: 0 });
+
+  // Load daily meals and compute nutrition
+  const loadMealData = () => {
     const stored = localStorage.getItem('th_daily_meals');
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        const { MEAL_DATABASE } = require('@/data/mealDatabase');
-        
-        let totalCalories = 0;
-        let totalProtein = 0;
-        let totalCarbs = 0;
-        let totalFats = 0;
-
+        let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFats = 0;
         parsed.forEach((item: any) => {
           const meal = MEAL_DATABASE.find((m: any) => m.id === item.mealId);
           if (meal) {
@@ -61,7 +47,6 @@ const NutritionDashboard = () => {
             totalFats += meal.nutrition.fats;
           }
         });
-
         setDailyGoals(prev => ({
           ...prev,
           calories: { ...prev.calories, current: totalCalories },
@@ -69,362 +54,97 @@ const NutritionDashboard = () => {
           carbs: { ...prev.carbs, current: totalCarbs },
           fat: { ...prev.fat, current: totalFats },
         }));
-      } catch (error) {
-        console.error('Failed to load daily meals:', error);
-      }
+        setMealNutrition({ protein: totalProtein, carbs: totalCarbs, fats: totalFats });
+      } catch {}
     }
+  };
+
+  useEffect(() => {
+    loadMealData();
+    // Listen for storage changes
+    const handler = () => loadMealData();
+    window.addEventListener('storage', handler);
+    // Also poll every 2 seconds for same-tab changes
+    const interval = setInterval(loadMealData, 2000);
+    return () => { window.removeEventListener('storage', handler); clearInterval(interval); };
   }, []);
 
-  const [weeklyProgress, setWeeklyProgress] = useState({
-    mealsLogged: 18,
-    targetMeals: 21,
-    streakDays: 5,
-    totalPoints: 1250,
-  });
-
-  const [recentChallenges] = useState([
-    {
-      id: 1,
-      title: "5-a-Day Challenge",
-      description: "Eat 5 servings of fruits and vegetables daily",
-      icon: "🥕",
-      progress: 3,
-      target: 5,
-    },
-    {
-      id: 2,
-      title: "Hydration Hero",
-      description: "Drink 8 glasses of water daily",
-      icon: "💧",
-      progress: 6,
-      target: 8,
-    },
-    {
-      id: 3,
-      title: "Protein Power",
-      description: "Meet your daily protein goals",
-      icon: "🥩",
-      progress: 45,
-      target: 150,
-    },
-  ]);
-
   const { language } = useLanguage();
-  const { isMobile, isTablet } = useScreenSize();
+  const { isMobile } = useScreenSize();
   const [activeTab, setActiveTab] = useState("dailyTools");
 
-  const translations = {
-    en: {
-      title: "Nutrition Dashboard",
-      dailyTools: "Daily Tools",
-      progressSummary: "Progress Summary",
-      achievements: "Achievements",
-      dailyGoals: "Today's Goals",
-      weeklyProgress: "Weekly Progress",
-      recentChallenges: "Active Challenges",
-      calories: "Calories",
-      protein: "Protein",
-      carbs: "Carbs",
-      fat: "Fat",
-      water: "Water",
-      mealsLogged: "Meals Logged",
-      streakDays: "Streak Days",
-      totalPoints: "Total Points",
-      viewDetails: "View Details",
-      joinChallenge: "Join Challenge",
-      kcal: "kcal",
-      grams: "g",
-      glasses: "glasses",
-      meals: "meals",
-      days: "days",
-      points: "points",
-    },
-    fr: {
-      title: "Tableau de Bord Nutritionnel",
-      dailyTools: "Outils Quotidiens",
-      progressSummary: "Résumé des Progrès",
-      achievements: "Réalisations",
-      dailyGoals: "Objectifs du Jour",
-      weeklyProgress: "Progrès Hebdomadaire",
-      recentChallenges: "Défis Actifs",
-      calories: "Calories",
-      protein: "Protéines",
-      carbs: "Glucides",
-      fat: "Lipides",
-      water: "Eau",
-      mealsLogged: "Repas Enregistrés",
-      streakDays: "Jours de Série",
-      totalPoints: "Points Totaux",
-      viewDetails: "Voir Détails",
-      joinChallenge: "Rejoindre Défi",
-      kcal: "kcal",
-      grams: "g",
-      glasses: "verres",
-      meals: "repas",
-      days: "jours",
-      points: "points",
-    },
-  };
+  // Achievements data
+  const challenges = getLS<Challenge[]>(LS_KEYS.CHALLENGES, []);
+  const activeChallenges = challenges.filter(c => !c.completed);
+  const completedChallenges = challenges.filter(c => c.completed);
+  const savedGoals = getLS<any[]>('th_saved_goals', []);
+  const quizScores = getLS<any[]>('th_quiz_scores', []);
 
-  const t = translations[language as keyof typeof translations] || translations.en;
+  const t = language === 'fr'
+    ? { title: "Tableau de Bord Nutritionnel", dailyTools: "Outils Quotidiens", progressSummary: "Résumé des Progrès", achievements: "Réalisations", dailyGoals: "Objectifs du Jour", calories: "Calories", protein: "Protéines", carbs: "Glucides", fat: "Lipides", water: "Eau", kcal: "kcal", grams: "g", glasses: "verres" }
+    : { title: "Nutrition Dashboard", dailyTools: "Daily Tools", progressSummary: "Progress Summary", achievements: "Achievements", dailyGoals: "Today's Goals", calories: "Calories", protein: "Protein", carbs: "Carbs", fat: "Fat", water: "Water", kcal: "kcal", grams: "g", glasses: "glasses" };
 
-  const calculateProgress = (current: number, target: number) => {
-    return Math.min((current / target) * 100, 100);
-  };
-
-  const getProgressColor = (progress: number) => {
-    if (progress >= 100) return "text-green-600";
-    if (progress >= 75) return "text-yellow-600";
-    return "text-blue-600";
-  };
+  const calculateProgress = (current: number, target: number) => Math.min((current / target) * 100, 100);
 
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
-          {t.title}
-        </h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">{t.title}</h1>
         <div className="flex items-center space-x-2">
-          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
-          <span className="text-xs sm:text-sm text-gray-500">
-            {new Date().toLocaleDateString()}
-          </span>
+          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+          <span className="text-xs sm:text-sm text-muted-foreground">{new Date().toLocaleDateString()}</span>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <ScrollableTabsList className="w-full">
-          <TabsTrigger value="dailyTools" className="flex items-center gap-2">
-            <Wrench className="h-4 w-4" />
-            {!isMobile && t.dailyTools}
-          </TabsTrigger>
-          <TabsTrigger value="progressSummary" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            {!isMobile && t.progressSummary}
-          </TabsTrigger>
-          <TabsTrigger value="achievements" className="flex items-center gap-2">
-            <Trophy className="h-4 w-4" />
-            {!isMobile && t.achievements}
-          </TabsTrigger>
+          <TabsTrigger value="dailyTools" className="flex items-center gap-2"><Wrench className="h-4 w-4" />{!isMobile && t.dailyTools}</TabsTrigger>
+          <TabsTrigger value="progressSummary" className="flex items-center gap-2"><TrendingUp className="h-4 w-4" />{!isMobile && t.progressSummary}</TabsTrigger>
+          <TabsTrigger value="achievements" className="flex items-center gap-2"><Trophy className="h-4 w-4" />{!isMobile && t.achievements}</TabsTrigger>
         </ScrollableTabsList>
 
         <TabsContent value="dailyTools" className="space-y-6">
-          {/* vertical grid layout for daily-tool cards */}
           <div className="grid grid-cols-1 gap-6">
-              <motion.div
-                className="w-full"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <DailyMealSelector />
-              </motion.div>
-
-              <motion.div
-                className="w-full"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-              >
-                <Card className="w-full">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-lg">
-                      <Gauge className="h-5 w-5 mr-2 text-green-500" />
-                      Progress Wheel
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <NutritionProgressWheel 
-                      protein={dailyGoals.protein.current}
-                      carbs={dailyGoals.carbs.current}
-                      fats={dailyGoals.fat.current}
-                    />
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div
-                className="w-full"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-              >
-                <Card className="w-full">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-lg">
-                      <Timer className="h-5 w-5 mr-2 text-orange-500" />
-                      Meal Prep Timer
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <MealPrepTimer />
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div
-                className="w-full"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-              >
-                <Card className="w-full">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-lg">
-                      <Droplet className="h-5 w-5 mr-2 text-blue-500" />
-                      Hydration Tracker
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <HydrationTracker />
-                  </CardContent>
-                </Card>
-              </motion.div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+              <DailyMealSelector />
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
+              <Card>
+                <CardHeader><CardTitle className="flex items-center text-lg"><Gauge className="h-5 w-5 mr-2 text-green-500" />Progress Wheel</CardTitle></CardHeader>
+                <CardContent>
+                  <NutritionProgressWheel protein={mealNutrition.protein} carbs={mealNutrition.carbs} fats={mealNutrition.fats} />
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}>
+              <Card><CardHeader><CardTitle className="flex items-center text-lg"><Timer className="h-5 w-5 mr-2 text-orange-500" />Meal Prep Timer</CardTitle></CardHeader><CardContent><MealPrepTimer /></CardContent></Card>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}>
+              <Card><CardHeader><CardTitle className="flex items-center text-lg"><Droplet className="h-5 w-5 mr-2 text-blue-500" />Hydration Tracker</CardTitle></CardHeader><CardContent><HydrationTracker /></CardContent></Card>
+            </motion.div>
           </div>
         </TabsContent>
 
         <TabsContent value="progressSummary" className="space-y-6">
-          {/* Daily Goals */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Target className="h-5 w-5 mr-2 text-blue-500" />
-                {t.dailyGoals}
-              </CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="flex items-center"><Target className="h-5 w-5 mr-2 text-blue-500" />{t.dailyGoals}</CardTitle></CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                {/* Calories */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Flame className="h-4 w-4 mr-1 text-orange-500" />
-                      <span className="text-sm font-medium">{t.calories}</span>
+                {[
+                  { label: t.calories, current: dailyGoals.calories.current, target: dailyGoals.calories.target, unit: t.kcal, icon: <Flame className="h-4 w-4 mr-1 text-orange-500" /> },
+                  { label: t.protein, current: dailyGoals.protein.current, target: dailyGoals.protein.target, unit: t.grams, icon: <Utensils className="h-4 w-4 mr-1 text-red-500" /> },
+                  { label: t.carbs, current: dailyGoals.carbs.current, target: dailyGoals.carbs.target, unit: t.grams, icon: <Activity className="h-4 w-4 mr-1 text-yellow-500" /> },
+                  { label: t.fat, current: dailyGoals.fat.current, target: dailyGoals.fat.target, unit: t.grams, icon: <TrendingUp className="h-4 w-4 mr-1 text-purple-500" /> },
+                  { label: t.water, current: dailyGoals.water.current, target: dailyGoals.water.target, unit: t.glasses, icon: <Droplet className="h-4 w-4 mr-1 text-blue-500" /> },
+                ].map(item => (
+                  <div key={item.label} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">{item.icon}<span className="text-sm font-medium">{item.label}</span></div>
+                      <span className="text-xs text-muted-foreground">{item.current}/{item.target} {item.unit}</span>
                     </div>
-                    <span className="text-xs text-gray-500">
-                      {dailyGoals.calories.current}/{dailyGoals.calories.target} {t.kcal}
-                    </span>
+                    <Progress value={calculateProgress(item.current, item.target)} className="h-2" />
                   </div>
-                  <Progress
-                    value={calculateProgress(
-                      dailyGoals.calories.current,
-                      dailyGoals.calories.target
-                    )}
-                    className="h-2"
-                  />
-                </div>
-
-                {/* Protein */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Utensils className="h-4 w-4 mr-1 text-red-500" />
-                      <span className="text-sm font-medium">{t.protein}</span>
-                    </div>
-                    <span className="text-xs text-gray-500">
-                      {dailyGoals.protein.current}/{dailyGoals.protein.target} {t.grams}
-                    </span>
-                  </div>
-                  <Progress
-                    value={calculateProgress(
-                      dailyGoals.protein.current,
-                      dailyGoals.protein.target
-                    )}
-                    className="h-2"
-                  />
-                </div>
-
-                {/* Carbs */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Activity className="h-4 w-4 mr-1 text-yellow-500" />
-                      <span className="text-sm font-medium">{t.carbs}</span>
-                    </div>
-                    <span className="text-xs text-gray-500">
-                      {dailyGoals.carbs.current}/{dailyGoals.carbs.target} {t.grams}
-                    </span>
-                  </div>
-                  <Progress
-                    value={calculateProgress(
-                      dailyGoals.carbs.current,
-                      dailyGoals.carbs.target
-                    )}
-                    className="h-2"
-                  />
-                </div>
-
-                {/* Fat */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <TrendingUp className="h-4 w-4 mr-1 text-purple-500" />
-                      <span className="text-sm font-medium">{t.fat}</span>
-                    </div>
-                    <span className="text-xs text-gray-500">
-                      {dailyGoals.fat.current}/{dailyGoals.fat.target} {t.grams}
-                    </span>
-                  </div>
-                  <Progress
-                    value={calculateProgress(
-                      dailyGoals.fat.current,
-                      dailyGoals.fat.target
-                    )}
-                    className="h-2"
-                  />
-                </div>
-
-                {/* Water */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Droplet className="h-4 w-4 mr-1 text-blue-500" />
-                      <span className="text-sm font-medium">{t.water}</span>
-                    </div>
-                    <span className="text-xs text-gray-500">
-                      {dailyGoals.water.current}/{dailyGoals.water.target} {t.glasses}
-                    </span>
-                  </div>
-                  <Progress
-                    value={calculateProgress(
-                      dailyGoals.water.current,
-                      dailyGoals.water.target
-                    )}
-                    className="h-2"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Weekly Progress */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2 text-green-500" />
-                {t.weeklyProgress}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {weeklyProgress.mealsLogged}/{weeklyProgress.targetMeals}
-                  </div>
-                  <div className="text-sm text-gray-600">{t.mealsLogged}</div>
-                </div>
-                <div className="text-center p-4 bg-orange-50 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">
-                    {weeklyProgress.streakDays}
-                  </div>
-                  <div className="text-sm text-gray-600">{t.streakDays}</div>
-                </div>
-              </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-3xl font-bold text-green-600">
-                  {weeklyProgress.totalPoints}
-                </div>
-                <div className="text-sm text-gray-600">{t.totalPoints}</div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -433,47 +153,65 @@ const NutritionDashboard = () => {
         <TabsContent value="achievements" className="space-y-4">
           {/* Active Challenges */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Award className="h-5 w-5 mr-2 text-purple-500" />
-                {t.recentChallenges}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {recentChallenges.map((challenge, index) => (
-                <motion.div
-                  key={challenge.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="p-4 border rounded-lg hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center">
-                      <span className="text-2xl mr-3">{challenge.icon}</span>
-                      <div>
-                        <h4 className="font-medium">{challenge.title}</h4>
-                        <p className="text-sm text-gray-600">{challenge.description}</p>
-                      </div>
-                    </div>
+            <CardHeader><CardTitle className="flex items-center gap-2"><Award className="h-5 w-5 text-purple-500" />Active Challenges</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              {activeChallenges.length === 0 ? (
+                <p className="text-muted-foreground text-sm text-center py-4">No active challenges</p>
+              ) : activeChallenges.map(c => (
+                <div key={c.id} className="p-3 border rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-sm">{c.name}</span>
+                    <Badge variant="secondary">{c.progress}/{c.target}</Badge>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Progress</span>
-                      <span>
-                        {challenge.progress}/{challenge.target}
-                      </span>
-                    </div>
-                    <Progress
-                      value={calculateProgress(challenge.progress, challenge.target)}
-                      className="h-2"
-                    />
-                  </div>
-                </motion.div>
+                  <Progress value={Math.min((c.progress / c.target) * 100, 100)} className="h-2" />
+                </div>
               ))}
-              <Button variant="outline" className="w-full">
-                {t.viewDetails}
-              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Completed Challenges */}
+          {completedChallenges.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-green-500" />Completed Challenges</CardTitle></CardHeader>
+              <CardContent className="space-y-2">
+                {completedChallenges.map(c => (
+                  <div key={c.id} className="flex items-center gap-2 p-2 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                    <Trophy className="h-4 w-4 text-green-500" />
+                    <span className="text-sm font-medium">{c.name}</span>
+                    <Badge className="bg-green-600 ml-auto">Done</Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Saved Goals */}
+          <Card>
+            <CardHeader><CardTitle className="flex items-center gap-2"><Target className="h-5 w-5 text-blue-500" />Saved Goals</CardTitle></CardHeader>
+            <CardContent className="space-y-2">
+              {savedGoals.length === 0 ? (
+                <p className="text-muted-foreground text-sm text-center py-4">No goals saved yet</p>
+              ) : savedGoals.slice(0, 5).map((g: any) => (
+                <div key={g.id} className="flex items-center gap-2 p-2 border rounded-lg">
+                  <input type="checkbox" checked={g.completed} readOnly className="h-4 w-4" />
+                  <span className={`text-sm ${g.completed ? 'line-through text-muted-foreground' : ''}`}>{g.text}</span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Quiz Scores */}
+          <Card>
+            <CardHeader><CardTitle className="flex items-center gap-2"><Award className="h-5 w-5 text-yellow-500" />Quiz Scores</CardTitle></CardHeader>
+            <CardContent className="space-y-2">
+              {quizScores.length === 0 ? (
+                <p className="text-muted-foreground text-sm text-center py-4">No quiz scores yet. Take a quiz in the Nutrition Game!</p>
+              ) : quizScores.map((s: any, i: number) => (
+                <div key={i} className="flex items-center justify-between p-2 border rounded-lg">
+                  <span className="text-sm">{new Date(s.date).toLocaleDateString()}</span>
+                  <Badge variant={s.score >= 80 ? "default" : "secondary"}>{s.score}%</Badge>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </TabsContent>

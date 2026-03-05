@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Gift, Star, Zap, Crown } from "lucide-react";
+import { Trophy, Gift, Star, Zap, Crown, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
-import { getLS, setLS, LS_KEYS, Reward } from "@/utils/localStorage";
+import { getLS, setLS, LS_KEYS, Reward, CalorieEntry, HydrationEntry, MealPlan, Challenge } from "@/utils/localStorage";
+import Confetti from "@/components/Confetti";
 
 const DEFAULT_REWARDS: Reward[] = [
   { id: '1', name: 'First Step', description: 'Log your first calorie entry', points: 10, claimed: false, icon: 'star' },
@@ -14,6 +14,9 @@ const DEFAULT_REWARDS: Reward[] = [
   { id: '3', name: 'Week Warrior', description: 'Log data for 7 consecutive days', points: 50, claimed: false, icon: 'trophy' },
   { id: '4', name: 'Meal Master', description: 'Create your first meal plan', points: 30, claimed: false, icon: 'gift' },
   { id: '5', name: 'Nutrition King', description: 'Reach 1000 total points', points: 100, claimed: false, icon: 'crown' },
+  { id: '6', name: 'Goal Setter', description: 'Save a nutrition goal', points: 20, claimed: false, icon: 'star' },
+  { id: '7', name: 'Challenge Champion', description: 'Complete a challenge', points: 40, claimed: false, icon: 'trophy' },
+  { id: '8', name: 'Quest Master', description: 'Complete all quests', points: 60, claimed: false, icon: 'crown' },
 ];
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -27,21 +30,58 @@ const iconMap: Record<string, React.ReactNode> = {
 const RewardsSystem = () => {
   const { language } = useLanguage();
   const [rewards, setRewards] = useState<Reward[]>(getLS(LS_KEYS.REWARDS, DEFAULT_REWARDS));
+  const [showConfetti, setShowConfetti] = useState(false);
 
-  const claimReward = (id: string) => {
-    const updated = rewards.map(r => r.id === id ? { ...r, claimed: true } : r);
-    setRewards(updated); setLS(LS_KEYS.REWARDS, updated);
-    const reward = rewards.find(r => r.id === id);
-    // Add points
+  // Auto-claim check
+  useEffect(() => {
+    const updated = [...rewards];
+    let changed = false;
+
+    const calorieLog = getLS<CalorieEntry[]>(LS_KEYS.CALORIE_LOG, []);
+    const hydrationLog = getLS<HydrationEntry[]>(LS_KEYS.HYDRATION_LOG, []);
+    const mealPlans = getLS<MealPlan[]>(LS_KEYS.MEAL_PLANS, []);
     const points = getLS<number>(LS_KEYS.POINTS, 0);
-    setLS(LS_KEYS.POINTS, points + (reward?.points || 0));
-    toast.success(`+${reward?.points} points! ${reward?.name} claimed!`);
-  };
+    const streak = getLS<number>(LS_KEYS.STREAK, 0);
+    const challenges = getLS<Challenge[]>(LS_KEYS.CHALLENGES, []);
+    const completedChallenges = challenges.filter(c => c.completed);
+    const nutritionGoal = getLS<any>('th_nutrition_goal', null);
+    const quests = getLS<any[]>('th_quests_active', []);
+    const allQuestsComplete = quests.length > 0 && quests.every((q: any) => q.completed);
+
+    const conditions: Record<string, boolean> = {
+      '1': calorieLog.length > 0,
+      '2': hydrationLog.some(h => h.cups >= 8),
+      '3': streak >= 7,
+      '4': mealPlans.length > 0,
+      '5': points >= 1000,
+      '6': !!nutritionGoal,
+      '7': completedChallenges.length > 0,
+      '8': allQuestsComplete,
+    };
+
+    updated.forEach((r, i) => {
+      if (!r.claimed && conditions[r.id]) {
+        updated[i] = { ...r, claimed: true };
+        changed = true;
+        const currentPts = getLS<number>(LS_KEYS.POINTS, 0);
+        setLS(LS_KEYS.POINTS, currentPts + r.points);
+        toast.success(`🎉 Auto-claimed: ${r.name} (+${r.points} pts)`);
+      }
+    });
+
+    if (changed) {
+      setRewards(updated);
+      setLS(LS_KEYS.REWARDS, updated);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3500);
+    }
+  }, []);
 
   const claimed = rewards.filter(r => r.claimed).length;
 
   return (
     <div className="space-y-6">
+      <Confetti active={showConfetti} />
       <Card>
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2">
@@ -63,9 +103,9 @@ const RewardsSystem = () => {
               <div className="flex items-center gap-2">
                 <Badge variant="secondary">{r.points} pts</Badge>
                 {r.claimed ? (
-                  <Badge className="bg-green-600">Claimed</Badge>
+                  <Badge className="bg-green-600 flex items-center gap-1"><Check className="h-3 w-3" />Claimed</Badge>
                 ) : (
-                  <Button size="sm" onClick={() => claimReward(r.id)}>Claim</Button>
+                  <Badge variant="outline">Locked</Badge>
                 )}
               </div>
             </div>

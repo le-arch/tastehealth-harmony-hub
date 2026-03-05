@@ -91,8 +91,8 @@ const GoalWizard = () => {
       fatsPercentage: formData.fatsPercentage,
     });
     setShowConfetti(true);
-    toast.success("Goals saved successfully!");
-    setTimeout(() => navigate("/games"), 3000);
+    toast.success("Goals saved! View them in Progress → Goals tab.");
+    setTimeout(() => navigate("/progress"), 3000);
   };
 
   const handleNext = () => {
