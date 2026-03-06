@@ -1,63 +1,53 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ProfileSidebar } from '@/components/profile/ProfileSidebar';
+import PageLayout from '@/components/PageLayout';
 import NutritionDashboard from '@/components/nutrition/NutritionDashboard';
 import BMICalculator from '@/components/health/BMICalculator';
 import ProgressTracker from '@/components/health/ProgressTracker';
-//import RewardsSystem from '../components/RewardSystem';
 import WeeklySummary from '@/components/WeeklySummary';
 import MealMoodTracker from '@/components/MealMoodTracker';
+import DashboardGreeting from '@/components/DashboardGreeting';
+import MealRecommendations from '@/components/MealRecommendations';
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PointsTransactionsPage from './PointsTransactionsPage';
-//import ChallengeCreator from '../components/ChallengeCreator';
 import { useScreenSize } from '@/utils/mobile';
-import { LayoutDashboard, Apple, Calendar, Smile, Award} from 'lucide-react';
-import { useState } from 'react';
+import { LayoutDashboard, Apple, Calendar, Smile, Award } from 'lucide-react';
 
 const DashboardPage = () => {
   const { language } = useLanguage();
   const [selectedTab, setSelectedTab] = useState("dashboard");
   const { isMobile } = useScreenSize();
   const t = language === 'fr'
-    ? { title: "Tableau de Bord Santé", subtitle: "Suivez vos indicateurs", tabs: { dashboard: "Tableau de Bord", nutrition: "Nuriture", summary: "Résumé", mood: "Humeur", points:"Points History" } }
-    : { title: "Health Dashboard", subtitle: "Track your nutrition and health metrics", tabs: { dashboard: "Dashboard", nutrition:"Nutrition", summary: "Weekly Summary", mood: "Mood Tracker", points:"Points History" } };
+    ? { tabs: { dashboard: "Tableau de Bord", nutrition: "Nutrition", summary: "Résumé", mood: "Humeur", points: "Historique" } }
+    : { tabs: { dashboard: "Dashboard", nutrition: "Nutrition", summary: "Weekly Summary", mood: "Mood Tracker", points: "Points History" } };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col md:flex-row">
-      <ProfileSidebar activePage="dashboard" />
-      <div className={`flex-1 p-3 sm:p-4 ${isMobile ? 'mt-16' : 'md:ml-64'}`}>
-        <div className="p-2 sm:p-4 max-w-6xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <h1 className="text-xl sm:text-2xl font-bold mb-1">{t.title}</h1>
-            <p className="text-muted-foreground mb-4 sm:mb-6">{t.subtitle}</p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <Tabs defaultValue="dashboard" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4 sm:space-y-6">
-              <ScrollableTabsList className="w-full max-w-3xl mx-auto">
-              <TabsTrigger value="dashboard" className="flex items-center gap-2"><LayoutDashboard className="h-4 w-4" />{!isMobile && t.tabs.dashboard}</TabsTrigger>
-              <TabsTrigger value="nutrition" className="flex items-center gap-2"><Apple className="h-4 w-4" />{!isMobile && t.tabs.nutrition}</TabsTrigger>
-              <TabsTrigger value="summary" className="flex items-center gap-2"><Calendar className="h-4 w-4" />{!isMobile && t.tabs.summary}</TabsTrigger>
-              <TabsTrigger value="mood" className="flex items-center gap-2"><Smile className="h-4 w-4" />{!isMobile && t.tabs.mood}</TabsTrigger>
-              <TabsTrigger value="points" className="flex items-center gap-2"><Award className="h-4 w-4" />{!isMobile && t.tabs.points}</TabsTrigger>
-            </ScrollableTabsList>
-            <TabsContent value="dashboard" className="space-y-6 sm:space-y-8"><div className="grid grid-cols-1 gap-4 sm:gap-6"><ProgressTracker /><BMICalculator /></div></TabsContent>
-            <TabsContent value="nutrition"><NutritionDashboard /></TabsContent>
-            <TabsContent value="summary"><WeeklySummary /></TabsContent>
-            <TabsContent value="mood"><MealMoodTracker /></TabsContent>
-            <TabsContent value="points"><PointsTransactionsPage /></TabsContent>
-              </Tabs>
-            </motion.div>
-        </div>
+    <PageLayout activePage="dashboard" showChatbot>
+      <div className="p-3 sm:p-6 max-w-6xl mx-auto">
+        <DashboardGreeting />
+        <Tabs defaultValue="dashboard" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4 sm:space-y-6">
+          <ScrollableTabsList className="w-full max-w-3xl mx-auto">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2"><LayoutDashboard className="h-4 w-4" />{!isMobile && t.tabs.dashboard}</TabsTrigger>
+            <TabsTrigger value="nutrition" className="flex items-center gap-2"><Apple className="h-4 w-4" />{!isMobile && t.tabs.nutrition}</TabsTrigger>
+            <TabsTrigger value="summary" className="flex items-center gap-2"><Calendar className="h-4 w-4" />{!isMobile && t.tabs.summary}</TabsTrigger>
+            <TabsTrigger value="mood" className="flex items-center gap-2"><Smile className="h-4 w-4" />{!isMobile && t.tabs.mood}</TabsTrigger>
+            <TabsTrigger value="points" className="flex items-center gap-2"><Award className="h-4 w-4" />{!isMobile && t.tabs.points}</TabsTrigger>
+          </ScrollableTabsList>
+          <TabsContent value="dashboard" className="space-y-6">
+            <ProgressTracker />
+            <MealRecommendations />
+            <BMICalculator />
+          </TabsContent>
+          <TabsContent value="nutrition"><NutritionDashboard /></TabsContent>
+          <TabsContent value="summary"><WeeklySummary /></TabsContent>
+          <TabsContent value="mood"><MealMoodTracker /></TabsContent>
+          <TabsContent value="points"><PointsTransactionsPage /></TabsContent>
+        </Tabs>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 
