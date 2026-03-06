@@ -21,8 +21,8 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
   const { theme, toggleTheme } = useTheme();
 
   const t = language === 'fr'
-    ? { dashboard: "Tableau de Bord", mealPlanning: "Repas", progress: "Progrès", settings: "Paramètres", signOut: "Déconnexion", games: "Jeu", challenges: "Défis", level: "Niveau", journal: "Journal", cookingVideos: "Vidéos", healthTips: "Conseils", howToUse: "Guide" }
-    : { dashboard: "Dashboard", mealPlanning: "Meal Planning", progress: "Progress", settings: "Settings", signOut: "Sign Out", games: "Nutrition Game", challenges: "Challenges", level: "Level", journal: "Daily Journal", cookingVideos: "Cooking Videos", healthTips: "Health Tips", howToUse: "How to Use" };
+    ? { dashboard: "Tableau de Bord", mealPlanning: "Repas", progress: "Progrès",  signOut: "Déconnexion", games: "Jeu", challenges: "Défis", level: "Niveau", journal: "Journal", cookingVideos: "Vidéos", healthTips: "Conseils", howToUse: "Guide" }
+    : { dashboard: "Dashboard", mealPlanning: "Meal Planning", progress: "Progress", signOut: "Sign Out", games: "Nutrition Game", challenges: "Challenges", level: "Level", journal: "Daily Journal", cookingVideos: "Cooking Videos", healthTips: "Health Tips", howToUse: "How to Use" };
 
   const navItems = [
     { path: "/dashboard", icon: <LayoutDashboard className="h-5 w-5" />, label: t.dashboard },
@@ -34,7 +34,7 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
     { path: "/benefits", icon: <Gift className="h-5 w-5" />, label: t.level },
     { path: "/cooking-videos", icon: <Video className="h-5 w-5" />, label: t.cookingVideos },
     { path: "/health-tips", icon: <Stethoscope className="h-5 w-5" />, label: t.healthTips },
-    { path: "/settings", icon: <Settings className="h-5 w-5" />, label: t.settings },
+    // { path: "/settings", icon: <Settings className="h-5 w-5" />, label: t.settings },
     { path: "/how-to-use", icon: <BookOpen className="h-5 w-5" />, label: t.howToUse },
   ];
 
@@ -50,7 +50,7 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
         <div className="flex items-center justify-between p-4 border-b border-border">
           <Link to="/dashboard" className="flex items-center" onClick={onClose}>
             <Logo size="md" />
-            <span className="ml-2 text-lg font-bold text-primary">TasteHealth</span>
+            {/* <span className="ml-2 text-lg font-bold text-primary"></span> */}
           </Link>
           <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
             <X className="h-5 w-5" />

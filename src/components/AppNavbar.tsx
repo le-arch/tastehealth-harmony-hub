@@ -46,7 +46,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ onToggleSidebar }) => {
         </Button>
         <Link to="/dashboard" className="flex items-center gap-1.5">
           <Logo size="sm" />
-          <span className="font-bold text-sm hidden sm:inline">Dashboard</span>
+          {/* <span className="font-bold text-sm hidden sm:inline">Dashboard</span> */}
         </Link>
       </div>
 
