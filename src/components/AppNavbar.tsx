@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, Star, Flame, User, Home } from 'lucide-react';
+import { Menu, Star, Flame, User, Home, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Logo from '@/components/Logo';
@@ -86,7 +86,9 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ onToggleSidebar }) => {
             <DropdownMenuItem onClick={() => navigate('/profile')}>
               <User className="h-4 w-4 mr-2" />Profile
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/settings')}>Settings</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/settings')}>
+            <Settings className="h-4 w-4 mr-2" />
+            Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-destructive" onClick={() => { localStorage.removeItem('th_current_user'); navigate('/'); }}>
               Sign Out
