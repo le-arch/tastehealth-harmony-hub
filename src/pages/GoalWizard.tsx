@@ -10,7 +10,7 @@ import NutritionGoalForm from "@/components/goal-wizard/NutritionGoalForm";
 import CalorieGoalStep from "@/components/goal-wizard/CalorieGoalStep";
 import MacroStep from "@/components/goal-wizard/MacroStep";
 import ReviewGoalsStep from "@/components/goal-wizard/ReviewGoalsStep";
-import ProfileSidebar from "@/components/profile/ProfileSidebar";
+//import ProfileSidebar from "@/components/profile/ProfileSidebar";
 
 const steps = [
   { id: 1, title: "Basic Information" },
@@ -106,7 +106,7 @@ const GoalWizard = () => {
 
   return (
     <div className="mx-auto space-y-8 flex">
-      <ProfileSidebar activePage="goals" />
+      {/* <ProfileSidebar activePage="goals" /> */}
       <Confetti active={showConfetti} />
       <div className="settings-page ml-16 md:ml-64 w-full transition-all duration-300 ease-in-out">
         <div className="space-y-2">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Calendar, ChefHat, ArrowLeft } from "lucide-react";
+import { Search, Calendar, ChefHat, ArrowLeft, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealPlanList } from "@/components/MealPlanList";
 import { CreateMealPlanDialog } from "@/components/CreateMealPlanDialog";
 import MealSearch from "@/components/MealSearch";
+import Favorites from "./Favorites";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { useScreenSize } from "@/utils/mobile";
@@ -19,8 +20,8 @@ const MealPlanningPage = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const { language } = useLanguage();
   const t = language === 'fr'
-    ? { title: "Planification des Repas", subtitle: "Planifiez vos repas", myMealPlans: "Mes Plans", mealSearch: "Recherche", backToDashboard: "Retour", searchPlaceholder: "Rechercher...", createMealPlan: "Créer" }
-    : { title: "Meal Planning", subtitle: "Plan your meals for the week ahead", myMealPlans: "My Meal Plans", mealSearch: "Meal Search", backToDashboard: "Back to Dashboard", searchPlaceholder: "Search meal plans...", createMealPlan: "Create Meal Plan" };
+    ? { title: "Planification des Repas", subtitle: "Planifiez vos repas", myMealPlans: "Mes Plans", mealSearch: "Recherche", backToDashboard: "Retour", searchPlaceholder: "Rechercher...", createMealPlan: "Créer", favorites:"Favoris" }
+    : { title: "Meal Planning", subtitle: "Plan your meals for the week ahead", myMealPlans: "My Meal Plans", mealSearch: "Meal Search", backToDashboard: "Back to Dashboard", searchPlaceholder: "Search meal plans...", createMealPlan: "Create Meal Plan", favorites: "Favorites" };
 
   // Listen for storage changes to refresh meal plan list
   useEffect(() => {
@@ -54,6 +55,10 @@ const MealPlanningPage = () => {
                 <TabsTrigger value="search" className="flex items-center gap-2">
                   <Search className="h-4 w-4" />
                   {t.mealSearch}
+                    </TabsTrigger>
+                  <TabsTrigger value="favorites" className="flex items-center gap-2">
+                  <Heart className="h-4 w-4" />
+                  {t.favorites}
                 </TabsTrigger>
               </TabsList>
               
@@ -85,6 +90,19 @@ const MealPlanningPage = () => {
                     <MealSearch onSelectMeal={() => {}} />
                   </CardContent>
                 </Card>
+              </TabsContent>
+              <TabsContent value="favorites">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                    <Heart className="h-5 w-5" />
+                    {t.favorites}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Favorites />
+                </CardContent>
+               </Card>
               </TabsContent>
             </Tabs>
           </div>

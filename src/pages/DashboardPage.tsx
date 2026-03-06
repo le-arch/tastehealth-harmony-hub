@@ -5,16 +5,17 @@ import { ProfileSidebar } from '@/components/profile/ProfileSidebar';
 import NutritionDashboard from '@/components/nutrition/NutritionDashboard';
 import BMICalculator from '@/components/health/BMICalculator';
 import ProgressTracker from '@/components/health/ProgressTracker';
-import RewardsSystem from '../components/RewardSystem';
+//import RewardsSystem from '../components/RewardSystem';
 import WeeklySummary from '@/components/WeeklySummary';
 import MealMoodTracker from '@/components/MealMoodTracker';
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { useLanguage } from '@/contexts/LanguageContext';
-import ChallengeCreator from '../components/ChallengeCreator';
+import PointsTransactionsPage from './PointsTransactionsPage';
+//import ChallengeCreator from '../components/ChallengeCreator';
 import { useScreenSize } from '@/utils/mobile';
-import { LayoutDashboard, Award, Calendar, Smile, Trophy } from 'lucide-react';
+import { LayoutDashboard, Apple, Calendar, Smile, Award} from 'lucide-react';
 import { useState } from 'react';
 
 const DashboardPage = () => {
@@ -22,8 +23,8 @@ const DashboardPage = () => {
   const [selectedTab, setSelectedTab] = useState("dashboard");
   const { isMobile } = useScreenSize();
   const t = language === 'fr'
-    ? { title: "Tableau de Bord Santé", subtitle: "Suivez vos indicateurs", tabs: { dashboard: "Tableau de Bord", rewards: "Récompenses", summary: "Résumé", mood: "Humeur", challenges: "Défis" } }
-    : { title: "Health Dashboard", subtitle: "Track your nutrition and health metrics", tabs: { dashboard: "Dashboard", rewards: "Rewards", summary: "Weekly Summary", mood: "Mood Tracker", challenges: "Challenges" } };
+    ? { title: "Tableau de Bord Santé", subtitle: "Suivez vos indicateurs", tabs: { dashboard: "Tableau de Bord", nutrition: "Nuriture", summary: "Résumé", mood: "Humeur", points:"Points History" } }
+    : { title: "Health Dashboard", subtitle: "Track your nutrition and health metrics", tabs: { dashboard: "Dashboard", nutrition:"Nutrition", summary: "Weekly Summary", mood: "Mood Tracker", points:"Points History" } };
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
@@ -42,16 +43,16 @@ const DashboardPage = () => {
             <Tabs defaultValue="dashboard" value={selectedTab} onValueChange={setSelectedTab} className="space-y-4 sm:space-y-6">
               <ScrollableTabsList className="w-full max-w-3xl mx-auto">
               <TabsTrigger value="dashboard" className="flex items-center gap-2"><LayoutDashboard className="h-4 w-4" />{!isMobile && t.tabs.dashboard}</TabsTrigger>
-              <TabsTrigger value="rewards" className="flex items-center gap-2"><Trophy className="h-4 w-4" />{!isMobile && t.tabs.rewards}</TabsTrigger>
+              <TabsTrigger value="nutrition" className="flex items-center gap-2"><Apple className="h-4 w-4" />{!isMobile && t.tabs.nutrition}</TabsTrigger>
               <TabsTrigger value="summary" className="flex items-center gap-2"><Calendar className="h-4 w-4" />{!isMobile && t.tabs.summary}</TabsTrigger>
               <TabsTrigger value="mood" className="flex items-center gap-2"><Smile className="h-4 w-4" />{!isMobile && t.tabs.mood}</TabsTrigger>
-              <TabsTrigger value="challenges" className="flex items-center gap-2"><Award className="h-4 w-4" />{!isMobile && t.tabs.challenges}</TabsTrigger>
+              <TabsTrigger value="points" className="flex items-center gap-2"><Award className="h-4 w-4" />{!isMobile && t.tabs.points}</TabsTrigger>
             </ScrollableTabsList>
-            <TabsContent value="dashboard" className="space-y-6 sm:space-y-8"><div className="grid grid-cols-1 gap-4 sm:gap-6"><ProgressTracker /><BMICalculator /><NutritionDashboard /></div></TabsContent>
-            <TabsContent value="rewards"><RewardsSystem /></TabsContent>
+            <TabsContent value="dashboard" className="space-y-6 sm:space-y-8"><div className="grid grid-cols-1 gap-4 sm:gap-6"><ProgressTracker /><BMICalculator /></div></TabsContent>
+            <TabsContent value="nutrition"><NutritionDashboard /></TabsContent>
             <TabsContent value="summary"><WeeklySummary /></TabsContent>
             <TabsContent value="mood"><MealMoodTracker /></TabsContent>
-            <TabsContent value="challenges"><ChallengeCreator /></TabsContent>
+            <TabsContent value="points"><PointsTransactionsPage /></TabsContent>
               </Tabs>
             </motion.div>
         </div>

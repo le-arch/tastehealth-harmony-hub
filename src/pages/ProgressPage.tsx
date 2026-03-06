@@ -7,15 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { useLanguage } from '@/contexts/LanguageContext';
-import RewardSystem from '@/components/RewardSystem';
+//import RewardSystem from '@/components/RewardSystem';
 import BMICalculator from '@/components/health/BMICalculator';
 import ProgressTracker from '@/components/health/ProgressTracker';
 import CalorieTracker from '@/components/health/CalorieTracker';
 import SleepTracker from '@/components/health/SleepTracker';
 import ExerciseTracker from '@/components/health/ExerciseTracker';
 import HydrationInput from '@/components/health/HydrationInput';
-import { BarChart as BarChartIcon, TrendingUp, Trophy, History, PlusCircle, Edit, Gift, Droplet, Moon, Flame, Scale, Dumbbell, Target } from 'lucide-react';
-import ChallengeCreator from '@/components/ChallengeCreator';
+import GoalWizard from './GoalWizard'
+import { BarChart as BarChartIcon, TrendingUp, Trophy, History, PlusCircle, Edit, Pencil, Droplet, Moon, Flame, Scale, Dumbbell, Target } from 'lucide-react';
+//import ChallengeCreator from '@/components/ChallengeCreator';
 import { useScreenSize } from '@/utils/mobile';
 import { getLS, LS_KEYS, CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry, BMIEntry } from '@/utils/localStorage';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -30,8 +31,8 @@ const ProgressPage = () => {
   const [goalText, setGoalText] = useState('');
   
   const t = language === 'fr'
-    ? { title: "Progrès & Objectifs", overview: "Vue d'ensemble", trackers: "Saisir données", rewards: "Récompenses", challenges: "Défis", history: "Historique", goals: "Objectifs", subtitle: "Suivez votre parcours santé", calories: "Calories", sleep: "Sommeil", exercise: "Exercice", water: "Hydratation", bmiTracker: "IMC", trackDescription: "Saisissez vos données de santé", addProgress: "Ajouter des données", editProgress: "Modifier les données" }
-    : { title: "Progress & Goals", overview: "Overview", trackers: "Track Data", rewards: "Rewards", challenges: "Challenges", history: "History", goals: "Goals", subtitle: "Track your health journey", calories: "Calories", sleep: "Sleep", exercise: "Exercise", water: "Water Intake", bmiTracker: "BMI", trackDescription: "Enter your health data to see it reflected in your charts", addProgress: "Add Progress", editProgress: "Edit Progress" };
+    ? { title: "Progrès & Objectifs", overview: "Vue d'ensemble", trackers: "Saisir données", wizard:"Goal Wizard", history: "Historique", goals: "Objectifs", subtitle: "Suivez votre parcours santé", calories: "Calories", sleep: "Sommeil", exercise: "Exercice", water: "Hydratation", bmiTracker: "IMC", trackDescription: "Saisissez vos données de santé", addProgress: "Ajouter des données", editProgress: "Modifier les données" }
+    : { title: "Progress & Goals", overview: "Overview", trackers: "Track Data", wizard:"Goal Wizard", history: "History", goals: "Goals", subtitle: "Track your health journey", calories: "Calories", sleep: "Sleep", exercise: "Exercise", water: "Water Intake", bmiTracker: "BMI", trackDescription: "Enter your health data to see it reflected in your charts", addProgress: "Add Progress", editProgress: "Edit Progress" };
 
   // Goals state
   interface SavedGoal { id: string; text: string; week: string; date: string; completed: boolean; }
@@ -133,8 +134,8 @@ const ProgressPage = () => {
             <ScrollableTabsList className="w-full">
               <TabsTrigger value="overview" className="flex items-center gap-1"><BarChartIcon className="h-4 w-4" />{!isSmallScreen && t.overview}</TabsTrigger>
               <TabsTrigger value="trackers" className="flex items-center gap-1"><TrendingUp className="h-4 w-4" />{!isSmallScreen && t.trackers}</TabsTrigger>
-              <TabsTrigger value="rewards" className="flex items-center gap-1"><Gift className="h-4 w-4" />{!isSmallScreen && t.rewards}</TabsTrigger>
-              <TabsTrigger value="challenges" className="flex items-center gap-1"><Trophy className="h-4 w-4" />{!isSmallScreen && t.challenges}</TabsTrigger>
+              <TabsTrigger value="wizard" className="flex items-center gap-1"><Pencil className="h-4 w-4" />{!isSmallScreen && t.wizard}</TabsTrigger>
+              {/* <TabsTrigger value="challenges" className="flex items-center gap-1"><Trophy className="h-4 w-4" />{!isSmallScreen && t.challenges}</TabsTrigger> */}
               <TabsTrigger value="goals" className="flex items-center gap-1"><Target className="h-4 w-4" />{!isSmallScreen && t.goals}</TabsTrigger>
               <TabsTrigger value="history" className="flex items-center gap-1"><History className="h-4 w-4" />{!isSmallScreen && t.history}</TabsTrigger>
             </ScrollableTabsList>
@@ -171,13 +172,13 @@ const ProgressPage = () => {
               </Card>
             </TabsContent>
             
-            <TabsContent value="rewards" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
-              <Card><CardHeader><CardTitle>{t.rewards}</CardTitle></CardHeader><CardContent><RewardSystem /></CardContent></Card>
+            <TabsContent value="wizard" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+              <Card><CardHeader><CardTitle>{t.wizard}</CardTitle></CardHeader><CardContent><GoalWizard /></CardContent></Card>
             </TabsContent>
             
-            <TabsContent value="challenges" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+            {/* <TabsContent value="challenges" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               <Card><CardHeader><CardTitle>{t.challenges}</CardTitle></CardHeader><CardContent><ChallengeCreator /></CardContent></Card>
-            </TabsContent>
+            </TabsContent> */}
 
             <TabsContent value="goals" className="space-y-4 mt-4 sm:mt-6">
               <Card>

@@ -52,21 +52,21 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
 
   const navItems = [
     { path: "/dashboard", icon: <LayoutDashboard className="h-5 w-5" />, label: t.dashboard },
+    { path: "/progress", icon: <LineChart className="h-5 w-5" />, label: t.progress },
     { path: "/profile", icon: <User className="h-5 w-5" />, label: t.profile },
     { path: "/meal-planning", icon: <Calendar className="h-5 w-5" />, label: t.mealPlanning },
-    { path: "/progress", icon: <LineChart className="h-5 w-5" />, label: t.progress },
-    //{ path: "/meal-plan", icon: <Pencil className="h-5 w-5" />, label: t.mealplan },
     { path: "/journal", icon: <Bookmark className="h-5 w-5" />, label: t.journal },
-    { path: "/favorites", icon: <Heart className="h-5 w-5" />, label: t.favorites },
-    { path: "/goals", icon: <Trophy className="h-5 w-5" />, label: t.goals },
+    //{ path: "/meal-plan", icon: <Pencil className="h-5 w-5" />, label: t.mealplan },
+    //{ path: "/favorites", icon: <Heart className="h-5 w-5" />, label: t.favorites },
+   // { path: "/goals", icon: <Trophy className="h-5 w-5" />, label: t.goals },
     { path: "/games", icon: <Gamepad className="h-5 w-5" />, label: t.games },
-    { path: "/points", icon: <Star className="h-5 w-5" />, label: t.points },
+    //{ path: "/points", icon: <Star className="h-5 w-5" />, label: t.points },
     { path: "/challenges", icon: <Mountain className="h-5 w-5" />, label: t.challenges },
     { path: "/benefits", icon: <Gift className="h-5 w-5" />, label: t.level },
-    { path: "/how-to-use", icon: <Pencil className="h-5 w-5" />, label: language === 'fr' ? 'Guide' : 'How to Use' },
     { path: "/cooking-videos", icon: <Pencil className="h-5 w-5" />, label: language === 'fr' ? 'Vidéos' : 'Cooking Videos' },
     { path: "/health-tips", icon: <Heart className="h-5 w-5" />, label: language === 'fr' ? 'Conseils Santé' : 'Health Tips' },
     { path: "/settings", icon: <Settings className="h-5 w-5" />, label: t.settings },
+    { path: "/how-to-use", icon: <Pencil className="h-5 w-5" />, label: language === 'fr' ? 'Guide' : 'How to Use' },
   ];
 
   const closeSidebar = () => setIsOpen(false);
