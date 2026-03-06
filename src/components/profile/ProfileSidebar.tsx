@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,69 +6,37 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  LayoutDashboard, User, Calendar, LineChart, Settings, LogOut, Menu, X,
-  Heart, Trophy, Sun, Moon, Gamepad, Star, Mountain, Gift, Pencil, Bookmark,
+  LayoutDashboard, Calendar, LineChart, Settings, LogOut, X,
+  Heart, Trophy, Sun, Moon, Gamepad, Mountain, Gift, Pencil, Bookmark,
+  Video, Stethoscope, BookOpen,
 } from "lucide-react";
 import Logo from "@/components/Logo";
-import NotificationDropdown from "@/components/notifications/NotificationDropdown";
 
-interface ProfileSidebarProps { activePage?: string; }
+interface ProfileSidebarProps { activePage?: string; isOpen?: boolean; onClose?: () => void; }
 
-export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
-  const [isOpen, setIsOpen] = useState(() => {
-    // Load initial state from localStorage for mobile
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('th_sidebar_open');
-      return saved ? JSON.parse(saved) : false;
-    }
-    return false;
-  });
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
 
-  const currentUser = JSON.parse(localStorage.getItem('th_current_user') || 'null');
-  const displayName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : 'User';
-
-  // Load profile image
-  useEffect(() => {
-    const savedImage = localStorage.getItem('th_profile_image');
-    if (savedImage) {
-      setProfileImage(savedImage);
-    }
-  }, []);
-
-  // Persist sidebar state
-  useEffect(() => {
-    localStorage.setItem('th_sidebar_open', JSON.stringify(isOpen));
-  }, [isOpen]);
-
   const t = language === 'fr'
-    ? { dashboard: "Tableau de Bord", profile: "Profil", mealPlanning: "Planification de Repas", progress: "Progrès", settings: "Paramètres", notifications: "Notifications", signOut: "Déconnexion", mealplan: "Creer des Plans", favorites: "Favoris", goals: "Assistant de but", games: "Jeu de Nutrition", challenges: "Defis", points: "Points Historique", level: "Niveau", toggleTheme: "Changer le Thème", language: "Langue", journal: "Journal Quotidien" }
-    : { dashboard: "Dashboard", profile: "Profile", mealPlanning: "Meal Planning", progress: "Progress", settings: "Settings", notifications: "Notifications", signOut: "Sign Out", mealplan: "Create Plans", favorites: "Favorites", goals: "Goal Wizard", games: "Nutrition Game", challenges: "Challenges", points: "Points History", level: "Level", toggleTheme: "Toggle Theme", language: "Language", journal: "Daily Journal" };
+    ? { dashboard: "Tableau de Bord", mealPlanning: "Repas", progress: "Progrès", settings: "Paramètres", signOut: "Déconnexion", games: "Jeu", challenges: "Défis", level: "Niveau", journal: "Journal", cookingVideos: "Vidéos", healthTips: "Conseils", howToUse: "Guide" }
+    : { dashboard: "Dashboard", mealPlanning: "Meal Planning", progress: "Progress", settings: "Settings", signOut: "Sign Out", games: "Nutrition Game", challenges: "Challenges", level: "Level", journal: "Daily Journal", cookingVideos: "Cooking Videos", healthTips: "Health Tips", howToUse: "How to Use" };
 
   const navItems = [
     { path: "/dashboard", icon: <LayoutDashboard className="h-5 w-5" />, label: t.dashboard },
     { path: "/progress", icon: <LineChart className="h-5 w-5" />, label: t.progress },
-    { path: "/profile", icon: <User className="h-5 w-5" />, label: t.profile },
     { path: "/meal-planning", icon: <Calendar className="h-5 w-5" />, label: t.mealPlanning },
     { path: "/journal", icon: <Bookmark className="h-5 w-5" />, label: t.journal },
-    //{ path: "/meal-plan", icon: <Pencil className="h-5 w-5" />, label: t.mealplan },
-    //{ path: "/favorites", icon: <Heart className="h-5 w-5" />, label: t.favorites },
-   // { path: "/goals", icon: <Trophy className="h-5 w-5" />, label: t.goals },
     { path: "/games", icon: <Gamepad className="h-5 w-5" />, label: t.games },
-    //{ path: "/points", icon: <Star className="h-5 w-5" />, label: t.points },
     { path: "/challenges", icon: <Mountain className="h-5 w-5" />, label: t.challenges },
     { path: "/benefits", icon: <Gift className="h-5 w-5" />, label: t.level },
-    { path: "/cooking-videos", icon: <Pencil className="h-5 w-5" />, label: language === 'fr' ? 'Vidéos' : 'Cooking Videos' },
-    { path: "/health-tips", icon: <Heart className="h-5 w-5" />, label: language === 'fr' ? 'Conseils Santé' : 'Health Tips' },
+    { path: "/cooking-videos", icon: <Video className="h-5 w-5" />, label: t.cookingVideos },
+    { path: "/health-tips", icon: <Stethoscope className="h-5 w-5" />, label: t.healthTips },
     { path: "/settings", icon: <Settings className="h-5 w-5" />, label: t.settings },
-    { path: "/how-to-use", icon: <Pencil className="h-5 w-5" />, label: language === 'fr' ? 'Guide' : 'How to Use' },
+    { path: "/how-to-use", icon: <BookOpen className="h-5 w-5" />, label: t.howToUse },
   ];
-
-  const closeSidebar = () => setIsOpen(false);
 
   const handleSignOut = () => {
     localStorage.removeItem('th_current_user');
@@ -78,57 +45,30 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
 
   return (
     <>
-      <div className="fixed top-4 left-4 z-50 md:hidden">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle Sidebar"
-        >
-          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </Button>
-      </div>
-      {isOpen && <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={closeSidebar} />}
-      <aside className={`fixed top-0 left-0 z-50 h-full w-64 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"} bg-background border-r border-border`}>
-        <div className="flex items-center justify-between p-4">
-          <Link to="/dashboard" className="flex items-center" onClick={closeSidebar}><Logo size="md" /><span className="ml-2 text-xl font-bold">TH</span></Link>
-          <div className="flex items-center gap-1">
-            <NotificationDropdown />
-          </div>
+      {isOpen && <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />}
+      <aside className={`fixed top-14 left-0 z-50 h-[calc(100vh-3.5rem)] w-64 transform transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"} bg-card border-r border-border shadow-xl`}>
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <Link to="/dashboard" className="flex items-center" onClick={onClose}>
+            <Logo size="md" />
+            <span className="ml-2 text-lg font-bold text-primary">TasteHealth</span>
+          </Link>
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+            <X className="h-5 w-5" />
+          </Button>
         </div>
-        <div className="flex items-center space-x-3 mx-4 mb-4 p-3 rounded-lg bg-muted">
-          {profileImage ? (
-            <img 
-              src={profileImage} 
-              alt={displayName} 
-              className="h-10 w-10 rounded-full object-cover flex-shrink-0"
-            />
-          ) : (
-            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0"><User className="h-5 w-5 text-primary" /></div>
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{displayName}</p>
-            {currentUser?.email && <p className="text-xs text-muted-foreground truncate">{currentUser.email}</p>}
-          </div>
-        </div>
-        <ScrollArea className="flex-1 px-2">
-          <nav className="space-y-1 pb-6">
+
+        <ScrollArea className="flex-1 px-3 py-2">
+          <nav className="space-y-1">
             {navItems.map((item) => {
-              const isActive =
-                (activePage && item.label.toLowerCase().includes(activePage.toLowerCase())) ||
-                location.pathname === item.path;
+              const isActive = location.pathname === item.path;
               return (
-                <motion.div
-                  key={item.path}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                >
+                <motion.div key={item.path} whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }}>
                   <Link
                     to={item.path}
-                    onClick={closeSidebar}
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                    onClick={onClose}
+                    className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-primary-foreground shadow-sm"
                         : "text-foreground hover:bg-muted"
                     }`}
                   >
@@ -140,13 +80,19 @@ export const ProfileSidebar = ({ activePage }: ProfileSidebarProps) => {
             })}
           </nav>
         </ScrollArea>
-        <div className="mt-auto p-4 border-t border-border">
-          <div className="flex items-center justify-between mb-4">
-            <Button variant="ghost" size="icon" onClick={toggleTheme}>{theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}</Button>
-            <select value={language} onChange={(e) => setLanguage(e.target.value)} className="text-sm bg-transparent border-none focus:ring-0"><option value="en">English</option><option value="fr">Français</option></select>
+
+        <div className="p-4 border-t border-border space-y-3">
+          <div className="flex items-center justify-between">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8">
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            <select value={language} onChange={(e) => setLanguage(e.target.value)} className="text-sm bg-transparent border border-border rounded-md px-2 py-1 focus:ring-1 focus:ring-primary">
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+            </select>
           </div>
-          <Button variant="ghost" className="w-full justify-start text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={handleSignOut}>
-            <LogOut className="mr-3 h-5 w-5" />{t.signOut}
+          <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10" onClick={handleSignOut} size="sm">
+            <LogOut className="mr-2 h-4 w-4" />{t.signOut}
           </Button>
         </div>
       </aside>
