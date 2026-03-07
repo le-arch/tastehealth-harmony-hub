@@ -49,6 +49,11 @@ const ProgressPage = () => {
   };
   const toggleGoal = (id: string) => {
     const updated = savedGoals.map(g => g.id === id ? { ...g, completed: !g.completed } : g);
+    const toggled = updated.find(g => g.id === id);
+    if (toggled?.completed) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3500);
+    }
     setSavedGoals(updated);
     localStorage.setItem('th_saved_goals', JSON.stringify(updated));
   };
