@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Flame, Star, Smile } from 'lucide-react';
+import { Flame, Star } from 'lucide-react';
 import { getLS, LS_KEYS, MoodEntry } from '@/utils/localStorage';
+import wavingLady from '@/assets/waving-lady.png';
 
 const DashboardGreeting: React.FC = () => {
   const currentUser = JSON.parse(localStorage.getItem('th_current_user') || 'null');
@@ -30,13 +31,22 @@ const DashboardGreeting: React.FC = () => {
       className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-xl p-5 mb-6"
     >
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-            {greeting}! <span className="text-2xl">{emoji}</span>
-          </h2>
-          <p className="text-primary-foreground/80 text-sm mt-0.5">
-            Here's your health snapshot for today
-          </p>
+        <div className="flex items-center gap-4">
+          <motion.img
+            src={wavingLady}
+            alt="Greeting"
+            className="h-16 w-16 sm:h-20 sm:w-20 object-contain drop-shadow-lg"
+            animate={{ rotate: [0, -8, 8, -8, 0] }}
+            transition={{ repeat: Infinity, repeatDelay: 2, duration: 1.2, ease: "easeInOut" }}
+          />
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              {greeting}, {firstName}! <span className="text-2xl">{emoji}</span>
+            </h2>
+            <p className="text-primary-foreground/80 text-sm mt-0.5">
+              Here's your health snapshot for today
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5 text-center">
