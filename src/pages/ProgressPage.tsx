@@ -25,6 +25,7 @@ const ProgressPage = () => {
   const { isMobile, isTablet } = useScreenSize();
   const isSmallScreen = isMobile || isTablet;
   const [goalText, setGoalText] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const t = language === 'fr'
     ? { title: "Progrès & Objectifs", overview: "Vue d'ensemble", trackers: "Saisir données", wizard: "Goal Wizard", history: "Historique", goals: "Objectifs", subtitle: "Suivez votre parcours santé", calories: "Calories", sleep: "Sommeil", exercise: "Exercice", water: "Hydratation", bmiTracker: "IMC", trackDescription: "Saisissez vos données de santé", addProgress: "Ajouter des données", editProgress: "Modifier les données" }
