@@ -10,7 +10,6 @@ import { Bell, Trash2, CheckCheck, Clock } from "lucide-react";
 
 const NotificationsPage = () => {
   const { language } = useLanguage();
-  const { isMobile } = useScreenSize();
   const { notifications, markAsRead, markAllAsRead, deleteNotification, clearNotifications } = useNotifications();
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
