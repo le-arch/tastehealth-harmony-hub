@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import Confetti from '@/components/Confetti';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
