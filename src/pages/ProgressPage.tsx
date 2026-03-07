@@ -96,6 +96,7 @@ const ProgressPage = () => {
 
   return (
     <PageLayout activePage="progress">
+      <Confetti active={showConfetti} />
       <div className="p-3 sm:p-6 max-w-6xl mx-auto">
         <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2">
           <div>
