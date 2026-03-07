@@ -1,17 +1,15 @@
 
 import { useState } from "react";
-import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
+import PageLayout from "@/components/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { Bell, Trash2, CheckCheck, Clock } from "lucide-react";
-import { useScreenSize } from "@/utils/mobile";
 
 const NotificationsPage = () => {
   const { language } = useLanguage();
-  const { isMobile } = useScreenSize();
   const { notifications, markAsRead, markAllAsRead, deleteNotification, clearNotifications } = useNotifications();
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
@@ -72,9 +70,8 @@ const NotificationsPage = () => {
   const filteredNotifications = filter === 'unread' ? notifications.filter(n => !n.isRead) : notifications;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-background">
-      <ProfileSidebar activePage="notifications" />
-      <div className={`flex-1 p-4 sm:p-6 md:p-8 ${isMobile ? 'mt-16' : 'md:ml-64'}`}>
+    <PageLayout activePage="notifications">
+      <div className="p-4 sm:p-6 md:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-start mb-6">
             <div>
@@ -185,7 +182,7 @@ const NotificationsPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

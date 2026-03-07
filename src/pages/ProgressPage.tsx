@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import Confetti from '@/components/Confetti';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -24,6 +25,7 @@ const ProgressPage = () => {
   const { isMobile, isTablet } = useScreenSize();
   const isSmallScreen = isMobile || isTablet;
   const [goalText, setGoalText] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const t = language === 'fr'
     ? { title: "Progrès & Objectifs", overview: "Vue d'ensemble", trackers: "Saisir données", wizard: "Goal Wizard", history: "Historique", goals: "Objectifs", subtitle: "Suivez votre parcours santé", calories: "Calories", sleep: "Sommeil", exercise: "Exercice", water: "Hydratation", bmiTracker: "IMC", trackDescription: "Saisissez vos données de santé", addProgress: "Ajouter des données", editProgress: "Modifier les données" }
@@ -47,6 +49,11 @@ const ProgressPage = () => {
   };
   const toggleGoal = (id: string) => {
     const updated = savedGoals.map(g => g.id === id ? { ...g, completed: !g.completed } : g);
+    const toggled = updated.find(g => g.id === id);
+    if (toggled?.completed) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3500);
+    }
     setSavedGoals(updated);
     localStorage.setItem('th_saved_goals', JSON.stringify(updated));
   };
@@ -89,6 +96,7 @@ const ProgressPage = () => {
 
   return (
     <PageLayout activePage="progress">
+      <Confetti active={showConfetti} />
       <div className="p-3 sm:p-6 max-w-6xl mx-auto">
         <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2">
           <div>
