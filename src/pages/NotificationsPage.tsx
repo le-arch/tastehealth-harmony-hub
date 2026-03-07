@@ -1,13 +1,12 @@
 
 import { useState } from "react";
-import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
+import PageLayout from "@/components/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { Bell, Trash2, CheckCheck, Clock } from "lucide-react";
-import { useScreenSize } from "@/utils/mobile";
 
 const NotificationsPage = () => {
   const { language } = useLanguage();
