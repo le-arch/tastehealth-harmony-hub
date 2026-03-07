@@ -70,9 +70,8 @@ const NotificationsPage = () => {
   const filteredNotifications = filter === 'unread' ? notifications.filter(n => !n.isRead) : notifications;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-background">
-      <ProfileSidebar activePage="notifications" />
-      <div className={`flex-1 p-4 sm:p-6 md:p-8 ${isMobile ? 'mt-16' : 'md:ml-64'}`}>
+    <PageLayout activePage="notifications">
+      <div className="p-4 sm:p-6 md:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-start mb-6">
             <div>
