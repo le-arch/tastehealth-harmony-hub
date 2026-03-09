@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import Confetti from "@/components/Confetti";
+import { getLS, setLS, LS_KEYS, Challenge } from '@/utils/localStorage';
 
 const challengeTypes = [
   { id: "water", label: "Water Intake", description: "Drink more water daily" },
@@ -34,7 +34,24 @@ const ChallengeCreator: React.FC = () => {
   const handleCreateChallenge = () => {
     if (!name.trim()) { toast.error("Please provide a challenge name"); return; }
     if (selectedTypes.length === 0) { toast.error("Please select at least one challenge type"); return; }
-    toast.success("Challenge created (local only)!");
+    
+    const challenge: Challenge = {
+      id: crypto.randomUUID(),
+      name,
+      types: selectedTypes,
+      duration,
+      difficulty,
+      startDate: new Date().toISOString(),
+      progress: 0,
+      target: duration,
+      completed: false,
+    };
+
+    const existing = getLS<Challenge[]>(LS_KEYS.CHALLENGES, []);
+    const updated = [challenge, ...existing];
+    setLS(LS_KEYS.CHALLENGES, updated);
+
+    toast.success(`Challenge "${name}" created and added to active challenges!`);
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 3000);
     setName(""); setSelectedTypes([]); setDuration(7); setDifficulty(1);
