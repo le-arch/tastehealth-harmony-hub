@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotifications } from '@/contexts/NotificationContext';
-import { Bookmark, Calendar, Trash2, Search, Plus, ChefHat } from 'lucide-react';
+import { Bookmark, Calendar, Trash2, Search, Plus, ChefHat, Edit3, ImagePlus } from 'lucide-react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { TabsTrigger, ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
+import RichTextEditor from '@/components/journal/RichTextEditor';
 
 interface JournalEntry { id: string; date: string; title: string; content: string; mood: string; meals: string[]; createdAt: Date; updatedAt: Date; }
-interface CustomRecipe { id: string; name: string; ingredients: string; method: string; category: string; date: string; }
+interface CustomRecipe { id: string; name: string; ingredients: string; method: string; category: string; date: string; imageUrl?: string; }
 
 const DailyJournalPage = () => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -24,7 +23,8 @@ const DailyJournalPage = () => {
   const [formData, setFormData] = useState({ date: new Date().toISOString().split('T')[0], title: '', content: '', mood: 'great', meals: [] as string[] });
   const [activeTab, setActiveTab] = useState('journal');
   const [recipes, setRecipes] = useState<CustomRecipe[]>(() => { try { return JSON.parse(localStorage.getItem('th_custom_recipes') || '[]'); } catch { return []; } });
-  const [recipeForm, setRecipeForm] = useState({ name: '', ingredients: '', method: '', category: 'breakfast' });
+  const [recipeForm, setRecipeForm] = useState({ name: '', ingredients: '', method: '', category: 'breakfast', imageUrl: '' });
+  const [editingRecipe, setEditingRecipe] = useState<string | null>(null);
   const { language } = useLanguage();
   const { addNotification } = useNotifications();
 
@@ -38,12 +38,7 @@ const DailyJournalPage = () => {
 
   useEffect(() => {
     const stored = localStorage.getItem('th_journal_entries');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setEntries(parsed.map((e: any) => ({ ...e, createdAt: new Date(e.createdAt), updatedAt: new Date(e.updatedAt) })));
-      } catch {}
-    }
+    if (stored) { try { const parsed = JSON.parse(stored); setEntries(parsed.map((e: any) => ({ ...e, createdAt: new Date(e.createdAt), updatedAt: new Date(e.updatedAt) }))); } catch {} }
   }, []);
 
   const saveEntry = () => {
@@ -70,51 +65,116 @@ const DailyJournalPage = () => {
   const editEntry = (entry: JournalEntry) => { setSelectedEntry(entry); setFormData({ date: entry.date, title: entry.title, content: entry.content, mood: entry.mood, meals: entry.meals }); setIsEditing(true); };
   const filteredEntries = entries.filter(e => e.title.toLowerCase().includes(searchTerm.toLowerCase()) || e.content.toLowerCase().includes(searchTerm.toLowerCase()));
 
+  const saveRecipe = () => {
+    if (!recipeForm.name.trim()) { toast.error('Enter a recipe name'); return; }
+    let updated: CustomRecipe[];
+    if (editingRecipe) {
+      updated = recipes.map(r => r.id === editingRecipe ? { ...r, ...recipeForm, date: r.date } : r);
+      setEditingRecipe(null);
+    } else {
+      const r: CustomRecipe = { id: crypto.randomUUID(), ...recipeForm, date: new Date().toISOString() };
+      updated = [r, ...recipes];
+    }
+    setRecipes(updated); localStorage.setItem('th_custom_recipes', JSON.stringify(updated));
+    setRecipeForm({ name: '', ingredients: '', method: '', category: 'breakfast', imageUrl: '' });
+    toast.success(editingRecipe ? 'Recipe updated!' : 'Recipe saved!');
+  };
+
+  const editRecipe = (r: CustomRecipe) => {
+    setEditingRecipe(r.id);
+    setRecipeForm({ name: r.name, ingredients: r.ingredients, method: r.method, category: r.category, imageUrl: r.imageUrl || '' });
+  };
+
+  const renderMarkdownPreview = (text: string) => {
+    return text.split('\n').map((line, i) => {
+      if (line.startsWith('## ')) return <h3 key={i} className="font-semibold text-sm mt-1">{line.slice(3)}</h3>;
+      if (line.startsWith('# ')) return <h2 key={i} className="font-bold text-sm mt-1">{line.slice(2)}</h2>;
+      if (line.startsWith('- [x] ')) return <div key={i} className="flex items-center gap-1 text-xs"><input type="checkbox" checked readOnly className="h-3 w-3" /><span className="line-through text-muted-foreground">{line.slice(6)}</span></div>;
+      if (line.startsWith('- [ ] ')) return <div key={i} className="flex items-center gap-1 text-xs"><input type="checkbox" readOnly className="h-3 w-3" /><span>{line.slice(6)}</span></div>;
+      if (line.startsWith('- ')) return <li key={i} className="text-xs ml-3 list-disc">{line.slice(2)}</li>;
+      if (/^\d+\. /.test(line)) return <li key={i} className="text-xs ml-3 list-decimal">{line.replace(/^\d+\. /, '')}</li>;
+      if (line.startsWith('> ')) return <blockquote key={i} className="border-l-2 border-primary pl-2 text-xs italic text-muted-foreground">{line.slice(2)}</blockquote>;
+      return <p key={i} className="text-xs">{line}</p>;
+    });
+  };
+
   return (
     <PageLayout activePage="journal">
       <div className="p-4 sm:p-6 max-w-6xl mx-auto">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-          <h1 className="text-2xl font-bold flex items-center gap-2"><Bookmark className="h-7 w-7 text-primary" />Daily Journal</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}>
+              <Bookmark className="h-7 w-7 text-primary" />
+            </motion.span>
+            Daily Journal
+          </h1>
           <p className="text-muted-foreground text-sm">Track your nutrition journey and wellness</p>
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <ScrollableTabsList className="mb-6">
-            <TabsTrigger value="journal"><Bookmark className="h-4 w-4 mr-1" />Journal</TabsTrigger>
-            <TabsTrigger value="recipes"><ChefHat className="h-4 w-4 mr-1" />My Recipes</TabsTrigger>
+            <TabsTrigger value="journal"><motion.span whileHover={{ scale: 1.1 }}><Bookmark className="h-4 w-4 mr-1 inline text-amber-500" /></motion.span>Journal</TabsTrigger>
+            <TabsTrigger value="recipes"><motion.span whileHover={{ scale: 1.1 }}><ChefHat className="h-4 w-4 mr-1 inline text-orange-500" /></motion.span>My Recipes</TabsTrigger>
           </ScrollableTabsList>
 
           <TabsContent value="journal">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader><CardTitle>{isEditing ? 'Edit Entry' : 'New Entry'}{isEditing && <Button variant="ghost" size="sm" onClick={() => { setSelectedEntry(null); setIsEditing(false); setFormData({ date: new Date().toISOString().split('T')[0], title: '', content: '', mood: 'great', meals: [] }); }} className="ml-2">Cancel</Button>}</CardTitle></CardHeader>
-                <CardContent className="space-y-4">
-                  <div><label className="text-sm font-medium">Date</label><Input type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="mt-1" /></div>
-                  <div><label className="text-sm font-medium">Mood</label><div className="grid grid-cols-5 gap-2 mt-2">{moodOptions.map(m => (<button key={m.value} onClick={() => setFormData({ ...formData, mood: m.value })} className={`p-2 rounded-lg border-2 text-2xl ${formData.mood === m.value ? 'border-primary bg-primary/10' : 'border-muted'}`}>{m.emoji}</button>))}</div></div>
-                  <div><label className="text-sm font-medium">Title</label><Input placeholder="Entry title..." value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="mt-1" /></div>
-                  <div><label className="text-sm font-medium">Content</label><Textarea placeholder="Write your thoughts..." value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} rows={5} className="mt-1" /></div>
-                  <Button onClick={saveEntry} className="w-full"><Plus className="h-4 w-4 mr-2" />Save</Button>
-                </CardContent>
-              </Card>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                <Card className="border-primary/20 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Edit3 className="h-5 w-5 text-primary" />
+                      {isEditing ? 'Edit Entry' : 'New Entry'}
+                      {isEditing && <Button variant="ghost" size="sm" onClick={() => { setSelectedEntry(null); setIsEditing(false); setFormData({ date: new Date().toISOString().split('T')[0], title: '', content: '', mood: 'great', meals: [] }); }} className="ml-2 text-xs">Cancel</Button>}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div><label className="text-sm font-medium">Date</label><Input type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="mt-1" /></div>
+                    <div>
+                      <label className="text-sm font-medium">Mood</label>
+                      <div className="grid grid-cols-5 gap-2 mt-2">
+                        {moodOptions.map(m => (
+                          <motion.button key={m.value} whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.95 }}
+                            onClick={() => setFormData({ ...formData, mood: m.value })}
+                            className={`p-2 rounded-lg border-2 text-2xl transition-all ${formData.mood === m.value ? 'border-primary bg-primary/10 shadow-md' : 'border-muted hover:border-primary/30'}`}
+                          >{m.emoji}</motion.button>
+                        ))}
+                      </div>
+                    </div>
+                    <div><label className="text-sm font-medium">Title</label><Input placeholder="Entry title..." value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="mt-1" /></div>
+                    <div>
+                      <label className="text-sm font-medium">Content</label>
+                      <div className="mt-1">
+                        <RichTextEditor value={formData.content} onChange={(v) => setFormData({ ...formData, content: v })} placeholder="Write your thoughts... Use the toolbar for formatting!" />
+                      </div>
+                    </div>
+                    <Button onClick={saveEntry} className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"><Plus className="h-4 w-4 mr-2" />Save</Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
               <div>
                 <div className="mb-4 relative"><Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Search entries" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" /></div>
                 {filteredEntries.length === 0 ? (
                   <Card><CardContent className="flex items-center justify-center h-40"><div className="text-center"><Bookmark className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" /><p className="text-muted-foreground">No entries found</p></div></CardContent></Card>
                 ) : (
-                  <div className="space-y-3">
-                    {filteredEntries.map(entry => (
-                      <Card key={entry.id} className={`cursor-pointer hover:shadow-md ${selectedEntry?.id === entry.id ? 'ring-2 ring-primary' : ''}`} onClick={() => editEntry(entry)}>
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between mb-1">
-                            <div className="flex items-center gap-2"><span className="text-xl">{moodOptions.find(m => m.value === entry.mood)?.emoji}</span><h3 className="font-semibold">{entry.title}</h3></div>
-                            <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); deleteEntry(entry.id); }} className="text-destructive"><Trash2 className="h-3 w-3" /></Button>
-                          </div>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(entry.date).toLocaleDateString()}</p>
-                          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{entry.content}</p>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                  <AnimatePresence>
+                    <div className="space-y-3">
+                      {filteredEntries.map((entry, idx) => (
+                        <motion.div key={entry.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
+                          <Card className={`cursor-pointer hover:shadow-lg transition-all ${selectedEntry?.id === entry.id ? 'ring-2 ring-primary shadow-lg' : 'hover:border-primary/30'}`} onClick={() => editEntry(entry)}>
+                            <CardContent className="p-4">
+                              <div className="flex items-start justify-between mb-1">
+                                <div className="flex items-center gap-2"><span className="text-xl">{moodOptions.find(m => m.value === entry.mood)?.emoji}</span><h3 className="font-semibold">{entry.title}</h3></div>
+                                <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); deleteEntry(entry.id); }} className="text-destructive hover:bg-destructive/10"><Trash2 className="h-3 w-3" /></Button>
+                              </div>
+                              <p className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(entry.date).toLocaleDateString()}</p>
+                              <div className="text-sm text-muted-foreground line-clamp-2 mt-1">{renderMarkdownPreview(entry.content)}</div>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </AnimatePresence>
                 )}
               </div>
             </div>
@@ -122,40 +182,60 @@ const DailyJournalPage = () => {
 
           <TabsContent value="recipes">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader><CardTitle className="flex items-center gap-2"><ChefHat className="h-5 w-5 text-primary" />Add Recipe</CardTitle></CardHeader>
-                <CardContent className="space-y-4">
-                  <div><label className="text-sm font-medium">Name</label><Input value={recipeForm.name} onChange={e => setRecipeForm({ ...recipeForm, name: e.target.value })} placeholder="Recipe name..." className="mt-1" /></div>
-                  <div><label className="text-sm font-medium">Category</label><select value={recipeForm.category} onChange={e => setRecipeForm({ ...recipeForm, category: e.target.value })} className="w-full mt-1 px-3 py-2 border border-input rounded-md text-sm bg-background">{['breakfast','lunch','dinner','snacks','drinks'].map(c => <option key={c} value={c}>{c}</option>)}</select></div>
-                  <div><label className="text-sm font-medium">Ingredients</label><Textarea value={recipeForm.ingredients} onChange={e => setRecipeForm({ ...recipeForm, ingredients: e.target.value })} placeholder="One per line..." rows={4} className="mt-1" /></div>
-                  <div><label className="text-sm font-medium">Method</label><Textarea value={recipeForm.method} onChange={e => setRecipeForm({ ...recipeForm, method: e.target.value })} placeholder="Step by step..." rows={4} className="mt-1" /></div>
-                  <Button onClick={() => {
-                    if (!recipeForm.name.trim()) { toast.error('Enter a recipe name'); return; }
-                    const r: CustomRecipe = { id: crypto.randomUUID(), ...recipeForm, date: new Date().toISOString() };
-                    const updated = [r, ...recipes]; setRecipes(updated); localStorage.setItem('th_custom_recipes', JSON.stringify(updated));
-                    setRecipeForm({ name: '', ingredients: '', method: '', category: 'breakfast' }); toast.success('Recipe saved!');
-                  }} className="w-full"><Plus className="h-4 w-4 mr-2" />Save Recipe</Button>
-                </CardContent>
-              </Card>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                <Card className="border-orange-200 dark:border-orange-800/30 shadow-lg">
+                  <CardHeader><CardTitle className="flex items-center gap-2"><ChefHat className="h-5 w-5 text-orange-500" />{editingRecipe ? 'Edit Recipe' : 'Add Recipe'}</CardTitle></CardHeader>
+                  <CardContent className="space-y-4">
+                    <div><label className="text-sm font-medium">Name</label><Input value={recipeForm.name} onChange={e => setRecipeForm({ ...recipeForm, name: e.target.value })} placeholder="Recipe name..." className="mt-1" /></div>
+                    <div><label className="text-sm font-medium">Category</label><select value={recipeForm.category} onChange={e => setRecipeForm({ ...recipeForm, category: e.target.value })} className="w-full mt-1 px-3 py-2 border border-input rounded-md text-sm bg-background">{['breakfast','lunch','dinner','snacks','drinks'].map(c => <option key={c} value={c}>{c}</option>)}</select></div>
+                    <div>
+                      <label className="text-sm font-medium flex items-center gap-2"><ImagePlus className="h-4 w-4 text-blue-500" />Image URL</label>
+                      <Input value={recipeForm.imageUrl} onChange={e => setRecipeForm({ ...recipeForm, imageUrl: e.target.value })} placeholder="https://example.com/image.jpg" className="mt-1" />
+                      {recipeForm.imageUrl && <img src={recipeForm.imageUrl} alt="Preview" className="mt-2 rounded-lg max-h-32 object-cover w-full" />}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Ingredients</label>
+                      <RichTextEditor value={recipeForm.ingredients} onChange={v => setRecipeForm({ ...recipeForm, ingredients: v })} placeholder="Use bullets (- ) or numbered list (1. ) for ingredients..." minRows={4} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Method</label>
+                      <RichTextEditor value={recipeForm.method} onChange={v => setRecipeForm({ ...recipeForm, method: v })} placeholder="Use numbered list (1. ) for steps, **bold** for emphasis..." minRows={4} />
+                    </div>
+                    <div className="flex gap-2">
+                      {editingRecipe && <Button variant="outline" onClick={() => { setEditingRecipe(null); setRecipeForm({ name: '', ingredients: '', method: '', category: 'breakfast', imageUrl: '' }); }} className="flex-1">Cancel</Button>}
+                      <Button onClick={saveRecipe} className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"><Plus className="h-4 w-4 mr-2" />{editingRecipe ? 'Update' : 'Save'} Recipe</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
               <div className="space-y-3">
                 <h3 className="font-semibold text-lg">My Recipes ({recipes.length})</h3>
                 {recipes.length === 0 ? <p className="text-muted-foreground text-sm">No recipes yet.</p> :
-                  recipes.map(r => (
-                    <Card key={r.id}>
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium">{r.name}</h4>
-                          <span className="text-xs capitalize text-muted-foreground bg-muted px-2 py-0.5 rounded">{r.category}</span>
-                        </div>
-                        {r.ingredients && <div className="mb-2"><p className="text-xs font-medium text-muted-foreground">Ingredients:</p><p className="text-xs whitespace-pre-line">{r.ingredients}</p></div>}
-                        {r.method && <div><p className="text-xs font-medium text-muted-foreground">Method:</p><p className="text-xs whitespace-pre-line">{r.method}</p></div>}
-                        <Button variant="ghost" size="sm" className="mt-2 text-destructive" onClick={() => {
-                          const updated = recipes.filter(x => x.id !== r.id); setRecipes(updated);
-                          localStorage.setItem('th_custom_recipes', JSON.stringify(updated)); toast.success('Recipe deleted');
-                        }}><Trash2 className="h-3 w-3 mr-1" />Delete</Button>
-                      </CardContent>
-                    </Card>
-                  ))}
+                  <AnimatePresence>
+                    {recipes.map((r, idx) => (
+                      <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
+                        <Card className="hover:shadow-md transition-all overflow-hidden">
+                          {r.imageUrl && <img src={r.imageUrl} alt={r.name} className="w-full h-36 object-cover" />}
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-medium">{r.name}</h4>
+                              <span className="text-xs capitalize text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{r.category}</span>
+                            </div>
+                            {r.ingredients && <div className="mb-2"><p className="text-xs font-medium text-muted-foreground mb-1">Ingredients:</p><div className="text-xs">{renderMarkdownPreview(r.ingredients)}</div></div>}
+                            {r.method && <div><p className="text-xs font-medium text-muted-foreground mb-1">Method:</p><div className="text-xs">{renderMarkdownPreview(r.method)}</div></div>}
+                            <div className="flex gap-2 mt-3">
+                              <Button variant="outline" size="sm" onClick={() => editRecipe(r)} className="text-primary"><Edit3 className="h-3 w-3 mr-1" />Edit</Button>
+                              <Button variant="ghost" size="sm" className="text-destructive" onClick={() => {
+                                const updated = recipes.filter(x => x.id !== r.id); setRecipes(updated);
+                                localStorage.setItem('th_custom_recipes', JSON.stringify(updated)); toast.success('Recipe deleted');
+                              }}><Trash2 className="h-3 w-3 mr-1" />Delete</Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                }
               </div>
             </div>
           </TabsContent>
