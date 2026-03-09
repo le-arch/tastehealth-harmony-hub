@@ -10,7 +10,6 @@ import NutritionGoalForm from "@/components/goal-wizard/NutritionGoalForm";
 import CalorieGoalStep from "@/components/goal-wizard/CalorieGoalStep";
 import MacroStep from "@/components/goal-wizard/MacroStep";
 import ReviewGoalsStep from "@/components/goal-wizard/ReviewGoalsStep";
-//import ProfileSidebar from "@/components/profile/ProfileSidebar";
 
 const steps = [
   { id: 1, title: "Basic Information" },
@@ -90,52 +89,74 @@ const GoalWizard = () => {
       carbsPercentage: formData.carbsPercentage,
       fatsPercentage: formData.fatsPercentage,
     });
+
+    // Auto-save goals to the goals tab
+    const goalTexts = [
+      `Daily calorie target: ${formData.dailyCalories} kcal`,
+      `Protein: ${formData.proteinPercentage}% (${Math.round(formData.dailyCalories * formData.proteinPercentage / 400)}g)`,
+      `Carbs: ${formData.carbsPercentage}% (${Math.round(formData.dailyCalories * formData.carbsPercentage / 400)}g)`,
+      `Fats: ${formData.fatsPercentage}% (${Math.round(formData.dailyCalories * formData.fatsPercentage / 900)}g)`,
+      `Goal: ${formData.goal === 'lose' ? 'Lose weight' : formData.goal === 'gain' ? 'Gain weight' : 'Maintain weight'}`,
+    ];
+    const getWeekLabel = (d: Date) => {
+      const start = new Date(d); start.setDate(d.getDate() - d.getDay());
+      return `Week of ${start.toLocaleDateString()}`;
+    };
+    try {
+      const existing = JSON.parse(localStorage.getItem('th_saved_goals') || '[]');
+      // Remove old wizard goals
+      const filtered = existing.filter((g: any) => !g.text.startsWith('Daily calorie target') && !g.text.startsWith('Protein:') && !g.text.startsWith('Carbs:') && !g.text.startsWith('Fats:') && !g.text.startsWith('Goal:'));
+      const newGoals = goalTexts.map(text => ({
+        id: crypto.randomUUID(),
+        text,
+        week: getWeekLabel(new Date()),
+        date: new Date().toISOString(),
+        completed: false,
+      }));
+      const updated = [...newGoals, ...filtered];
+      localStorage.setItem('th_saved_goals', JSON.stringify(updated));
+      window.dispatchEvent(new Event('goals-updated'));
+    } catch {}
+
     setShowConfetti(true);
     toast.success("Goals saved! View them in Progress → Goals tab.");
-    setTimeout(() => navigate("/progress"), 3000);
+    setTimeout(() => setShowConfetti(false), 3500);
   };
 
   const handleNext = () => {
     if (currentStep === 2) handleCalculateCalories();
-    if (currentStep < steps.length) { setCurrentStep(currentStep + 1); window.scrollTo(0, 0); }
+    if (currentStep < steps.length) { setCurrentStep(currentStep + 1); }
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) { setCurrentStep(currentStep - 1); window.scrollTo(0, 0); }
+    if (currentStep > 1) { setCurrentStep(currentStep - 1); }
   };
 
   return (
-    <div className="mx-auto space-y-8 flex">
-      {/* <ProfileSidebar activePage="goals" /> */}
+    <div className="space-y-6">
       <Confetti active={showConfetti} />
-      <div className="settings-page ml-16 md:ml-64 w-full transition-all duration-300 ease-in-out">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Personalized Nutrition Goal Wizard</h1>
-          <p className="text-muted-foreground">Set your nutrition goals in just a few steps.</p>
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span>Step {currentStep} of {steps.length}</span>
+          <span className="font-medium text-primary">{steps[currentStep - 1].title}</span>
         </div>
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>Step {currentStep} of {steps.length}</span>
-            <span>{steps[currentStep - 1].title}</span>
-          </div>
-          <Progress value={(currentStep / steps.length) * 100} className="h-2" />
-        </div>
-        <Card className="nutrition-card animate-fade-in">
-          <CardContent className="pt-6">
-            {currentStep === 1 && <NutritionGoalForm formData={formData} onChange={handleChange} />}
-            {currentStep === 2 && <CalorieGoalStep formData={formData} calculateCalories={calculateCalories} onChange={handleChange} />}
-            {currentStep === 3 && <MacroStep formData={formData} onMacroChange={handleMacroChange} />}
-            {currentStep === 4 && <ReviewGoalsStep formData={formData} />}
-          </CardContent>
-        </Card>
-        <div className="flex justify-between">
-          <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>Previous</Button>
-          {currentStep < steps.length ? (
-            <Button onClick={handleNext}>Continue</Button>
-          ) : (
-            <Button onClick={handleSubmit} className="bg-primary hover:bg-primary/90">Save Goals</Button>
-          )}
-        </div>
+        <Progress value={(currentStep / steps.length) * 100} className="h-2" />
+      </div>
+      <Card className="animate-fade-in border-primary/20">
+        <CardContent className="pt-6">
+          {currentStep === 1 && <NutritionGoalForm formData={formData} onChange={handleChange} />}
+          {currentStep === 2 && <CalorieGoalStep formData={formData} calculateCalories={calculateCalories} onChange={handleChange} />}
+          {currentStep === 3 && <MacroStep formData={formData} onMacroChange={handleMacroChange} />}
+          {currentStep === 4 && <ReviewGoalsStep formData={formData} />}
+        </CardContent>
+      </Card>
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>Previous</Button>
+        {currentStep < steps.length ? (
+          <Button onClick={handleNext} className="bg-gradient-to-r from-primary to-primary/80">Continue</Button>
+        ) : (
+          <Button onClick={handleSubmit} className="bg-gradient-to-r from-primary to-primary/80">Save Goals</Button>
+        )}
       </div>
     </div>
   );
