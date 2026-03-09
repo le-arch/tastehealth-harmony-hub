@@ -8,6 +8,7 @@ import WeeklySummary from '@/components/WeeklySummary';
 import MealMoodTracker from '@/components/MealMoodTracker';
 import DashboardGreeting from '@/components/DashboardGreeting';
 import MealRecommendations from '@/components/MealRecommendations';
+import { MealMoodSaver, TodayMealCard } from '@/components/MealMoodSaver';
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
@@ -37,6 +38,10 @@ const DashboardPage = () => {
             <TabsTrigger value="points" className="flex items-center gap-2"><Award className="h-4 w-4" />{!isMobile && t.tabs.points}</TabsTrigger>
           </ScrollableTabsList>
           <TabsContent value="dashboard" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <TodayMealCard />
+              <MealMoodSaver />
+            </div>
             <ProgressTracker />
             <MealRecommendations />
             <BMICalculator />

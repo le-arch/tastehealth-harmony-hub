@@ -9,6 +9,19 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import Confetti from "@/components/Confetti";
+import { soundManager } from "@/utils/sounds";
+
+interface Challenge {
+  id: string;
+  name: string;
+  types: string[];
+  duration: number;
+  difficulty: number;
+  startDate: string;
+  progress: number;
+  target: number;
+  completed: boolean;
+}
 
 const challengeTypes = [
   { id: "water", label: "Water Intake", description: "Drink more water daily" },
@@ -31,13 +44,42 @@ const ChallengeCreator: React.FC = () => {
     );
   };
 
+  const loadChallenges = (): Challenge[] => {
+    try {
+      const stored = localStorage.getItem('th_challenges');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  };
+
   const handleCreateChallenge = () => {
     if (!name.trim()) { toast.error("Please provide a challenge name"); return; }
     if (selectedTypes.length === 0) { toast.error("Please select at least one challenge type"); return; }
-    toast.success("Challenge created (local only)!");
+
+    const newChallenge: Challenge = {
+      id: crypto.randomUUID(),
+      name,
+      types: selectedTypes,
+      duration,
+      difficulty,
+      startDate: new Date().toISOString(),
+      progress: 0,
+      target: duration,
+      completed: false,
+    };
+
+    const challenges = loadChallenges();
+    challenges.push(newChallenge);
+    localStorage.setItem('th_challenges', JSON.stringify(challenges));
+
+    toast.success(`Challenge "${name}" created!`);
+    soundManager.playMilestone();
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 3000);
     setName(""); setSelectedTypes([]); setDuration(7); setDifficulty(1);
+
+    window.dispatchEvent(new Event('challenge-created'));
   };
 
   return (

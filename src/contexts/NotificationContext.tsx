@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { getLS, LS_KEYS, CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry } from "@/utils/localStorage";
 
 export interface Notification {
   id: string;
   title: string;
   message: string;
-  type: 'water' | 'achievement' | 'meal' | 'reminder' | 'info';
+  type: 'water' | 'achievement' | 'meal' | 'reminder' | 'info' | 'weekly_summary';
   isRead: boolean;
   timestamp: Date;
   actionUrl?: string;
@@ -18,6 +19,7 @@ interface NotificationContextType {
   markAllAsRead: () => void;
   clearNotifications: () => void;
   deleteNotification: (id: string) => void;
+  sendWeeklySummary: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -126,6 +128,56 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setNotifications(prev => prev.filter(n => n.id !== id));
   }, []);
 
+  const sendWeeklySummary = useCallback(() => {
+    const now = new Date();
+    const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7);
+
+    const calories = getLS<CalorieEntry[]>(LS_KEYS.CALORIE_LOG, []).filter(e => new Date(e.date) >= weekAgo);
+    const sleep = getLS<SleepEntry[]>(LS_KEYS.SLEEP_LOG, []).filter(e => new Date(e.date) >= weekAgo);
+    const exercise = getLS<ExerciseEntry[]>(LS_KEYS.EXERCISE_LOG, []).filter(e => new Date(e.date) >= weekAgo);
+    const hydration = getLS<HydrationEntry[]>(LS_KEYS.HYDRATION_LOG, []).filter(e => new Date(e.date) >= weekAgo);
+
+    const totalCal = calories.reduce((s, e) => s + e.calories, 0);
+    const avgCal = calories.length ? Math.round(totalCal / 7) : 0;
+    const totalSleep = sleep.reduce((s, e) => s + e.hours, 0);
+    const avgSleep = sleep.length ? (totalSleep / sleep.length).toFixed(1) : '0';
+    const totalExercise = exercise.reduce((s, e) => s + e.duration, 0);
+    const totalWater = hydration.reduce((s, e) => s + e.cups, 0);
+
+    const summaryMessage = `Weekly Summary: ${totalCal} total calories (${avgCal}/day), ${totalWater} cups water, ${totalExercise}min exercise, ${avgSleep}hrs sleep avg. Great job staying consistent!`;
+
+    const weeklyNotification: Notification = {
+      id: crypto.randomUUID(),
+      title: '📊 Weekly Health Summary',
+      message: summaryMessage,
+      type: 'weekly_summary',
+      isRead: false,
+      timestamp: new Date(),
+    };
+
+    setNotifications(prev => [weeklyNotification, ...prev]);
+    const stored = JSON.parse(localStorage.getItem('th_notifications') || '[]');
+    localStorage.setItem('th_notifications', JSON.stringify([weeklyNotification, ...stored]));
+    localStorage.setItem(LS_KEYS.WEEKLY_SUMMARY_SENT, new Date().toISOString());
+  }, []);
+
+  useEffect(() => {
+    const lastSent = localStorage.getItem(LS_KEYS.WEEKLY_SUMMARY_SENT);
+    if (!lastSent) {
+      const now = new Date();
+      if (now.getDay() === 0) {
+        sendWeeklySummary();
+      }
+    } else {
+      const lastSentDate = new Date(lastSent);
+      const now = new Date();
+      const daysSinceLastSent = Math.floor((now.getTime() - lastSentDate.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceLastSent >= 7 && now.getDay() === 0) {
+        sendWeeklySummary();
+      }
+    }
+  }, [sendWeeklySummary]);
+
   return (
     <NotificationContext.Provider
       value={{
@@ -136,6 +188,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         markAllAsRead,
         clearNotifications,
         deleteNotification,
+        sendWeeklySummary,
       }}
     >
       {children}

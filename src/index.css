@@ -152,3 +152,176 @@
   applied to specific scrollable-containing classes (below) so scrollbars
   are hidden only where intended.
 */
+
+/* Animated Icon Styles */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes drop {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+
+@keyframes glow {
+  0%, 100% { filter: drop-shadow(0 0 2px currentColor); }
+  50% { filter: drop-shadow(0 0 8px currentColor); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes flip {
+  0% { transform: perspective(400px) rotateY(0); }
+  100% { transform: perspective(400px) rotateY(360deg); }
+}
+
+@keyframes cook {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.05); }
+}
+
+@keyframes beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+@keyframes vibrate {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+@keyframes grow {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.1); }
+}
+
+.animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+.animate-pulse-slow { animation: pulse-slow 2s ease-in-out infinite; }
+.animate-drop { animation: drop 1.5s ease-in-out infinite; }
+.animate-glow { animation: glow 2s ease-in-out infinite; }
+.animate-shake { animation: shake 0.5s ease-in-out infinite; }
+.animate-bounce-subtle { animation: bounce-subtle 1.5s ease-in-out infinite; }
+.animate-spin-slow { animation: spin-slow 8s linear infinite; }
+.animate-flip { animation: flip 2s ease-in-out infinite; }
+.animate-cook { animation: cook 1s ease-in-out infinite; }
+.animate-beat { animation: beat 1s ease-in-out infinite; }
+.animate-sparkle { animation: sparkle 1.5s ease-in-out infinite; }
+.animate-vibrate { animation: vibrate 0.3s ease-in-out infinite; }
+.animate-grow { animation: grow 2s ease-in-out infinite; }
+
+/* Stylish Meal Table Styles */
+.meal-timetable {
+  @apply w-full border-collapse;
+}
+
+.meal-timetable th {
+  @apply bg-gradient-to-r from-primary/10 to-secondary/10 px-3 py-2 text-left font-semibold text-sm border-b-2 border-primary/20;
+}
+
+.meal-timetable td {
+  @apply border p-2 align-top transition-all duration-200;
+}
+
+.meal-timetable .meal-slot {
+  @apply min-h-[100px] bg-muted/20 hover:bg-muted/40 transition-colors rounded-lg;
+}
+
+.meal-timetable .meal-item {
+  @apply bg-white dark:bg-gray-800 border rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow;
+}
+
+.meal-timetable .meal-name {
+  @apply font-medium text-sm truncate;
+}
+
+.meal-timetable .calories-badge {
+  @apply text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded;
+}
+
+/* Rich Text Content Styles */
+.rich-text-content h1 {
+  @apply text-xl font-bold mb-2;
+}
+
+.rich-text-content h2 {
+  @apply text-lg font-semibold mb-2;
+}
+
+.rich-text-content h3 {
+  @apply text-base font-semibold mb-1;
+}
+
+.rich-text-content ul {
+  @apply list-disc list-inside mb-2;
+}
+
+.rich-text-content ol {
+  @apply list-decimal list-inside mb-2;
+}
+
+.rich-text-content blockquote {
+  @apply border-l-4 border-primary pl-4 italic text-muted-foreground mb-2;
+}
+
+.rich-text-content strong {
+  @apply font-bold;
+}
+
+.rich-text-content em {
+  @apply italic;
+}
+
+/* Recipe Card Enhancement */
+.recipe-card {
+  @apply relative overflow-hidden transition-all duration-300 hover:shadow-lg;
+}
+
+.recipe-card::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 transition-opacity;
+}
+
+.recipe-card:hover::before {
+  @apply opacity-100;
+}
+
+/* Gradient Text */
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent;
+}
+
+/* Glass Effect */
+.glass-effect {
+  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
+/* Glow Effect */
+.glow-effect {
+  @apply shadow-lg shadow-primary/25;
+}

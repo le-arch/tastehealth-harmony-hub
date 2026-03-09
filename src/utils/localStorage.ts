@@ -39,6 +39,12 @@ export const LS_KEYS = {
   QUESTS: 'th_quests',
   NOTIFICATIONS: 'th_notifications',
   REWARDS: 'th_rewards',
+  MEAL_MOOD_SAVER: 'th_meal_mood_saver',
+  TODAY_MEALS: 'th_today_meals',
+  TODAY_MEAL_LOG: 'th_today_meal_log',
+  WEEKLY_SUMMARY_SENT: 'th_weekly_summary_sent',
+  JOURNAL_ENTRIES: 'th_journal_entries',
+  CUSTOM_RECIPES: 'th_custom_recipes',
 } as const;
 
 export interface ProfileData {
@@ -108,6 +114,22 @@ export interface FavoriteMeal {
 
 export interface Reward {
   id: string; name: string; description: string; points: number; claimed: boolean; icon: string;
+}
+
+export interface MealMoodEntry {
+  id: string; date: string; mealName: string; mood: string; notes: string; calories?: number;
+}
+
+export interface TodayMealLog {
+  id: string; date: string; mealName: string; mealType: 'breakfast' | 'lunch' | 'dinner' | 'snacks'; calories: number; timestamp: string;
+}
+
+export interface JournalEntryRich {
+  id: string; date: string; title: string; content: string; formattedContent: string; mood: string; meals: string[]; createdAt: string; updatedAt: string;
+}
+
+export interface CustomRecipeFull {
+  id: string; name: string; ingredients: string; ingredientsFormatted: string; method: string; methodFormatted: string; category: string; date: string; imageUrl?: string;
 }
 
 const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

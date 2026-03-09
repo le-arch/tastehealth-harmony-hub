@@ -10,6 +10,7 @@ import NutritionGoalForm from "@/components/goal-wizard/NutritionGoalForm";
 import CalorieGoalStep from "@/components/goal-wizard/CalorieGoalStep";
 import MacroStep from "@/components/goal-wizard/MacroStep";
 import ReviewGoalsStep from "@/components/goal-wizard/ReviewGoalsStep";
+import { soundManager } from "@/utils/sounds";
 //import ProfileSidebar from "@/components/profile/ProfileSidebar";
 
 const steps = [
@@ -90,6 +91,25 @@ const GoalWizard = () => {
       carbsPercentage: formData.carbsPercentage,
       fatsPercentage: formData.fatsPercentage,
     });
+
+    const nutritionGoalText = `Daily calorie goal: ${formData.dailyCalories} kcal (P: ${formData.proteinPercentage}%, C: ${formData.carbsPercentage}%, F: ${formData.fatsPercentage}%)`;
+    
+    try {
+      const existingGoals = JSON.parse(localStorage.getItem('th_saved_goals') || '[]');
+      const newGoal = {
+        id: crypto.randomUUID(),
+        text: nutritionGoalText,
+        week: `Week of ${new Date().toLocaleDateString()}`,
+        date: new Date().toISOString(),
+        completed: false,
+      };
+      existingGoals.push(newGoal);
+      localStorage.setItem('th_saved_goals', JSON.stringify(existingGoals));
+    } catch (e) {
+      console.error('Failed to save goal to localStorage:', e);
+    }
+
+    soundManager.playGoalComplete();
     setShowConfetti(true);
     toast.success("Goals saved! View them in Progress → Goals tab.");
     setTimeout(() => navigate("/progress"), 3000);

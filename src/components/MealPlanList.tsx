@@ -4,7 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CalendarDays, Trash2, Plus, X, Search } from 'lucide-react';
+import { CalendarDays, Trash2, Plus, X, Search, Edit2, Save, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
 import { getLS, setLS, LS_KEYS, MealPlan, MealPlanItem, DAYS_OF_WEEK, createEmptyWeek } from '@/utils/localStorage';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -13,9 +13,24 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MEAL_DATABASE } from '@/data/mealDatabase';
+import { soundManager } from '@/utils/sounds';
 
 type MealCategory = 'breakfast' | 'lunch' | 'dinner' | 'snacks';
 const CATEGORIES: MealCategory[] = ['breakfast', 'lunch', 'dinner', 'snacks'];
+
+const CATEGORY_COLORS: Record<MealCategory, string> = {
+  breakfast: 'from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/30',
+  lunch: 'from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30',
+  dinner: 'from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30',
+  snacks: 'from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30',
+};
+
+const CATEGORY_ICONS: Record<MealCategory, string> = {
+  breakfast: '🌅',
+  lunch: '☀️',
+  dinner: '🌙',
+  snacks: '🍿',
+};
 
 export function MealPlanList() {
   const { language } = useLanguage();
@@ -28,6 +43,9 @@ export function MealPlanList() {
   const [addMealCalories, setAddMealCalories] = useState('');
   const [addMealMode, setAddMealMode] = useState<'database' | 'custom'>('database');
   const [mealSearch, setMealSearch] = useState('');
+  const [editingMealId, setEditingMealId] = useState<string | null>(null);
+  const [editMealName, setEditMealName] = useState('');
+  const [editMealCalories, setEditMealCalories] = useState('');
 
   const save = (updated: MealPlan[]) => { setPlans(updated); setLS(LS_KEYS.MEAL_PLANS, updated); };
 
@@ -35,6 +53,7 @@ export function MealPlanList() {
     save(plans.filter(p => p.id !== id));
     if (selectedPlan === id) setSelectedPlan(null);
     toast.success("Plan deleted");
+    soundManager.playClick();
   };
 
   const plan = plans.find(p => p.id === selectedPlan);
@@ -50,6 +69,7 @@ export function MealPlanList() {
       return { ...p, days };
     });
     save(updated);
+    soundManager.playSuccess();
     toast.success(`${addMealName} added to ${addDay} ${addCategory}`);
     setAddMealName(''); setAddMealCalories(''); setAddOpen(false);
     setMealSearch('');
@@ -66,6 +86,7 @@ export function MealPlanList() {
       return { ...p, days };
     });
     save(updated);
+    soundManager.playSuccess();
     toast.success(`${dbMeal.name} added to ${addDay} ${addCategory}`);
     setAddMealName(''); setAddMealCalories(''); setAddOpen(false);
     setMealSearch('');
@@ -85,7 +106,41 @@ export function MealPlanList() {
       return { ...p, days };
     });
     save(updated);
+    soundManager.playClick();
     toast.success("Meal removed");
+  };
+
+  const startEditingMeal = (meal: MealPlanItem) => {
+    setEditingMealId(meal.id);
+    setEditMealName(meal.name);
+    setEditMealCalories(meal.calories.toString());
+  };
+
+  const saveEditingMeal = (day: string, category: MealCategory, mealId: string) => {
+    if (!plan || !editMealName.trim()) return;
+    const updated = plans.map(p => {
+      if (p.id !== plan.id) return p;
+      const days = { ...p.days };
+      days[day] = {
+        ...days[day],
+        [category]: days[day][category].map((m: MealPlanItem) =>
+          m.id === mealId ? { ...m, name: editMealName, calories: parseInt(editMealCalories) || 0 } : m
+        ),
+      };
+      return { ...p, days };
+    });
+    save(updated);
+    soundManager.playSuccess();
+    toast.success("Meal updated!");
+    setEditingMealId(null);
+    setEditMealName('');
+    setEditMealCalories('');
+  };
+
+  const cancelEditingMeal = () => {
+    setEditingMealId(null);
+    setEditMealName('');
+    setEditMealCalories('');
   };
 
   const t = language === 'fr'
@@ -96,19 +151,53 @@ export function MealPlanList() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Button variant="outline" onClick={() => setSelectedPlan(null)}>{t.back}</Button>
-          <h2 className="text-xl font-bold">{plan.name}</h2>
+          <Button variant="outline" onClick={() => setSelectedPlan(null)} className="gap-2">
+            ← {t.back}
+          </Button>
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <CalendarDays className="h-5 w-5 text-primary" />
+            {plan.name}
+          </h2>
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
-            <DialogTrigger asChild><Button size="sm"><Plus className="h-4 w-4 mr-1" />{t.addMeal}</Button></DialogTrigger>
+            <DialogTrigger asChild>
+              <Button size="sm" className="glow-effect">
+                <Plus className="h-4 w-4 mr-1" />
+                {t.addMeal}
+              </Button>
+            </DialogTrigger>
             <DialogContent className="max-w-2xl">
-              <DialogHeader><DialogTitle>{t.addMeal}</DialogTitle></DialogHeader>
+              <DialogHeader>
+                <DialogTitle>{t.addMeal}</DialogTitle>
+              </DialogHeader>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
-                  <div><Label>{t.day}</Label>
-                    <Select value={addDay} onValueChange={setAddDay}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{DAYS_OF_WEEK.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent></Select>
+                  <div>
+                    <Label>{t.day}</Label>
+                    <Select value={addDay} onValueChange={setAddDay}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DAYS_OF_WEEK.map(d => (
+                          <SelectItem key={d} value={d}>{d}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div><Label>{t.category}</Label>
-                    <Select value={addCategory} onValueChange={(v) => { setAddCategory(v as MealCategory); setMealSearch(''); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}</SelectContent></Select>
+                  <div>
+                    <Label>{t.category}</Label>
+                    <Select value={addCategory} onValueChange={(v) => { setAddCategory(v as MealCategory); setMealSearch(''); }}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CATEGORIES.map(c => (
+                          <SelectItem key={c} value={c} className="capitalize">
+                            {CATEGORY_ICONS[c]} {c}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
@@ -121,10 +210,10 @@ export function MealPlanList() {
                   <TabsContent value="database" className="space-y-3">
                     <div className="relative">
                       <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        placeholder="Search meals..." 
-                        value={mealSearch} 
-                        onChange={(e) => setMealSearch(e.target.value)} 
+                      <Input
+                        placeholder="Search meals..."
+                        value={mealSearch}
+                        onChange={(e) => setMealSearch(e.target.value)}
                         className="pl-8"
                       />
                     </div>
@@ -148,8 +237,14 @@ export function MealPlanList() {
                   </TabsContent>
 
                   <TabsContent value="custom" className="space-y-3">
-                    <div><Label>{t.name}</Label><Input value={addMealName} onChange={e => setAddMealName(e.target.value)} placeholder="e.g. Grilled Chicken Salad" /></div>
-                    <div><Label>{t.calories}</Label><Input type="number" value={addMealCalories} onChange={e => setAddMealCalories(e.target.value)} placeholder="e.g. 450" /></div>
+                    <div>
+                      <Label>{t.name}</Label>
+                      <Input value={addMealName} onChange={e => setAddMealName(e.target.value)} placeholder="e.g. Grilled Chicken Salad" />
+                    </div>
+                    <div>
+                      <Label>{t.calories}</Label>
+                      <Input type="number" value={addMealCalories} onChange={e => setAddMealCalories(e.target.value)} placeholder="e.g. 450" />
+                    </div>
                     <Button onClick={addMealToPlan} disabled={!addMealName.trim()} className="w-full">{t.add}</Button>
                   </TabsContent>
                 </Tabs>
@@ -159,32 +254,104 @@ export function MealPlanList() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse min-w-[800px]">
+          <table className="meal-timetable w-full border-collapse min-w-[900px]">
             <thead>
               <tr>
-                <th className="border p-2 bg-muted text-left font-medium w-24">{t.day}</th>
-                {CATEGORIES.map(c => <th key={c} className="border p-2 bg-muted text-left font-medium capitalize">{c}</th>)}
+                <th className="border p-3 bg-gradient-to-r from-primary/20 to-secondary/20 text-left font-bold w-28">
+                  <CalendarDays className="h-4 w-4 inline mr-1" />
+                  {t.day}
+                </th>
+                {CATEGORIES.map(c => (
+                  <th key={c} className={`border p-3 bg-gradient-to-r ${CATEGORY_COLORS[c]} text-left font-bold capitalize`}>
+                    <span className="mr-1">{CATEGORY_ICONS[c]}</span>
+                    {c}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {DAYS_OF_WEEK.map(day => {
                 const dayData = plan.days[day] || { breakfast: [], lunch: [], dinner: [], snacks: [] };
                 return (
-                  <tr key={day}>
-                    <td className="border p-2 font-medium text-sm bg-muted/50">{day}</td>
+                  <tr key={day} className="hover:bg-muted/20 transition-colors">
+                    <td className="border p-3 font-semibold text-sm bg-muted/50">
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="h-3 w-3 text-muted-foreground" />
+                        {day}
+                      </div>
+                    </td>
                     {CATEGORIES.map(cat => (
-                      <td key={cat} className="border p-2 align-top min-w-[180px]">
-                        <div className="space-y-1">
+                      <td key={cat} className={`border p-2 align-top min-w-[180px] bg-gradient-to-br ${CATEGORY_COLORS[cat]} /20`}>
+                        <div className="space-y-2">
                           {dayData[cat].map((meal: MealPlanItem) => (
-                            <div key={meal.id} className="flex items-center justify-between bg-background border rounded p-1.5 text-sm group">
-                              <div>
-                                <span className="font-medium">{meal.name}</span>
-                                {meal.calories > 0 && <Badge variant="secondary" className="ml-1 text-xs">{meal.calories} kcal</Badge>}
-                              </div>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeMeal(day, cat, meal.id)}><X className="h-3 w-3 text-destructive" /></Button>
+                            <div 
+                              key={meal.id} 
+                              className="meal-item group relative"
+                            >
+                              {editingMealId === meal.id ? (
+                                <div className="space-y-1 p-2 bg-white dark:bg-gray-800 rounded border">
+                                  <Input
+                                    value={editMealName}
+                                    onChange={(e) => setEditMealName(e.target.value)}
+                                    className="text-sm h-7"
+                                    placeholder="Meal name"
+                                  />
+                                  <div className="flex gap-1">
+                                    <Input
+                                      type="number"
+                                      value={editMealCalories}
+                                      onChange={(e) => setEditMealCalories(e.target.value)}
+                                      className="text-xs h-6"
+                                      placeholder="Calories"
+                                    />
+                                    <Button size="icon" className="h-6 w-6" onClick={() => saveEditingMeal(day, cat, meal.id)}>
+                                      <Save className="h-3 w-3" />
+                                    </Button>
+                                    <Button size="icon" variant="ghost" className="h-6 w-6" onClick={cancelEditingMeal}>
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <span className="meal-name font-medium text-sm">{meal.name}</span>
+                                      {meal.calories > 0 && (
+                                        <span className="calories-badge ml-1">
+                                          {meal.calories} kcal
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-5 w-5 bg-white dark:bg-gray-700 shadow"
+                                      onClick={() => startEditingMeal(meal)}
+                                    >
+                                      <Edit2 className="h-2.5 w-2.5" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-5 w-5 bg-white dark:bg-gray-700 shadow text-destructive hover:text-destructive"
+                                      onClick={() => removeMeal(day, cat, meal.id)}
+                                    >
+                                      <X className="h-2.5 w-2.5" />
+                                    </Button>
+                                  </div>
+                                </>
+                              )}
                             </div>
                           ))}
-                          <Button variant="ghost" size="sm" className="w-full text-xs h-7 text-muted-foreground" onClick={() => { setAddDay(day); setAddCategory(cat); setAddOpen(true); }}>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="w-full text-xs h-7 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                            onClick={() => { setAddDay(day); setAddCategory(cat); setAddOpen(true); }}
+                          >
                             <Plus className="h-3 w-3 mr-1" />Add
                           </Button>
                         </div>
@@ -213,16 +380,25 @@ export function MealPlanList() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {plans.map(p => (
-        <Card key={p.id} className="hover:shadow-md transition-shadow">
+        <Card key={p.id} className="hover:shadow-lg transition-all hover:scale-[1.02] glow-effect">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2"><CalendarDays className="h-4 w-4" />{p.name}</CardTitle>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <CalendarDays className="h-4 w-4 text-primary" />
+              {p.name}
+            </CardTitle>
             {p.description && <p className="text-sm text-muted-foreground">{p.description}</p>}
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground mb-3">Created {new Date(p.created_at).toLocaleDateString()}</p>
+            <p className="text-xs text-muted-foreground mb-3">
+              Created {new Date(p.created_at).toLocaleDateString()}
+            </p>
             <div className="flex gap-2">
-              <Button size="sm" onClick={() => setSelectedPlan(p.id)} className="flex-1">{t.selectPlan}</Button>
-              <Button size="sm" variant="destructive" onClick={() => deletePlan(p.id)}><Trash2 className="h-4 w-4" /></Button>
+              <Button size="sm" onClick={() => setSelectedPlan(p.id)} className="flex-1 glow-effect">
+                {t.selectPlan}
+              </Button>
+              <Button size="sm" variant="destructive" onClick={() => deletePlan(p.id)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
           </CardContent>
         </Card>
