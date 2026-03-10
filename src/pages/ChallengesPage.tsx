@@ -10,10 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Target, Trash2 } from "lucide-react";
-import { getLS, setLS, LS_KEYS, Challenge } from "@/utils/localStorage";
+import { getLS, setLS, LS_KEYS, Challenge, PointsTransaction } from "@/utils/localStorage";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import Confetti from "@/components/Confetti";
+import { playMilestoneSound } from "@/utils/sounds";
 
 const ChallengesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("active");
@@ -25,18 +26,29 @@ const ChallengesPage: React.FC = () => {
   const completedChallenges = challenges.filter(c => c.completed);
 
   const advanceProgress = (id: string) => {
+    const today = new Date().toDateString();
     const updated = challenges.map(c => {
       if (c.id !== id || c.completed) return c;
+      // Daily limit check
+      if ((c as any).lastAdvanced === today) {
+        toast.info("You can only advance once per day!");
+        return c;
+      }
       const newProgress = Math.min(c.progress + 1, c.target);
       const completed = newProgress >= c.target;
       if (completed) {
         setShowConfetti(true);
+        playMilestoneSound('reward');
         setTimeout(() => setShowConfetti(false), 3500);
-        toast.success(`🏆 Challenge "${c.name}" completed!`);
+        toast.success(`🏆 Challenge "${c.name}" completed! +50 pts`);
         const pts = getLS<number>(LS_KEYS.POINTS, 0);
         setLS(LS_KEYS.POINTS, pts + 50);
+        // Save to points history
+        const history = getLS<PointsTransaction[]>(LS_KEYS.POINTS_HISTORY, []);
+        history.unshift({ id: crypto.randomUUID(), date: new Date().toISOString(), points: 50, reason: `Challenge: ${c.name}` });
+        setLS(LS_KEYS.POINTS_HISTORY, history.slice(0, 100));
       }
-      return { ...c, progress: newProgress, completed };
+      return { ...c, progress: newProgress, completed, lastAdvanced: today } as any;
     });
     setChallenges(updated);
     setLS(LS_KEYS.CHALLENGES, updated);
@@ -47,6 +59,11 @@ const ChallengesPage: React.FC = () => {
     setChallenges(updated);
     setLS(LS_KEYS.CHALLENGES, updated);
     toast.success("Challenge deleted");
+  };
+
+  const canAdvanceToday = (c: any) => {
+    if (c.completed) return false;
+    return c.lastAdvanced !== new Date().toDateString();
   };
 
   return (
@@ -61,7 +78,7 @@ const ChallengesPage: React.FC = () => {
               </motion.span>
               Nutrition Challenges
             </h1>
-            <p className="text-muted-foreground mb-6 text-sm">Complete challenges to earn points and improve your nutrition habits.</p>
+            <p className="text-muted-foreground mb-6 text-sm">Complete challenges to earn points. You can advance once per day.</p>
           </motion.div>
           <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); if (v === 'active') refresh(); }} className="w-full">
             <ScrollableTabsList className="mb-6">
@@ -94,7 +111,9 @@ const ChallengesPage: React.FC = () => {
                           <Progress value={Math.min((c.progress / c.target) * 100, 100)} className="h-2" />
                           <div className="flex flex-wrap gap-2">{c.types.map(t => <Badge key={t} variant="outline" className="text-xs capitalize">{t}</Badge>)}</div>
                           <div className="flex gap-2 mt-2">
-                            <Button size="sm" onClick={() => advanceProgress(c.id)} className="flex-1">+1 Progress</Button>
+                            <Button size="sm" onClick={() => advanceProgress(c.id)} className="flex-1" disabled={!canAdvanceToday(c)}>
+                              {canAdvanceToday(c) ? '+1 Progress' : 'Done Today'}
+                            </Button>
                             <Button size="sm" variant="destructive" onClick={() => deleteChallenge(c.id)}><Trash2 className="h-4 w-4" /></Button>
                           </div>
                         </CardContent>
