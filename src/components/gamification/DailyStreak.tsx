@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -6,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Flame, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
-import { getLS, setLS, LS_KEYS } from "@/utils/localStorage";
+import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
 import Confetti from "@/components/Confetti";
+import { playMilestoneSound } from "@/utils/sounds";
 
 interface DailyStreakProps { streak: number; updateStreak: () => Promise<void>; }
 
@@ -29,9 +29,17 @@ const DailyStreak = ({ updateStreak }: DailyStreakProps) => {
     setStreak(newStreak); setCheckedIn(true);
     setLS(LS_KEYS.STREAK, newStreak); setLS(LS_KEYS.STREAK_DATE, today);
     await updateStreak();
+    // Save to points history
+    const streakPts = newStreak % 7 === 0 ? 50 : 10;
+    const currentPts = getLS<number>(LS_KEYS.POINTS, 0);
+    setLS(LS_KEYS.POINTS, currentPts + streakPts);
+    const history = getLS<PointsTransaction[]>(LS_KEYS.POINTS_HISTORY, []);
+    history.unshift({ id: crypto.randomUUID(), date: new Date().toISOString(), points: streakPts, reason: `Streak Day ${newStreak}${newStreak % 7 === 0 ? ' (Weekly Bonus!)' : ''}` });
+    setLS(LS_KEYS.POINTS_HISTORY, history.slice(0, 100));
     setShowConfetti(true);
+    playMilestoneSound('streak');
     setTimeout(() => setShowConfetti(false), 3500);
-    toast.success(`Streak: ${newStreak} days! 🔥`);
+    toast.success(`Streak: ${newStreak} days! 🔥 +${streakPts} pts`);
   };
 
   return (

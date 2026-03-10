@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { MEAL_DATABASE, MealDBItem } from '@/data/mealDatabase';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotifications } from '@/contexts/NotificationContext';
-import { Plus, Trash2, Clock, Activity } from 'lucide-react';
+import { getLS, setLS, LS_KEYS, CalorieEntry } from '@/utils/localStorage';
+import { Plus, Trash2, Activity } from 'lucide-react';
 
 interface DailyMealEntry {
   id: string;
@@ -20,38 +21,9 @@ const DailyMealSelector: React.FC = () => {
   const { language } = useLanguage();
   const { addNotification } = useNotifications();
 
-  const translations = {
-    en: {
-      title: 'Today\'s Meals',
-      selectMeals: 'Select & Log Meals',
-      totalCalories: 'Total Calories',
-      breakfast: 'Breakfast',
-      lunch: 'Lunch',
-      dinner: 'Dinner',
-      snacks: 'Snacks',
-      drinks: 'Drinks',
-      addMeal: 'Add Meal',
-      removeAll: 'Clear All',
-      empty: 'No meals selected yet',
-      caloriesLogged: 'Calories logged successfully!',
-    },
-    fr: {
-      title: 'Repas d\'Aujourd\'hui',
-      selectMeals: 'Sélectionner et Enregistrer les Repas',
-      totalCalories: 'Calories Totales',
-      breakfast: 'Petit déjeuner',
-      lunch: 'Déjeuner',
-      dinner: 'Dîner',
-      snacks: 'Collations',
-      drinks: 'Boissons',
-      addMeal: 'Ajouter un Repas',
-      removeAll: 'Effacer Tout',
-      empty: 'Aucun repas sélectionné',
-      caloriesLogged: 'Calories enregistrées avec succès!',
-    },
-  };
-
-  const t = translations[language as keyof typeof translations] || translations.en;
+  const t = language === 'fr'
+    ? { title: 'Repas d\'Aujourd\'hui', selectMeals: 'Sélectionner et Enregistrer', totalCalories: 'Calories Totales', breakfast: 'Petit déjeuner', lunch: 'Déjeuner', dinner: 'Dîner', snacks: 'Collations', drinks: 'Boissons', removeAll: 'Effacer Tout', empty: 'Aucun repas sélectionné' }
+    : { title: 'Today\'s Meals', selectMeals: 'Select & Log Meals', totalCalories: 'Total Calories', breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snacks: 'Snacks', drinks: 'Drinks', removeAll: 'Clear All', empty: 'No meals selected yet' };
 
   const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'drinks'] as const;
   
@@ -68,32 +40,36 @@ const DailyMealSelector: React.FC = () => {
   }), { calories: 0, protein: 0, carbs: 0, fats: 0 });
 
   const addMeal = (meal: MealDBItem) => {
-    const newEntry: DailyMealEntry = {
-      id: `${meal.id}-${Date.now()}`,
-      meal,
-      timestamp: new Date(),
+    const newEntry: DailyMealEntry = { id: `${meal.id}-${Date.now()}`, meal, timestamp: new Date() };
+    const updated = [...selectedMeals, newEntry];
+    setSelectedMeals(updated);
+    addNotification({ title: 'Meal Added', message: `${meal.name} (${meal.nutrition.calories} kcal) added to today's meals`, type: 'meal' });
+    // Auto-add to calorie tracker
+    autoLogCalories(meal);
+  };
+
+  const autoLogCalories = (meal: MealDBItem) => {
+    const entry: CalorieEntry = {
+      id: crypto.randomUUID(),
+      date: new Date().toISOString(),
+      calories: meal.nutrition.calories,
+      meal: meal.category,
+      notes: meal.name,
     };
-    setSelectedMeals([...selectedMeals, newEntry]);
-    addNotification({
-      title: 'Meal Added',
-      message: `${meal.name} (${meal.nutrition.calories} kcal) added to today's meals`,
-      type: 'meal',
-    });
+    const existing = getLS<CalorieEntry[]>(LS_KEYS.CALORIE_LOG, []);
+    setLS(LS_KEYS.CALORIE_LOG, [entry, ...existing]);
   };
 
-  const removeMeal = (id: string) => {
-    setSelectedMeals(selectedMeals.filter(entry => entry.id !== id));
-  };
-
-  const clearAll = () => {
-    setSelectedMeals([]);
-  };
+  const removeMeal = (id: string) => { setSelectedMeals(selectedMeals.filter(entry => entry.id !== id)); };
+  const clearAll = () => { setSelectedMeals([]); };
 
   // Persist to localStorage
   useEffect(() => {
     localStorage.setItem('th_daily_meals', JSON.stringify(selectedMeals.map(entry => ({
-      mealId: entry.meal.id,
-      timestamp: entry.timestamp,
+      mealId: entry.meal.id, mealName: entry.meal.name,
+      calories: entry.meal.nutrition.calories, protein: entry.meal.nutrition.protein,
+      carbs: entry.meal.nutrition.carbs, fats: entry.meal.nutrition.fats,
+      category: entry.meal.category, timestamp: entry.timestamp,
     }))));
   }, [selectedMeals]);
 
@@ -103,37 +79,27 @@ const DailyMealSelector: React.FC = () => {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        const meals = parsed
-          .map((item: any) => {
-            const meal = MEAL_DATABASE.find(m => m.id === item.mealId);
-            return meal ? { id: `${meal.id}-${item.timestamp}`, meal, timestamp: new Date(item.timestamp) } : null;
-          })
-          .filter((item: any) => item !== null);
+        const meals = parsed.map((item: any) => {
+          const meal = MEAL_DATABASE.find(m => m.id === item.mealId);
+          return meal ? { id: `${meal.id}-${item.timestamp}`, meal, timestamp: new Date(item.timestamp) } : null;
+        }).filter((item: any) => item !== null);
         setSelectedMeals(meals);
-      } catch (error) {
-        console.error('Failed to load daily meals:', error);
-      }
+      } catch {}
     }
   }, []);
 
   return (
     <div className="space-y-4">
-      {/* Summary Card */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center justify-between">
             <span>{t.title}</span>
-            {selectedMeals.length > 0 && (
-              <Badge variant="secondary">{selectedMeals.length} meals</Badge>
-            )}
+            {selectedMeals.length > 0 && <Badge variant="secondary">{selectedMeals.length} meals</Badge>}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {selectedMeals.length === 0 ? (
-            <div className="text-center py-6">
-              <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" />
-              <p className="text-muted-foreground">{t.empty}</p>
-            </div>
+            <div className="text-center py-6"><Activity className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" /><p className="text-muted-foreground">{t.empty}</p></div>
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -158,88 +124,49 @@ const DailyMealSelector: React.FC = () => {
                   <p className="text-xs text-muted-foreground">g</p>
                 </div>
               </div>
-
-              {selectedMeals.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="font-medium text-sm">Selected Meals:</h4>
-                  <AnimatePresence>
-                    {selectedMeals.map((entry) => (
-                      <motion.div
-                        key={entry.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="flex items-center justify-between p-2 bg-muted rounded-lg"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">{entry.meal.name}</p>
-                          <p className="text-xs text-muted-foreground">{entry.meal.nutrition.calories} kcal</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeMeal(entry.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              )}
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Selected Meals:</h4>
+                <AnimatePresence>
+                  {selectedMeals.map((entry) => (
+                    <motion.div key={entry.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                      className="flex items-center justify-between p-2 bg-muted rounded-lg">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{entry.meal.name}</p>
+                        <p className="text-xs text-muted-foreground">{entry.meal.nutrition.calories} kcal • {entry.meal.category}</p>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => removeMeal(entry.id)} className="text-red-600 hover:text-red-700"><Trash2 className="h-4 w-4" /></Button>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
             </>
           )}
         </CardContent>
       </Card>
 
-      {/* Meal Selection */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg">{t.selectMeals}</CardTitle>
-        </CardHeader>
+        <CardHeader className="pb-3"><CardTitle className="text-lg">{t.selectMeals}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           {categories.map((category) => (
             <div key={category}>
-              <button
-                onClick={() => setExpandedCategory(expandedCategory === category ? null : category)}
-                className="w-full flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-              >
-                <span className="font-medium capitalize">{t[category as keyof typeof t]}</span>
+              <button onClick={() => setExpandedCategory(expandedCategory === category ? null : category)}
+                className="w-full flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
+                <span className="font-medium capitalize">{t[category as keyof typeof t] || category}</span>
                 <span className="text-xs text-muted-foreground">{mealsByCategory[category].length}</span>
               </button>
-
               <AnimatePresence>
                 {expandedCategory === category && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-2 space-y-2 max-h-64 overflow-y-auto"
-                  >
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                    className="mt-2 space-y-2 max-h-64 overflow-y-auto">
                     {mealsByCategory[category].map((meal) => (
-                      <div
-                        key={meal.id}
-                        className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
-                      >
+                      <div key={meal.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{meal.name}</p>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                            <span>{meal.nutrition.calories} kcal</span>
-                            <span>•</span>
-                            <span>P: {meal.nutrition.protein}g</span>
-                            <span>•</span>
-                            <span>C: {meal.nutrition.carbs}g</span>
+                            <span>{meal.nutrition.calories} kcal</span><span>•</span><span>P: {meal.nutrition.protein}g</span><span>•</span><span>C: {meal.nutrition.carbs}g</span>
                           </div>
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => addMeal(meal)}
-                          className="ml-2"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => addMeal(meal)} className="ml-2"><Plus className="h-4 w-4" /></Button>
                       </div>
                     ))}
                   </motion.div>
@@ -247,15 +174,9 @@ const DailyMealSelector: React.FC = () => {
               </AnimatePresence>
             </div>
           ))}
-
           {selectedMeals.length > 0 && (
-            <Button
-              variant="outline"
-              className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-              onClick={clearAll}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {t.removeAll}
+            <Button variant="outline" className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={clearAll}>
+              <Trash2 className="h-4 w-4 mr-2" />{t.removeAll}
             </Button>
           )}
         </CardContent>

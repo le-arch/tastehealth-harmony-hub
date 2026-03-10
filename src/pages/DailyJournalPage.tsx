@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotifications } from '@/contexts/NotificationContext';
-import { Bookmark, Calendar, Trash2, Search, Plus, ChefHat, Edit3, ImagePlus } from 'lucide-react';
+import { Bookmark, Calendar, Trash2, Search, Plus, ChefHat, Edit3, Upload, Image as ImageIcon } from 'lucide-react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { TabsTrigger, ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { toast } from 'sonner';
 import RichTextEditor from '@/components/journal/RichTextEditor';
+import { Badge } from '@/components/ui/badge';
 
 interface JournalEntry { id: string; date: string; title: string; content: string; mood: string; meals: string[]; createdAt: Date; updatedAt: Date; }
 interface CustomRecipe { id: string; name: string; ingredients: string; method: string; category: string; date: string; imageUrl?: string; }
@@ -25,6 +26,9 @@ const DailyJournalPage = () => {
   const [recipes, setRecipes] = useState<CustomRecipe[]>(() => { try { return JSON.parse(localStorage.getItem('th_custom_recipes') || '[]'); } catch { return []; } });
   const [recipeForm, setRecipeForm] = useState({ name: '', ingredients: '', method: '', category: 'breakfast', imageUrl: '' });
   const [editingRecipe, setEditingRecipe] = useState<string | null>(null);
+  const [mealGallery, setMealGallery] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem('th_meal_gallery') || '[]'); } catch { return []; } });
+  const recipeFileRef = useRef<HTMLInputElement>(null);
+  const galleryFileRef = useRef<HTMLInputElement>(null);
   const { language } = useLanguage();
   const { addNotification } = useNotifications();
 
@@ -65,6 +69,35 @@ const DailyJournalPage = () => {
   const editEntry = (entry: JournalEntry) => { setSelectedEntry(entry); setFormData({ date: entry.date, title: entry.title, content: entry.content, mood: entry.mood, meals: entry.meals }); setIsEditing(true); };
   const filteredEntries = entries.filter(e => e.title.toLowerCase().includes(searchTerm.toLowerCase()) || e.content.toLowerCase().includes(searchTerm.toLowerCase()));
 
+  const handleRecipeImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => { setRecipeForm({ ...recipeForm, imageUrl: ev.target?.result as string }); };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target?.result as string;
+        setMealGallery(prev => {
+          const updated = [dataUrl, ...prev];
+          localStorage.setItem('th_meal_gallery', JSON.stringify(updated.slice(0, 50)));
+          return updated;
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+    toast.success('Photos added to gallery!');
+  };
+
   const saveRecipe = () => {
     if (!recipeForm.name.trim()) { toast.error('Enter a recipe name'); return; }
     let updated: CustomRecipe[];
@@ -94,6 +127,8 @@ const DailyJournalPage = () => {
       if (line.startsWith('- ')) return <li key={i} className="text-xs ml-3 list-disc">{line.slice(2)}</li>;
       if (/^\d+\. /.test(line)) return <li key={i} className="text-xs ml-3 list-decimal">{line.replace(/^\d+\. /, '')}</li>;
       if (line.startsWith('> ')) return <blockquote key={i} className="border-l-2 border-primary pl-2 text-xs italic text-muted-foreground">{line.slice(2)}</blockquote>;
+      const imgMatch = line.match(/!\[.*?\]\((.*?)\)/);
+      if (imgMatch) return <img key={i} src={imgMatch[1]} alt="" className="max-w-full rounded max-h-24 object-cover my-1" />;
       return <p key={i} className="text-xs">{line}</p>;
     });
   };
@@ -113,8 +148,9 @@ const DailyJournalPage = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <ScrollableTabsList className="mb-6">
-            <TabsTrigger value="journal"><motion.span whileHover={{ scale: 1.1 }}><Bookmark className="h-4 w-4 mr-1 inline text-amber-500" /></motion.span>Journal</TabsTrigger>
-            <TabsTrigger value="recipes"><motion.span whileHover={{ scale: 1.1 }}><ChefHat className="h-4 w-4 mr-1 inline text-orange-500" /></motion.span>My Recipes</TabsTrigger>
+            <TabsTrigger value="journal"><Bookmark className="h-4 w-4 mr-1 inline text-amber-500" />Journal</TabsTrigger>
+            <TabsTrigger value="recipes"><ChefHat className="h-4 w-4 mr-1 inline text-orange-500" />My Recipes</TabsTrigger>
+            <TabsTrigger value="gallery"><ImageIcon className="h-4 w-4 mr-1 inline text-blue-500" />Meal Gallery</TabsTrigger>
           </ScrollableTabsList>
 
           <TabsContent value="journal">
@@ -145,10 +181,10 @@ const DailyJournalPage = () => {
                     <div>
                       <label className="text-sm font-medium">Content</label>
                       <div className="mt-1">
-                        <RichTextEditor value={formData.content} onChange={(v) => setFormData({ ...formData, content: v })} placeholder="Write your thoughts... Use the toolbar for formatting!" />
+                        <RichTextEditor value={formData.content} onChange={(v) => setFormData({ ...formData, content: v })} placeholder="Write your thoughts... Use the toolbar for formatting! Upload images from device." />
                       </div>
                     </div>
-                    <Button onClick={saveEntry} className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"><Plus className="h-4 w-4 mr-2" />Save</Button>
+                    <Button onClick={saveEntry} className="w-full bg-gradient-to-r from-primary to-primary/80"><Plus className="h-4 w-4 mr-2" />Save</Button>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -181,6 +217,7 @@ const DailyJournalPage = () => {
           </TabsContent>
 
           <TabsContent value="recipes">
+            <input type="file" ref={recipeFileRef} onChange={handleRecipeImageUpload} accept="image/*" className="hidden" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
                 <Card className="border-orange-200 dark:border-orange-800/30 shadow-lg">
@@ -189,8 +226,10 @@ const DailyJournalPage = () => {
                     <div><label className="text-sm font-medium">Name</label><Input value={recipeForm.name} onChange={e => setRecipeForm({ ...recipeForm, name: e.target.value })} placeholder="Recipe name..." className="mt-1" /></div>
                     <div><label className="text-sm font-medium">Category</label><select value={recipeForm.category} onChange={e => setRecipeForm({ ...recipeForm, category: e.target.value })} className="w-full mt-1 px-3 py-2 border border-input rounded-md text-sm bg-background">{['breakfast','lunch','dinner','snacks','drinks'].map(c => <option key={c} value={c}>{c}</option>)}</select></div>
                     <div>
-                      <label className="text-sm font-medium flex items-center gap-2"><ImagePlus className="h-4 w-4 text-blue-500" />Image URL</label>
-                      <Input value={recipeForm.imageUrl} onChange={e => setRecipeForm({ ...recipeForm, imageUrl: e.target.value })} placeholder="https://example.com/image.jpg" className="mt-1" />
+                      <label className="text-sm font-medium flex items-center gap-2"><Upload className="h-4 w-4 text-blue-500" />Recipe Image</label>
+                      <Button variant="outline" size="sm" className="w-full mt-1" onClick={() => recipeFileRef.current?.click()}>
+                        <Upload className="h-4 w-4 mr-2" />Upload from Device
+                      </Button>
                       {recipeForm.imageUrl && <img src={recipeForm.imageUrl} alt="Preview" className="mt-2 rounded-lg max-h-32 object-cover w-full" />}
                     </div>
                     <div>
@@ -219,7 +258,7 @@ const DailyJournalPage = () => {
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between mb-2">
                               <h4 className="font-medium">{r.name}</h4>
-                              <span className="text-xs capitalize text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{r.category}</span>
+                              <Badge variant="outline" className="text-xs capitalize">{r.category}</Badge>
                             </div>
                             {r.ingredients && <div className="mb-2"><p className="text-xs font-medium text-muted-foreground mb-1">Ingredients:</p><div className="text-xs">{renderMarkdownPreview(r.ingredients)}</div></div>}
                             {r.method && <div><p className="text-xs font-medium text-muted-foreground mb-1">Method:</p><div className="text-xs">{renderMarkdownPreview(r.method)}</div></div>}
@@ -237,6 +276,33 @@ const DailyJournalPage = () => {
                   </AnimatePresence>
                 }
               </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="gallery">
+            <input type="file" ref={galleryFileRef} onChange={handleGalleryUpload} accept="image/*" multiple className="hidden" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold flex items-center gap-2"><ImageIcon className="h-5 w-5 text-blue-500" />Meal Photo Gallery</h3>
+                <Button onClick={() => galleryFileRef.current?.click()} className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
+                  <Upload className="h-4 w-4 mr-2" />Upload Photos
+                </Button>
+              </div>
+              {mealGallery.length === 0 ? (
+                <Card><CardContent className="flex items-center justify-center h-40"><div className="text-center"><ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" /><p className="text-muted-foreground">No photos yet. Upload your meal photos!</p></div></CardContent></Card>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {mealGallery.map((img, idx) => (
+                    <motion.div key={idx} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: idx * 0.05 }} className="relative group">
+                      <img src={img} alt={`Meal ${idx + 1}`} className="w-full h-40 object-cover rounded-lg shadow-sm" />
+                      <Button variant="destructive" size="sm" className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => { const updated = mealGallery.filter((_, i) => i !== idx); setMealGallery(updated); localStorage.setItem('th_meal_gallery', JSON.stringify(updated)); toast.success('Photo removed'); }}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
