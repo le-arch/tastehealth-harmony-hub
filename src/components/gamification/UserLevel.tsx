@@ -13,24 +13,20 @@ interface UserLevelProps {
   pointsForNextLevel: number
 }
 
+const LEVEL_TITLES: Record<number, string> = {
+  1: 'Beginner', 2: 'Novice', 3: 'Apprentice', 4: 'Learner', 5: 'Enthusiast',
+  6: 'Skilled', 7: 'Expert', 8: 'Master', 9: 'Champion', 10: 'Legend',
+  11: 'Titan', 12: 'Mythic', 13: 'Immortal', 14: 'Divine', 15: 'Supreme',
+};
+
 const UserLevel = ({ level, points, pointsForNextLevel }: UserLevelProps) => {
   const [animate, setAnimate] = useState(false)
   const { language } = useLanguage()
 
-  const translations = {
-    en: {
-      yourLevel: "Your Level",
-      pointsToNextLevel: "points to next level",
-    },
-    fr: {
-      yourLevel: "Votre Niveau",
-      pointsToNextLevel: "points pour le niveau suivant",
-    },
-  }
+  const t = language === 'fr'
+    ? { yourLevel: "Votre Niveau", pointsToNextLevel: "points pour le niveau suivant" }
+    : { yourLevel: "Your Level", pointsToNextLevel: "points to next level" };
 
-  const t = translations[language as keyof typeof translations] || translations.en
-
-  // Trigger animation when level changes
   useEffect(() => {
     setAnimate(true)
     const timer = setTimeout(() => setAnimate(false), 1000)
@@ -38,6 +34,8 @@ const UserLevel = ({ level, points, pointsForNextLevel }: UserLevelProps) => {
   }, [level])
 
   const progress = Math.min(100, Math.round((points / pointsForNextLevel) * 100))
+  const title = LEVEL_TITLES[Math.min(level, 15)] || 'Supreme'
+  const cappedLevel = Math.min(level, 15);
 
   return (
     <Card>
@@ -54,12 +52,13 @@ const UserLevel = ({ level, points, pointsForNextLevel }: UserLevelProps) => {
             transition={{ duration: 0.5 }}
             className="text-3xl font-bold"
           >
-            {level}
+            {cappedLevel}
           </motion.div>
           <div className="ml-4 flex-1">
-            <Progress value={progress} className="h-2" />
+            <div className="text-xs font-medium text-primary mb-0.5">{title}</div>
+            <Progress value={cappedLevel >= 15 ? 100 : progress} className="h-2" />
             <div className="text-xs text-muted-foreground mt-1">
-              {pointsForNextLevel - points} {t.pointsToNextLevel}
+              {cappedLevel >= 15 ? 'Max level reached! 🏆' : `${pointsForNextLevel - points} ${t.pointsToNextLevel}`}
             </div>
           </div>
         </div>
