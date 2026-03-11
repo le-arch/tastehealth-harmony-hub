@@ -374,7 +374,7 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
       // Add daily log
       const dailyLogs = [...c.dailyLogs, { date: today, completed: true, value }];
 
-      // Simulate milestone achievements (can be expanded later)
+      // Simulate milestone achievements
       const milestonesMet = [5, 10, 15, 20, 25].some(m => newProgress === m);
       if (milestonesMet) {
         showToast('milestone', `🎯 Progress Milestone: ${newProgress}/${c.target}!`);

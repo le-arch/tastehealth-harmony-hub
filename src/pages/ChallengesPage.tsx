@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import PageLayout from "@/components/PageLayout";
 import ChallengeCreator from "@/components/ChallengeCreator";
 import ProgressGuard from "@/components/ProgressGuard";
@@ -29,7 +29,6 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import Confetti from "@/components/Confetti";
 import { playMilestoneSound } from "@/utils/sounds";
-import { debugRender } from "@/utils/debug";
 
 // Simple string constants for toast icons - NO REACT ELEMENTS
 const TOAST_ICONS = {
@@ -86,14 +85,21 @@ const colorClasses = {
 // Map category to icon component - for RENDERING only, not storage
 const getCategoryIcon = (category: ChallengeCategory, color: string) => {
   const iconProps = { className: "h-4 w-4" };
-  const icons = {
-    nutrition: <Apple {...iconProps} />,
-    hydration: <Droplet {...iconProps} />,
-    fitness: <Dumbbell {...iconProps} />,
-    wellness: <Heart {...iconProps} />,
-    mindfulness: <Moon {...iconProps} />
-  };
-  return icons[category] || <Trophy {...iconProps} />;
+  
+  switch(category) {
+    case 'nutrition':
+      return <Apple {...iconProps} />;
+    case 'hydration':
+      return <Droplet {...iconProps} />;
+    case 'fitness':
+      return <Dumbbell {...iconProps} />;
+    case 'wellness':
+      return <Heart {...iconProps} />;
+    case 'mindfulness':
+      return <Moon {...iconProps} />;
+    default:
+      return <Trophy {...iconProps} />;
+  }
 };
 
 // PRESET CHALLENGES - WITHOUT storing React elements
@@ -154,8 +160,6 @@ const DifficultyStars = ({ difficulty }: { difficulty: number }) => (
 );
 
 const ChallengesPage: React.FC = () => {
-  debugRender('ChallengesPage', {});
-  
   const [activeTab, setActiveTab] = useState("active");
   const [challenges, setChallenges] = useState<Challenge[]>(() => {
     try {
@@ -259,6 +263,16 @@ const ChallengesPage: React.FC = () => {
 
         const pts = getLS<number>(LS_KEYS.POINTS, 0);
         setLS(LS_KEYS.POINTS, pts + pointsEarned);
+
+        // Save to points history
+        const history = getLS<PointsTransaction[]>(LS_KEYS.POINTS_HISTORY, []);
+        history.unshift({ 
+          id: crypto.randomUUID(), 
+          date: new Date().toISOString(), 
+          points: pointsEarned, 
+          reason: `Completed Challenge: ${c.name}` 
+        });
+        setLS(LS_KEYS.POINTS_HISTORY, history.slice(0, 100));
       }
 
       return { 
@@ -345,7 +359,8 @@ const ChallengesPage: React.FC = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <ScrollableTabsList className="mb-6">
               <TabsTrigger value="active">Active ({activeChallenges.length})</TabsTrigger>
-              <TabsTrigger value="available">Available</TabsTrigger>
+              <TabsTrigger value="create">Create Challenge</TabsTrigger>
+              <TabsTrigger value="explore">Explore</TabsTrigger>
               <TabsTrigger value="completed">Completed ({completedChallenges.length})</TabsTrigger>
             </ScrollableTabsList>
 
@@ -353,7 +368,7 @@ const ChallengesPage: React.FC = () => {
               {filteredActiveChallenges.length === 0 ? (
                 <div className="text-center py-12">
                   <Target className="h-16 w-16 mx-auto text-primary/40" />
-                  <p className="text-muted-foreground mt-4">No active challenges. Join one from Available!</p>
+                  <p className="text-muted-foreground mt-4">No active challenges. Create or explore one!</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -371,6 +386,7 @@ const ChallengesPage: React.FC = () => {
                             {c.category}
                           </Badge>
                         </CardTitle>
+                        <p className="text-sm text-muted-foreground">{c.description}</p>
                       </CardHeader>
                       
                       <CardContent className="space-y-3">
@@ -385,6 +401,9 @@ const ChallengesPage: React.FC = () => {
                         <div className="flex justify-between text-xs">
                           <span className="flex items-center gap-1 text-orange-500">
                             <Flame className="h-3 w-3" /> {c.streak} day streak
+                          </span>
+                          <span className="flex items-center gap-1 text-blue-500">
+                            <Calendar className="h-3 w-3" /> Started {new Date(c.startDate).toLocaleDateString()}
                           </span>
                         </div>
 
@@ -413,41 +432,12 @@ const ChallengesPage: React.FC = () => {
               )}
             </TabsContent>
 
-            <TabsContent value="available">
-              <div className="space-y-4">
-                {PRESET_CHALLENGES
-                  .filter(p => selectedCategory === 'all' || p.category === selectedCategory)
-                  .map((p, i) => {
-                    const isJoined = challenges.some(c => c.name === p.name && !c.completed);
-                    return (
-                      <Card key={i}>
-                        <CardContent className="p-4 flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${colorClasses[p.color]}`}>
-                              {getCategoryIcon(p.category, p.color)}
-                            </div>
-                            <div>
-                              <h3 className="font-medium">{p.name}</h3>
-                              <p className="text-sm text-muted-foreground">{p.description}</p>
-                              <div className="flex gap-2 mt-1">
-                                <Badge variant="outline">{p.duration} days</Badge>
-                                <Badge variant="secondary">
-                                  <DifficultyStars difficulty={p.difficulty} />
-                                </Badge>
-                              </div>
-                            </div>
-                          </div>
-                          <Button 
-                            onClick={() => joinChallenge(p)}
-                            disabled={isJoined}
-                          >
-                            {isJoined ? 'Joined' : 'Join'}
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-              </div>
+            <TabsContent value="create">
+              <ChallengeCreator />
+            </TabsContent>
+
+            <TabsContent value="explore">
+              <ExploreChallenges userId="local" />
             </TabsContent>
 
             <TabsContent value="completed">
@@ -464,10 +454,20 @@ const ChallengesPage: React.FC = () => {
                         <CardTitle className="text-lg flex items-center gap-2">
                           <CheckCircle2 className="h-5 w-5 text-green-600" />
                           {c.name}
+                          <Badge variant="outline" className="capitalize">
+                            {c.category}
+                          </Badge>
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <Progress value={100} className="h-2 mb-2" />
+                        <div className="flex justify-between text-xs text-muted-foreground mb-3">
+                          <span>Completed in {c.dailyLogs.length} days</span>
+                          <span className="flex items-center gap-1">
+                            <Flame className="h-3 w-3 text-orange-500" />
+                            {c.streak} day max streak
+                          </span>
+                        </div>
                         <Button 
                           size="sm" 
                           variant="outline" 
