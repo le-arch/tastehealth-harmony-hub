@@ -23,7 +23,6 @@ import {
   Coffee,
   Bike,
   Dumbbell,
-  Medal,
   Calendar,
   Sparkles
 } from "lucide-react";
@@ -32,27 +31,35 @@ import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
 import { motion } from "framer-motion";
 import Confetti from "@/components/Confetti";
 import { playMilestoneSound } from "@/utils/sounds";
-import { TOAST_ICONS } from "@/utils/toastIcons";
 
-// Types
+// Simple string constants for toast icons - NO REACT ELEMENTS
+const TOAST_ICONS = {
+  info: 'ℹ️',
+  success: '✅',
+  warning: '⚠️',
+  error: '❌',
+  trophy: '🏆',
+  medal: '🎖️',
+  target: '🎯',
+  fire: '🔥',
+  joined: '🎉',
+  milestone: '🎯',
+  completed: '🏆',
+  deleted: '🗑️',
+  reset: '🔄',
+  apple: '🍎',
+  water: '💧',
+  workout: '💪',
+  sleep: '😴'
+};
+
 type ChallengeCategory = 'nutrition' | 'hydration' | 'fitness' | 'wellness' | 'mindfulness';
 
-interface Milestone {
-  progress: number;
-  reward: string;
-}
-
-interface DailyLog {
-  date: string;
-  completed: boolean;
-  value?: number;
-}
-
-interface EnhancedChallenge {
+// SIMPLIFIED TYPE - no React elements in stored data
+interface Challenge {
   id: string;
   name: string;
   category: ChallengeCategory;
-  icon: React.ReactNode;
   color: string;
   description: string;
   duration: number;
@@ -61,27 +68,46 @@ interface EnhancedChallenge {
   progress: number;
   completed: boolean;
   startDate: string;
-  milestones: Milestone[];
   streak: number;
   lastUpdated: string | null;
-  dailyLogs: DailyLog[];
+  dailyLogs: { date: string; completed: boolean; value?: number }[];
   types: string[];
 }
 
 // Color mapping for Tailwind classes
 const colorClasses = {
-  green: 'bg-green-100 dark:bg-green-950 text-green-600',
-  red: 'bg-red-100 dark:bg-red-950 text-red-500',
-  blue: 'bg-blue-100 dark:bg-blue-950 text-blue-600',
-  amber: 'bg-amber-100 dark:bg-amber-950 text-amber-700',
-  yellow: 'bg-yellow-100 dark:bg-yellow-950 text-yellow-500',
-  pink: 'bg-pink-100 dark:bg-pink-950 text-pink-500',
-  cyan: 'bg-cyan-100 dark:bg-cyan-950 text-cyan-600',
-  purple: 'bg-purple-100 dark:bg-purple-950 text-purple-600',
-  orange: 'bg-orange-100 dark:bg-orange-950 text-orange-500',
-  lime: 'bg-lime-100 dark:bg-lime-950 text-lime-600',
-  indigo: 'bg-indigo-100 dark:bg-indigo-950 text-indigo-600',
-  violet: 'bg-violet-100 dark:bg-violet-950 text-violet-600',
+  green: 'bg-green-100 dark:bg-green-950',
+  red: 'bg-red-100 dark:bg-red-950',
+  blue: 'bg-blue-100 dark:bg-blue-950',
+  amber: 'bg-amber-100 dark:bg-amber-950',
+  yellow: 'bg-yellow-100 dark:bg-yellow-950',
+  pink: 'bg-pink-100 dark:bg-pink-950',
+  cyan: 'bg-cyan-100 dark:bg-cyan-950',
+  purple: 'bg-purple-100 dark:bg-purple-950',
+  orange: 'bg-orange-100 dark:bg-orange-950',
+  lime: 'bg-lime-100 dark:bg-lime-950',
+  indigo: 'bg-indigo-100 dark:bg-indigo-950',
+  violet: 'bg-violet-100 dark:bg-violet-950',
+};
+
+// Map category to icon component - for RENDERING only, not storage
+const getCategoryIcon = (category: ChallengeCategory, color: string, className: string = "h-4 w-4") => {
+  const iconProps = { className };
+  
+  switch(category) {
+    case 'nutrition':
+      return <Apple {...iconProps} />;
+    case 'hydration':
+      return <Droplet {...iconProps} />;
+    case 'fitness':
+      return <Dumbbell {...iconProps} />;
+    case 'wellness':
+      return <Heart {...iconProps} />;
+    case 'mindfulness':
+      return <Moon {...iconProps} />;
+    default:
+      return <Trophy {...iconProps} />;
+  }
 };
 
 // Helper component for difficulty stars
@@ -93,207 +119,135 @@ const DifficultyStars = ({ difficulty }: { difficulty: number }) => (
   </span>
 );
 
-// Preset Challenges
-const PRESET_CHALLENGES: Omit<EnhancedChallenge, 'id' | 'startDate' | 'progress' | 'completed' | 'streak' | 'lastUpdated' | 'dailyLogs'>[] = [
+// PRESET CHALLENGES - WITHOUT storing React elements
+const PRESET_CHALLENGES: Omit<Challenge, 'id' | 'startDate' | 'progress' | 'completed' | 'streak' | 'lastUpdated' | 'dailyLogs'>[] = [
   // Nutrition Challenges
   { 
     name: "5-a-Day", 
     category: "nutrition",
-    icon: <Apple className="h-4 w-4" />,
     color: "green",
     description: "Eat 5 servings of fruits and vegetables daily",
     duration: 7, 
     difficulty: 1, 
     target: 35,
-    types: ["vegetables", "fruits"],
-    milestones: [
-      { progress: 10, reward: "🥕 Baby Carrot" },
-      { progress: 25, reward: "🍎 Apple Enthusiast" },
-      { progress: 35, reward: "🥗 Salad Master" }
-    ]
+    types: ["vegetables", "fruits"]
   },
   { 
     name: "Protein Power", 
     category: "nutrition",
-    icon: <Beef className="h-4 w-4" />,
     color: "red",
     description: "Hit your daily protein target",
     duration: 14, 
     difficulty: 3, 
     target: 14,
-    types: ["protein"],
-    milestones: [
-      { progress: 5, reward: "🥚 Egg-cellent" },
-      { progress: 10, reward: "💪 Protein Builder" },
-      { progress: 14, reward: "🏋️ Muscle Master" }
-    ]
+    types: ["protein"]
   },
   { 
     name: "Sugar Detox", 
     category: "nutrition",
-    icon: <Salad className="h-4 w-4" />,
     color: "yellow",
     description: "Stay under 25g of added sugar daily",
     duration: 14, 
     difficulty: 4, 
     target: 14,
-    types: ["healthy"],
-    milestones: [
-      { progress: 5, reward: "🍃 Sugar Free" },
-      { progress: 10, reward: "✨ Clean Eater" },
-      { progress: 14, reward: "🏆 Sugar Master" }
-    ]
+    types: ["healthy"]
   },
   { 
     name: "Mindful Eating", 
     category: "nutrition",
-    icon: <Heart className="h-4 w-4" />,
     color: "pink",
     description: "Practice mindful eating (no screens, chew slowly)",
     duration: 10, 
     difficulty: 2, 
     target: 10,
-    types: ["mindfulness"],
-    milestones: [
-      { progress: 3, reward: "🧘 Present" },
-      { progress: 7, reward: "🌟 Mindful" },
-      { progress: 10, reward: "🕊️ Zen Master" }
-    ]
+    types: ["mindfulness"]
   },
   // Hydration Challenges
   { 
     name: "Hydration Hero", 
     category: "hydration",
-    icon: <Droplet className="h-4 w-4" />,
     color: "blue",
     description: "Drink 8 glasses of water daily",
     duration: 7, 
     difficulty: 2, 
     target: 56,
-    types: ["water"],
-    milestones: [
-      { progress: 20, reward: "💧 Thirst Quencher" },
-      { progress: 40, reward: "🌊 Wave Rider" },
-      { progress: 56, reward: "🏄 Hydration Hero" }
-    ]
+    types: ["water"]
   },
   { 
     name: "Electrolyte Balance", 
     category: "hydration",
-    icon: <Zap className="h-4 w-4" />,
     color: "cyan",
     description: "Add electrolytes to your water post-workout",
     duration: 10, 
     difficulty: 2, 
     target: 10,
-    types: ["hydration"],
-    milestones: [
-      { progress: 3, reward: "⚡ Energized" },
-      { progress: 7, reward: "🔋 Charged" },
-      { progress: 10, reward: "⚡ Power House" }
-    ]
+    types: ["hydration"]
   },
   // Fitness Challenges
   { 
     name: "10K Steps", 
     category: "fitness",
-    icon: <Footprints className="h-4 w-4" />,
     color: "purple",
     description: "Walk 10,000 steps daily",
     duration: 30, 
     difficulty: 3, 
     target: 30,
-    types: ["steps"],
-    milestones: [
-      { progress: 10, reward: "🚶 Walker" },
-      { progress: 20, reward: "🏃 Jogger" },
-      { progress: 30, reward: "🏅 Marathoner" }
-    ]
+    types: ["steps"]
   },
   { 
     name: "Workout Streak", 
     category: "fitness",
-    icon: <Dumbbell className="h-4 w-4" />,
     color: "orange",
     description: "Complete a 30-min workout daily",
     duration: 21, 
     difficulty: 4, 
     target: 21,
-    types: ["workout"],
-    milestones: [
-      { progress: 7, reward: "💪 Stronger" },
-      { progress: 14, reward: "🏋️ Enthusiast" },
-      { progress: 21, reward: "🔥 Beast Mode" }
-    ]
+    types: ["workout"]
   },
   { 
     name: "Morning Stretch", 
     category: "fitness",
-    icon: <Bike className="h-4 w-4" />,
     color: "lime",
     description: "15 minutes of morning stretching",
     duration: 14, 
     difficulty: 2, 
     target: 14,
-    types: ["stretching"],
-    milestones: [
-      { progress: 5, reward: "🌅 Early Riser" },
-      { progress: 10, reward: "🧘 Flexible" },
-      { progress: 14, reward: "🦢 Yoga Master" }
-    ]
+    types: ["stretching"]
   },
   // Wellness Challenges
   { 
     name: "Sleep Champion", 
     category: "wellness",
-    icon: <Moon className="h-4 w-4" />,
     color: "indigo",
     description: "Get 7-8 hours of sleep",
     duration: 14, 
     difficulty: 2, 
     target: 14,
-    types: ["sleep"],
-    milestones: [
-      { progress: 5, reward: "😴 Well Rested" },
-      { progress: 10, reward: "🛌 Sleep Pro" },
-      { progress: 14, reward: "👑 Sleep Champion" }
-    ]
+    types: ["sleep"]
   },
   { 
     name: "Meditation", 
     category: "mindfulness",
-    icon: <Heart className="h-4 w-4" />,
     color: "violet",
     description: "Meditate for 10 minutes daily",
     duration: 21, 
     difficulty: 3, 
     target: 21,
-    types: ["meditation"],
-    milestones: [
-      { progress: 7, reward: "🧘 Beginner" },
-      { progress: 14, reward: "🌿 Zen" },
-      { progress: 21, reward: "🕉️ Enlightened" }
-    ]
+    types: ["meditation"]
   },
   { 
     name: "No Alcohol", 
     category: "wellness",
-    icon: <Coffee className="h-4 w-4" />,
     color: "amber",
     description: "No alcohol consumption",
     duration: 30, 
     difficulty: 5, 
     target: 30,
-    types: ["healthy"],
-    milestones: [
-      { progress: 10, reward: "🍃 Clean Week" },
-      { progress: 20, reward: "🌱 Sober" },
-      { progress: 30, reward: "🏆 Alcohol-Free" }
-    ]
+    types: ["healthy"]
   }
 ];
 
-// Group challenges by category
+// Group challenges by category for filtering
 const challengesByCategory = PRESET_CHALLENGES.reduce((acc, challenge) => {
   if (!acc[challenge.category]) {
     acc[challenge.category] = [];
@@ -308,20 +262,31 @@ interface NutritionChallengeProps {
 
 const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoined }) => {
   const [activeTab, setActiveTab] = useState("active");
-  const [challenges, setChallenges] = useState<EnhancedChallenge[]>(() => {
-    const saved = getLS(LS_KEYS.CHALLENGES, []);
-    // Migrate old format to new format if needed
-    return saved.map((c: any) => ({
-      ...c,
-      streak: c.streak || 0,
-      lastUpdated: c.lastUpdated || null,
-      dailyLogs: c.dailyLogs || [],
-      milestones: c.milestones || [],
-      category: c.category || 'nutrition',
-      color: c.color || 'green',
-      description: c.description || '',
-      icon: c.icon || <Trophy className="h-4 w-4" />
-    }));
+  const [challenges, setChallenges] = useState<Challenge[]>(() => {
+    try {
+      const saved = getLS(LS_KEYS.CHALLENGES, []);
+      // Ensure we have clean data without React elements
+      return saved.map((c: any) => ({
+        id: c.id || crypto.randomUUID(),
+        name: c.name || '',
+        category: c.category || 'nutrition',
+        color: c.color || 'green',
+        description: c.description || '',
+        duration: c.duration || 7,
+        difficulty: c.difficulty || 1,
+        target: c.target || 1,
+        progress: c.progress || 0,
+        completed: c.completed || false,
+        startDate: c.startDate || new Date().toISOString(),
+        streak: c.streak || 0,
+        lastUpdated: c.lastUpdated || null,
+        dailyLogs: Array.isArray(c.dailyLogs) ? c.dailyLogs : [],
+        types: Array.isArray(c.types) ? c.types : []
+      }));
+    } catch (e) {
+      console.error('Error loading challenges:', e);
+      return [];
+    }
   });
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -330,27 +295,45 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
   const activeChallenges = challenges.filter(c => !c.completed);
   const completedChallenges = challenges.filter(c => c.completed);
 
-  const save = (updated: EnhancedChallenge[]) => {
-    setChallenges(updated);
-    setLS(LS_KEYS.CHALLENGES, updated);
+  const save = (updated: Challenge[]) => {
+    try {
+      // Strip any potential React elements before saving
+      const cleanData = updated.map(({ ...c }) => ({
+        ...c,
+        // Ensure no React elements sneak in
+        icon: undefined
+      }));
+      setChallenges(updated);
+      setLS(LS_KEYS.CHALLENGES, cleanData);
+    } catch (e) {
+      console.error('Error saving challenges:', e);
+    }
+  };
+
+  const showToast = (type: keyof typeof TOAST_ICONS, message: string, description?: string) => {
+    // Use setTimeout to avoid React rendering issues
+    setTimeout(() => {
+      toast(message, {
+        description,
+        icon: TOAST_ICONS[type],
+        duration: 3000
+      });
+    }, 0);
   };
 
   const joinChallenge = (preset: typeof PRESET_CHALLENGES[0]) => {
-    const challenge: EnhancedChallenge = { 
-      ...preset, 
-      id: crypto.randomUUID(), 
-      startDate: new Date().toISOString(), 
-      progress: 0, 
+    const challenge: Challenge = {
+      ...preset,
+      id: crypto.randomUUID(),
+      startDate: new Date().toISOString(),
+      progress: 0,
       completed: false,
       streak: 0,
       lastUpdated: null,
       dailyLogs: []
     };
     save([...challenges, challenge]);
-    toast.success(`Joined "${preset.name}"!`, {
-      description: preset.description,
-      icon: TOAST_ICONS.joined
-    });
+    showToast('joined', `Joined "${preset.name}"!`, preset.description);
     if (onChallengeJoined) onChallengeJoined();
   };
 
@@ -363,9 +346,7 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
       // Check if already logged today
       const alreadyLoggedToday = c.dailyLogs.some(log => log.date === today);
       if (alreadyLoggedToday) {
-        toast.info("You've already logged today's progress!", {
-          icon: TOAST_ICONS.info
-        });
+        showToast('info', "You've already logged today's progress!");
         return c;
       }
 
@@ -391,15 +372,12 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
       }
 
       // Add daily log
-      const dailyLogs = [...c.dailyLogs];
-      dailyLogs.push({ date: today, completed: true, value });
+      const dailyLogs = [...c.dailyLogs, { date: today, completed: true, value }];
 
-      // Check for milestone achievements
-      const newMilestone = c.milestones?.find(m => m.progress === newProgress);
-      if (newMilestone) {
-        toast.success(`🎯 Milestone Unlocked: ${newMilestone.reward}!`, {
-          icon: TOAST_ICONS.milestone
-        });
+      // Simulate milestone achievements (can be expanded later)
+      const milestonesMet = [5, 10, 15, 20, 25].some(m => newProgress === m);
+      if (milestonesMet) {
+        showToast('milestone', `🎯 Progress Milestone: ${newProgress}/${c.target}!`);
         playMilestoneSound('reward');
       }
 
@@ -409,10 +387,7 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
         setTimeout(() => setShowConfetti(false), 3500);
         
         const pointsEarned = c.difficulty * 25;
-        toast.success(`🎉 Challenge "${c.name}" completed! +${pointsEarned} pts`, {
-          description: `You've earned the ${c.milestones?.slice(-1)[0]?.reward || 'Final Badge'}!`,
-          icon: TOAST_ICONS.completed
-        });
+        showToast('completed', `🎉 Challenge "${c.name}" completed! +${pointsEarned} pts`);
 
         // Award points
         const pts = getLS<number>(LS_KEYS.POINTS, 0);
@@ -443,11 +418,8 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
   };
 
   const deleteChallenge = (id: string) => {
-    const updated = challenges.filter(c => c.id !== id);
-    save(updated);
-    toast.success("Challenge deleted", {
-      icon: TOAST_ICONS.deleted
-    });
+    save(challenges.filter(c => c.id !== id));
+    showToast('deleted', "Challenge deleted");
   };
 
   const resetChallenge = (id: string) => {
@@ -456,9 +428,7 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
       return { ...c, progress: 0, completed: false, streak: 0, dailyLogs: [] };
     });
     save(updated);
-    toast.info("Challenge progress reset", {
-      icon: TOAST_ICONS.reset
-    });
+    showToast('reset', "Challenge progress reset");
   };
 
   const filteredActiveChallenges = activeChallenges.filter(c => 
@@ -553,8 +523,8 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-start gap-3">
-                        <div className={`p-2 rounded-lg ${colorClasses[c.color as keyof typeof colorClasses] || 'bg-gray-100'}`}>
-                          {c.icon}
+                        <div className={`p-2 rounded-lg ${colorClasses[c.color]}`}>
+                          {getCategoryIcon(c.category, c.color)}
                         </div>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
@@ -567,6 +537,13 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground mt-1">{c.description}</p>
+                          <div className="flex gap-1 mt-1">
+                            {c.types.map(type => (
+                              <Badge key={type} variant="outline" className="text-[10px] capitalize">
+                                {type}
+                              </Badge>
+                            ))}
+                          </div>
                         </div>
                       </div>
                       <Button 
@@ -611,21 +588,6 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
                       })}
                     </div>
 
-                    {/* Milestones */}
-                    {c.milestones && c.milestones.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {c.milestones.map((milestone, i) => (
-                          <Badge 
-                            key={i}
-                            variant={c.progress >= milestone.progress ? "default" : "outline"}
-                            className={`text-xs ${c.progress >= milestone.progress ? 'bg-green-600' : ''}`}
-                          >
-                            {milestone.reward}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-
                     {/* Action Buttons */}
                     <div className="flex gap-2 mt-4">
                       <Button 
@@ -666,8 +628,8 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
                           className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900"
                         >
                           <div className="flex items-start gap-3">
-                            <div className={`p-2 rounded-lg ${colorClasses[p.color as keyof typeof colorClasses] || 'bg-gray-100'}`}>
-                              {p.icon}
+                            <div className={`p-2 rounded-lg ${colorClasses[p.color]}`}>
+                              {getCategoryIcon(p.category, p.color)}
                             </div>
                             <div>
                               <div className="flex items-center gap-2 flex-wrap">
@@ -680,11 +642,11 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
                                 </Badge>
                               </div>
                               <p className="text-sm text-muted-foreground">{p.description}</p>
-                              <div className="flex gap-2 mt-1 flex-wrap">
-                                {p.milestones.map((m, idx) => (
-                                  <span key={idx} className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <Award className="h-3 w-3" /> {m.reward}
-                                  </span>
+                              <div className="flex gap-1 mt-1">
+                                {p.types.map(type => (
+                                  <Badge key={type} variant="outline" className="text-[10px] capitalize">
+                                    {type}
+                                  </Badge>
                                 ))}
                               </div>
                             </div>

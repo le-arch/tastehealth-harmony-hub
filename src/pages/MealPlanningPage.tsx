@@ -39,9 +39,9 @@ const MealPlanningPage = () => {
         <div className="max-w-6xl mx-auto">
           <Tabs defaultValue="plans" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="plans" className="flex items-center gap-2"><Calendar className="h-4 w-4" />{t.myMealPlans}</TabsTrigger>
-              <TabsTrigger value="search" className="flex items-center gap-2"><Search className="h-4 w-4" />{t.mealSearch}</TabsTrigger>
-              <TabsTrigger value="favorites" className="flex items-center gap-2"><Heart className="h-4 w-4" />{t.favorites}</TabsTrigger>
+              <TabsTrigger value="plans" className="flex items-center gap-2"><Calendar className="h-4 w-4 text-blue-500" />{t.myMealPlans}</TabsTrigger>
+              <TabsTrigger value="search" className="flex items-center gap-2"><Search className="h-4 w-4 text-green-500" />{t.mealSearch}</TabsTrigger>
+              <TabsTrigger value="favorites" className="flex items-center gap-2"><Heart className="h-4 w-4 text-red-500" />{t.favorites}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="plans" className="space-y-6">

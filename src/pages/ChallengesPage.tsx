@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import PageLayout from "@/components/PageLayout";
 import ChallengeCreator from "@/components/ChallengeCreator";
 import ProgressGuard from "@/components/ProgressGuard";
@@ -17,34 +17,44 @@ import {
   Calendar,
   Plus,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  Apple,
+  Droplet,
+  Dumbbell,
+  Heart,
+  Moon
 } from "lucide-react";
 import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import Confetti from "@/components/Confetti";
 import { playMilestoneSound } from "@/utils/sounds";
-import { TOAST_ICONS } from "@/utils/toastIcons";
+import { debugRender } from "@/utils/debug";
 
-// Types (keep all your existing types)
+// Simple string constants for toast icons - NO REACT ELEMENTS
+const TOAST_ICONS = {
+  info: 'ℹ️',
+  success: '✅',
+  warning: '⚠️',
+  error: '❌',
+  trophy: '🏆',
+  medal: '🎖️',
+  target: '🎯',
+  fire: '🔥',
+  joined: '🎉',
+  milestone: '🎯',
+  completed: '🏆',
+  deleted: '🗑️',
+  reset: '🔄'
+};
+
 type ChallengeCategory = 'nutrition' | 'hydration' | 'fitness' | 'wellness' | 'mindfulness';
 
-interface Milestone {
-  progress: number;
-  reward: string;
-}
-
-interface DailyLog {
-  date: string;
-  completed: boolean;
-  value?: number;
-}
-
-interface EnhancedChallenge {
+// SIMPLIFIED TYPE - no React elements in stored data
+interface Challenge {
   id: string;
   name: string;
   category: ChallengeCategory;
-  icon: React.ReactNode; // This is fine for rendering
   color: string;
   description: string;
   duration: number;
@@ -53,30 +63,88 @@ interface EnhancedChallenge {
   progress: number;
   completed: boolean;
   startDate: string;
-  milestones: Milestone[];
   streak: number;
   lastUpdated: string | null;
-  dailyLogs: DailyLog[];
-  types: string[];
+  dailyLogs: { date: string; completed: boolean }[];
 }
 
-// Color mapping
 const colorClasses = {
-  green: 'bg-green-100 dark:bg-green-950 text-green-600',
-  red: 'bg-red-100 dark:bg-red-950 text-red-500',
-  blue: 'bg-blue-100 dark:bg-blue-950 text-blue-600',
-  amber: 'bg-amber-100 dark:bg-amber-950 text-amber-700',
-  yellow: 'bg-yellow-100 dark:bg-yellow-950 text-yellow-500',
-  pink: 'bg-pink-100 dark:bg-pink-950 text-pink-500',
-  cyan: 'bg-cyan-100 dark:bg-cyan-950 text-cyan-600',
-  purple: 'bg-purple-100 dark:bg-purple-950 text-purple-600',
-  orange: 'bg-orange-100 dark:bg-orange-950 text-orange-500',
-  lime: 'bg-lime-100 dark:bg-lime-950 text-lime-600',
-  indigo: 'bg-indigo-100 dark:bg-indigo-950 text-indigo-600',
-  violet: 'bg-violet-100 dark:bg-violet-950 text-violet-600',
+  green: 'bg-green-100 dark:bg-green-950',
+  red: 'bg-red-100 dark:bg-red-950',
+  blue: 'bg-blue-100 dark:bg-blue-950',
+  amber: 'bg-amber-100 dark:bg-amber-950',
+  yellow: 'bg-yellow-100 dark:bg-yellow-950',
+  pink: 'bg-pink-100 dark:bg-pink-950',
+  cyan: 'bg-cyan-100 dark:bg-cyan-950',
+  purple: 'bg-purple-100 dark:bg-purple-950',
+  orange: 'bg-orange-100 dark:bg-orange-950',
+  lime: 'bg-lime-100 dark:bg-lime-950',
+  indigo: 'bg-indigo-100 dark:bg-indigo-950',
+  violet: 'bg-violet-100 dark:bg-violet-950',
 };
 
-// Helper component for difficulty stars
+// Map category to icon component - for RENDERING only, not storage
+const getCategoryIcon = (category: ChallengeCategory, color: string) => {
+  const iconProps = { className: "h-4 w-4" };
+  const icons = {
+    nutrition: <Apple {...iconProps} />,
+    hydration: <Droplet {...iconProps} />,
+    fitness: <Dumbbell {...iconProps} />,
+    wellness: <Heart {...iconProps} />,
+    mindfulness: <Moon {...iconProps} />
+  };
+  return icons[category] || <Trophy {...iconProps} />;
+};
+
+// PRESET CHALLENGES - WITHOUT storing React elements
+const PRESET_CHALLENGES: Omit<Challenge, 'id' | 'startDate' | 'progress' | 'completed' | 'streak' | 'lastUpdated' | 'dailyLogs'>[] = [
+  {
+    name: "5-a-Day",
+    category: "nutrition",
+    color: "green",
+    description: "Eat 5 servings of fruits and vegetables daily",
+    duration: 7,
+    difficulty: 1,
+    target: 35
+  },
+  {
+    name: "Hydration Hero",
+    category: "hydration",
+    color: "blue",
+    description: "Drink 8 glasses of water daily",
+    duration: 7,
+    difficulty: 2,
+    target: 56
+  },
+  {
+    name: "10K Steps",
+    category: "fitness",
+    color: "purple",
+    description: "Walk 10,000 steps daily",
+    duration: 30,
+    difficulty: 3,
+    target: 30
+  },
+  {
+    name: "Sleep Champion",
+    category: "wellness",
+    color: "indigo",
+    description: "Get 7-8 hours of sleep",
+    duration: 14,
+    difficulty: 2,
+    target: 14
+  },
+  {
+    name: "Meditation",
+    category: "mindfulness",
+    color: "violet",
+    description: "Meditate for 10 minutes daily",
+    duration: 21,
+    difficulty: 3,
+    target: 21
+  }
+];
+
 const DifficultyStars = ({ difficulty }: { difficulty: number }) => (
   <span className="inline-flex items-center gap-0.5">
     {Array.from({ length: difficulty }).map((_, i) => (
@@ -86,38 +154,68 @@ const DifficultyStars = ({ difficulty }: { difficulty: number }) => (
 );
 
 const ChallengesPage: React.FC = () => {
+  debugRender('ChallengesPage', {});
+  
   const [activeTab, setActiveTab] = useState("active");
-  const [challenges, setChallenges] = useState<EnhancedChallenge[]>(() => {
-    const saved = getLS(LS_KEYS.CHALLENGES, []);
-    return saved.map((c: any) => ({
-      ...c,
-      streak: c.streak || 0,
-      lastUpdated: c.lastUpdated || null,
-      dailyLogs: c.dailyLogs || [],
-      milestones: c.milestones || [],
-      category: c.category || 'nutrition',
-      color: c.color || 'green',
-      description: c.description || '',
-      icon: c.icon || <Trophy className="h-4 w-4" />
-    }));
+  const [challenges, setChallenges] = useState<Challenge[]>(() => {
+    try {
+      const saved = getLS(LS_KEYS.CHALLENGES, []);
+      // Ensure we have clean data without React elements
+      return saved.map((c: any) => ({
+        id: c.id || crypto.randomUUID(),
+        name: c.name || '',
+        category: c.category || 'nutrition',
+        color: c.color || 'green',
+        description: c.description || '',
+        duration: c.duration || 7,
+        difficulty: c.difficulty || 1,
+        target: c.target || 1,
+        progress: c.progress || 0,
+        completed: c.completed || false,
+        startDate: c.startDate || new Date().toISOString(),
+        streak: c.streak || 0,
+        lastUpdated: c.lastUpdated || null,
+        dailyLogs: Array.isArray(c.dailyLogs) ? c.dailyLogs : []
+      }));
+    } catch (e) {
+      console.error('Error loading challenges:', e);
+      return [];
+    }
   });
   
   const [showConfetti, setShowConfetti] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const refresh = useCallback(() => {
-    setChallenges(getLS(LS_KEYS.CHALLENGES, []));
-  }, []);
-
   const activeChallenges = challenges.filter(c => !c.completed);
   const completedChallenges = challenges.filter(c => c.completed);
 
-  const save = (updated: EnhancedChallenge[]) => {
-    setChallenges(updated);
-    setLS(LS_KEYS.CHALLENGES, updated);
+  const save = (updated: Challenge[]) => {
+    try {
+      // Strip any potential React elements before saving
+      const cleanData = updated.map(({ ...c }) => ({
+        ...c,
+        // Ensure no React elements sneak in
+        icon: undefined
+      }));
+      setChallenges(updated);
+      setLS(LS_KEYS.CHALLENGES, cleanData);
+    } catch (e) {
+      console.error('Error saving challenges:', e);
+    }
   };
 
-  const updateProgress = (id: string, value: number = 1) => {
+  const showToast = (type: keyof typeof TOAST_ICONS, message: string, description?: string) => {
+    // Use setTimeout to avoid React rendering issues
+    setTimeout(() => {
+      toast(message, {
+        description,
+        icon: TOAST_ICONS[type],
+        duration: 3000
+      });
+    }, 0);
+  };
+
+  const updateProgress = (id: string) => {
     const today = new Date().toISOString().split('T')[0];
     
     const updated = challenges.map(c => {
@@ -125,13 +223,11 @@ const ChallengesPage: React.FC = () => {
 
       const alreadyLoggedToday = c.dailyLogs.some(log => log.date === today);
       if (alreadyLoggedToday) {
-        toast.info("You've already logged today's progress!", {
-          icon: TOAST_ICONS.info
-        });
+        showToast('info', "You've already logged today's progress!");
         return c;
       }
 
-      const newProgress = Math.min(c.progress + value, c.target);
+      const newProgress = Math.min(c.progress + 1, c.target);
       const completed = newProgress >= c.target;
       
       let newStreak = c.streak;
@@ -151,16 +247,7 @@ const ChallengesPage: React.FC = () => {
         newStreak = 1;
       }
 
-      const dailyLogs = [...c.dailyLogs];
-      dailyLogs.push({ date: today, completed: true, value });
-
-      const newMilestone = c.milestones?.find(m => m.progress === newProgress);
-      if (newMilestone) {
-        toast.success(`🎯 Milestone Unlocked: ${newMilestone.reward}!`, {
-          icon: TOAST_ICONS.milestone
-        });
-        playMilestoneSound('reward');
-      }
+      const dailyLogs = [...c.dailyLogs, { date: today, completed: true }];
 
       if (completed && !c.completed) {
         setShowConfetti(true);
@@ -168,22 +255,10 @@ const ChallengesPage: React.FC = () => {
         setTimeout(() => setShowConfetti(false), 3500);
         
         const pointsEarned = c.difficulty * 25;
-        toast.success(`🎉 Challenge "${c.name}" completed! +${pointsEarned} pts`, {
-          description: `You've earned the ${c.milestones?.slice(-1)[0]?.reward || 'Final Badge'}!`,
-          icon: TOAST_ICONS.completed
-        });
+        showToast('completed', `🎉 Challenge "${c.name}" completed! +${pointsEarned} pts`);
 
         const pts = getLS<number>(LS_KEYS.POINTS, 0);
         setLS(LS_KEYS.POINTS, pts + pointsEarned);
-
-        const history = getLS<PointsTransaction[]>(LS_KEYS.POINTS_HISTORY, []);
-        history.unshift({ 
-          id: crypto.randomUUID(), 
-          date: new Date().toISOString(), 
-          points: pointsEarned, 
-          reason: `Completed Challenge: ${c.name}` 
-        });
-        setLS(LS_KEYS.POINTS_HISTORY, history.slice(0, 100));
       }
 
       return { 
@@ -199,12 +274,24 @@ const ChallengesPage: React.FC = () => {
     save(updated);
   };
 
+  const joinChallenge = (preset: typeof PRESET_CHALLENGES[0]) => {
+    const challenge: Challenge = {
+      ...preset,
+      id: crypto.randomUUID(),
+      startDate: new Date().toISOString(),
+      progress: 0,
+      completed: false,
+      streak: 0,
+      lastUpdated: null,
+      dailyLogs: []
+    };
+    save([...challenges, challenge]);
+    showToast('joined', `Joined "${preset.name}"!`, preset.description);
+  };
+
   const deleteChallenge = (id: string) => {
-    const updated = challenges.filter(c => c.id !== id);
-    save(updated);
-    toast.success("Challenge deleted", {
-      icon: TOAST_ICONS.deleted
-    });
+    save(challenges.filter(c => c.id !== id));
+    showToast('deleted', "Challenge deleted");
   };
 
   const resetChallenge = (id: string) => {
@@ -213,9 +300,7 @@ const ChallengesPage: React.FC = () => {
       return { ...c, progress: 0, completed: false, streak: 0, dailyLogs: [] };
     });
     save(updated);
-    toast.info("Challenge progress reset", {
-      icon: TOAST_ICONS.reset
-    });
+    showToast('reset', "Challenge progress reset");
   };
 
   const filteredActiveChallenges = activeChallenges.filter(c => 
@@ -232,9 +317,8 @@ const ChallengesPage: React.FC = () => {
               <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}>
                 <Trophy className="h-7 w-7 text-amber-500" />
               </motion.span>
-              Nutrition Challenges
+              Challenges
             </h1>
-            <p className="text-muted-foreground mb-4 text-sm">Complete challenges to earn points. Track daily progress and unlock achievements!</p>
             
             <div className="flex flex-wrap gap-2 mb-6">
               <Button 
@@ -258,138 +342,112 @@ const ChallengesPage: React.FC = () => {
             </div>
           </motion.div>
 
-          <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); if (v === 'active') refresh(); }} className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <ScrollableTabsList className="mb-6">
               <TabsTrigger value="active">Active ({activeChallenges.length})</TabsTrigger>
-              <TabsTrigger value="create">Create Challenge</TabsTrigger>
-              <TabsTrigger value="explore">Explore</TabsTrigger>
+              <TabsTrigger value="available">Available</TabsTrigger>
               <TabsTrigger value="completed">Completed ({completedChallenges.length})</TabsTrigger>
             </ScrollableTabsList>
 
             <TabsContent value="active">
               {filteredActiveChallenges.length === 0 ? (
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
-                  <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-                    <Target className="h-16 w-16 mx-auto text-primary/40" />
-                  </motion.div>
-                  <p className="text-muted-foreground mt-4">
-                    {selectedCategory === 'all' 
-                      ? "No active challenges. Create or explore one!" 
-                      : `No active ${selectedCategory} challenges. Try a different category!`}
-                  </p>
-                </motion.div>
+                <div className="text-center py-12">
+                  <Target className="h-16 w-16 mx-auto text-primary/40" />
+                  <p className="text-muted-foreground mt-4">No active challenges. Join one from Available!</p>
+                </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {filteredActiveChallenges.map((c, idx) => (
-                    <motion.div key={c.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
-                      <Card className="hover:shadow-lg transition-all hover:border-primary/30">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-lg flex items-center justify-between">
-                            <span className="flex items-center gap-2">
-                              <div className={`p-1.5 rounded-lg ${colorClasses[c.color as keyof typeof colorClasses] || 'bg-gray-100'}`}>
-                                {c.icon}
-                              </div>
-                              {c.name}
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <Badge variant="outline" className="text-xs capitalize">
-                                {c.category}
-                              </Badge>
-                              <Badge variant={c.difficulty <= 2 ? "secondary" : c.difficulty <= 4 ? "default" : "destructive"} className="flex items-center gap-1">
-                                <DifficultyStars difficulty={c.difficulty} />
-                              </Badge>
+                  {filteredActiveChallenges.map(c => (
+                    <Card key={c.id} className="hover:shadow-lg">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg flex items-center justify-between">
+                          <span className="flex items-center gap-2">
+                            <div className={`p-1.5 rounded-lg ${colorClasses[c.color]}`}>
+                              {getCategoryIcon(c.category, c.color)}
                             </div>
-                          </CardTitle>
-                          <p className="text-sm text-muted-foreground">{c.description}</p>
-                        </CardHeader>
-                        
-                        <CardContent className="space-y-3">
-                          <div className="space-y-1">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Daily Progress</span>
-                              <span className="font-medium">{c.progress}/{c.target}</span>
-                            </div>
-                            <Progress value={Math.min((c.progress / c.target) * 100, 100)} className="h-2" />
+                            {c.name}
+                          </span>
+                          <Badge variant="outline" className="capitalize">
+                            {c.category}
+                          </Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      
+                      <CardContent className="space-y-3">
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Progress</span>
+                            <span className="font-medium">{c.progress}/{c.target}</span>
                           </div>
+                          <Progress value={(c.progress / c.target) * 100} className="h-2" />
+                        </div>
 
-                          <div className="flex justify-between text-xs">
-                            <span className="flex items-center gap-1 text-orange-500">
-                              <Flame className="h-3 w-3" /> {c.streak} day streak
-                            </span>
-                            <span className="flex items-center gap-1 text-blue-500">
-                              <Calendar className="h-3 w-3" /> Started {new Date(c.startDate).toLocaleDateString()}
-                            </span>
-                          </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="flex items-center gap-1 text-orange-500">
+                            <Flame className="h-3 w-3" /> {c.streak} day streak
+                          </span>
+                        </div>
 
-                          <div className="flex gap-1 pt-1">
-                            {Array.from({ length: 7 }).map((_, i) => {
-                              const date = new Date();
-                              date.setDate(date.getDate() - i);
-                              const dateStr = date.toISOString().split('T')[0];
-                              const log = c.dailyLogs.find(l => l.date === dateStr);
-                              return (
-                                <div key={i} className="flex-1 text-center">
-                                  <div className={`h-8 rounded-md flex items-center justify-center text-xs
-                                    ${log ? 'bg-green-500 text-white' : 'bg-gray-100 dark:bg-gray-800'}`}>
-                                    {log ? '✓' : '○'}
-                                  </div>
-                                  <span className="text-[10px] text-muted-foreground">
-                                    {date.toLocaleDateString('en-US', { weekday: 'narrow' })}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-
-                          {c.milestones && c.milestones.length > 0 && (
-                            <div className="flex flex-wrap gap-1 pt-1">
-                              {c.milestones.map((milestone, i) => (
-                                <Badge 
-                                  key={i}
-                                  variant={c.progress >= milestone.progress ? "default" : "outline"}
-                                  className={`text-[10px] ${c.progress >= milestone.progress ? 'bg-green-600' : ''}`}
-                                >
-                                  {milestone.reward}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-
-                          <div className="flex gap-2 mt-2">
-                            <Button 
-                              size="sm" 
-                              onClick={() => updateProgress(c.id)} 
-                              className="flex-1"
-                              variant={c.dailyLogs.some(log => log.date === new Date().toISOString().split('T')[0]) ? "outline" : "default"}
-                              disabled={c.dailyLogs.some(log => log.date === new Date().toISOString().split('T')[0])}
-                            >
-                              <Plus className="h-4 w-4 mr-1" />
-                              {c.dailyLogs.some(log => log.date === new Date().toISOString().split('T')[0]) 
-                                ? 'Logged Today' 
-                                : 'Log Daily Progress'}
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="destructive" 
-                              onClick={() => deleteChallenge(c.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            onClick={() => updateProgress(c.id)} 
+                            className="flex-1"
+                            disabled={c.dailyLogs.some(log => log.date === new Date().toISOString().split('T')[0])}
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Log Progress
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="destructive" 
+                            onClick={() => deleteChallenge(c.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               )}
             </TabsContent>
 
-            <TabsContent value="create">
-              <ChallengeCreator />
-            </TabsContent>
-
-            <TabsContent value="explore">
-              <ExploreChallenges userId="local" />
+            <TabsContent value="available">
+              <div className="space-y-4">
+                {PRESET_CHALLENGES
+                  .filter(p => selectedCategory === 'all' || p.category === selectedCategory)
+                  .map((p, i) => {
+                    const isJoined = challenges.some(c => c.name === p.name && !c.completed);
+                    return (
+                      <Card key={i}>
+                        <CardContent className="p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-lg ${colorClasses[p.color]}`}>
+                              {getCategoryIcon(p.category, p.color)}
+                            </div>
+                            <div>
+                              <h3 className="font-medium">{p.name}</h3>
+                              <p className="text-sm text-muted-foreground">{p.description}</p>
+                              <div className="flex gap-2 mt-1">
+                                <Badge variant="outline">{p.duration} days</Badge>
+                                <Badge variant="secondary">
+                                  <DifficultyStars difficulty={p.difficulty} />
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                          <Button 
+                            onClick={() => joinChallenge(p)}
+                            disabled={isJoined}
+                          >
+                            {isJoined ? 'Joined' : 'Join'}
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+              </div>
             </TabsContent>
 
             <TabsContent value="completed">
@@ -400,44 +458,27 @@ const ChallengesPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {completedChallenges.map((c, idx) => (
-                    <motion.div key={c.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
-                      <Card className="border-green-200 bg-green-50/50 dark:bg-green-900/10">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-lg flex items-center justify-between">
-                            <span className="flex items-center gap-2">
-                              <div className={`p-1.5 rounded-lg ${colorClasses[c.color as keyof typeof colorClasses] || 'bg-gray-100'}`}>
-                                {c.icon}
-                              </div>
-                              {c.name}
-                            </span>
-                            <Badge variant="secondary" className="flex items-center gap-1">
-                              <CheckCircle2 className="h-3 w-3" /> Completed
-                            </Badge>
-                          </CardTitle>
-                          <p className="text-sm text-muted-foreground">{c.description}</p>
-                        </CardHeader>
-                        <CardContent>
-                          <Progress value={100} className="h-2 mb-2" />
-                          <div className="flex justify-between text-xs text-muted-foreground">
-                            <span>Completed in {c.dailyLogs.length} days</span>
-                            <span className="flex items-center gap-1">
-                              <Flame className="h-3 w-3 text-orange-500" />
-                              {c.streak} day max streak
-                            </span>
-                          </div>
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => resetChallenge(c.id)}
-                            className="w-full mt-3"
-                          >
-                            <Sparkles className="h-4 w-4 mr-1" />
-                            Restart Challenge
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
+                  {completedChallenges.map(c => (
+                    <Card key={c.id} className="border-green-200 bg-green-50/50">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                          {c.name}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Progress value={100} className="h-2 mb-2" />
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => resetChallenge(c.id)}
+                          className="w-full"
+                        >
+                          <Sparkles className="h-4 w-4 mr-1" />
+                          Restart
+                        </Button>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               )}
