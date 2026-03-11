@@ -67,13 +67,13 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
       </div>
       <Tabs defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab}>
         <ScrollableTabsList className="w-full">
-          <TabsTrigger value="dashboard"><LayoutDashboard className="h-4 w-4" />{!isMobile && t.dashboard}</TabsTrigger>
+          <TabsTrigger value="dashboard"><LayoutDashboard className="h-4 w-4 text-cyan-600" />{!isMobile && t.dashboard}</TabsTrigger>
           <TabsTrigger value="challenges"><Target className="h-4 w-4" />{!isMobile && t.challenges}</TabsTrigger>
-          <TabsTrigger value="rewards"><Gift className="h-4 w-4" />{!isMobile && t.rewards}</TabsTrigger>
-          <TabsTrigger value="badges"><Award className="h-4 w-4" />{!isMobile && t.badges}</TabsTrigger>
-          <TabsTrigger value="leaderboard"><Trophy className="h-4 w-4" />{!isMobile && t.leaderboard}</TabsTrigger>
-          <TabsTrigger value="quests"><Compass className="h-4 w-4" />{!isMobile && t.quests}</TabsTrigger>
-          <TabsTrigger value="quiz"><Brain className="h-4 w-4" />{!isMobile && 'Quiz'}</TabsTrigger>
+          <TabsTrigger value="rewards"><Gift className="h-4 w-4 text-purple-600" />{!isMobile && t.rewards}</TabsTrigger>
+          <TabsTrigger value="badges"><Award className="h-4 w-4 text-pink-500" />{!isMobile && t.badges}</TabsTrigger>
+          <TabsTrigger value="leaderboard"><Trophy className="h-4 w-4 text-orange-500" />{!isMobile && t.leaderboard}</TabsTrigger>
+          <TabsTrigger value="quests"><Compass className="h-4 w-4 text-teal-600" />{!isMobile && t.quests}</TabsTrigger>
+          <TabsTrigger value="quiz"><Brain className="h-4 w-4 text-rose-600" />{!isMobile && 'Quiz'}</TabsTrigger>
         </ScrollableTabsList>
         <TabsContent value="dashboard" className="space-y-4 mt-6"><NutritionProgressWheel /><MealMoodTracker /></TabsContent>
         <TabsContent value="challenges" className="mt-6"><NutritionChallenge /></TabsContent>

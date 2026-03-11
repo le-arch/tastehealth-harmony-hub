@@ -4,7 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CalendarDays, Trash2, Plus, X, Search, Edit3, Utensils } from 'lucide-react';
+import { CalendarDays, Trash2, Plus, X, Search, Edit3, Utensils, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { getLS, setLS, LS_KEYS, MealPlan, MealPlanItem, DAYS_OF_WEEK, createEmptyWeek } from '@/utils/localStorage';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -25,6 +25,20 @@ const CATEGORY_COLORS: Record<string, string> = {
 const CATEGORY_ICONS: Record<string, string> = { breakfast: '🌅', lunch: '☀️', dinner: '🌙', snacks: '🍿' };
 const DAY_COLORS = ['bg-red-500/10', 'bg-orange-500/10', 'bg-amber-500/10', 'bg-green-500/10', 'bg-teal-500/10', 'bg-blue-500/10', 'bg-purple-500/10'];
 
+// Default meal times for each category
+const DEFAULT_MEAL_TIMES: Record<MealCategory, string> = {
+  breakfast: '08:00',
+  lunch: '12:30',
+  dinner: '19:00',
+  snacks: '15:30'
+};
+
+// Time suggestions for quick selection
+const TIME_SUGGESTIONS = [
+  '07:00', '07:30', '08:00', '08:30', '09:00', '12:00', '12:30', '13:00',
+  '18:00', '18:30', '19:00', '19:30', '20:00', '15:00', '15:30', '16:00'
+];
+
 export function MealPlanList() {
   const { language } = useLanguage();
   const [plans, setPlans] = useState<MealPlan[]>(getLS(LS_KEYS.MEAL_PLANS, []));
@@ -34,10 +48,12 @@ export function MealPlanList() {
   const [editingMeal, setEditingMeal] = useState<{ day: string; category: MealCategory; meal: MealPlanItem } | null>(null);
   const [editMealName, setEditMealName] = useState('');
   const [editMealCalories, setEditMealCalories] = useState('');
+  const [editMealTime, setEditMealTime] = useState('');
   const [addDay, setAddDay] = useState(DAYS_OF_WEEK[0]);
   const [addCategory, setAddCategory] = useState<MealCategory>('breakfast');
   const [addMealName, setAddMealName] = useState('');
   const [addMealCalories, setAddMealCalories] = useState('');
+  const [addMealTime, setAddMealTime] = useState(DEFAULT_MEAL_TIMES.breakfast);
   const [addMealMode, setAddMealMode] = useState<'database' | 'custom'>('database');
   const [mealSearch, setMealSearch] = useState('');
 
@@ -53,7 +69,12 @@ export function MealPlanList() {
 
   const addMealToPlan = () => {
     if (!addMealName.trim() || !plan) return;
-    const meal: MealPlanItem = { id: crypto.randomUUID(), name: addMealName, calories: parseInt(addMealCalories) || 0 };
+    const meal: MealPlanItem = { 
+      id: crypto.randomUUID(), 
+      name: addMealName, 
+      calories: parseInt(addMealCalories) || 0,
+      time: addMealTime || DEFAULT_MEAL_TIMES[addCategory]
+    };
     const updated = plans.map(p => {
       if (p.id !== plan.id) return p;
       const days = { ...p.days };
@@ -63,14 +84,19 @@ export function MealPlanList() {
     });
     save(updated);
     // Save to daily meals for nutrition tracking
-    saveToDailyMeals(addMealName, parseInt(addMealCalories) || 0, addCategory);
-    toast.success(`${addMealName} added to ${addDay} ${addCategory}`);
-    setAddMealName(''); setAddMealCalories(''); setAddOpen(false); setMealSearch('');
+    saveToDailyMeals(addMealName, parseInt(addMealCalories) || 0, addCategory, addMealTime);
+    toast.success(`${addMealName} added to ${addDay} ${addCategory} at ${addMealTime}`);
+    setAddMealName(''); setAddMealCalories(''); setAddMealTime(DEFAULT_MEAL_TIMES[addCategory]); setAddOpen(false); setMealSearch('');
   };
 
   const addDatabaseMealToPlan = (dbMeal: any) => {
     if (!plan) return;
-    const meal: MealPlanItem = { id: crypto.randomUUID(), name: dbMeal.name, calories: dbMeal.nutrition.calories };
+    const meal: MealPlanItem = { 
+      id: crypto.randomUUID(), 
+      name: dbMeal.name, 
+      calories: dbMeal.nutrition.calories,
+      time: addMealTime || DEFAULT_MEAL_TIMES[addCategory]
+    };
     const updated = plans.map(p => {
       if (p.id !== plan.id) return p;
       const days = { ...p.days };
@@ -79,12 +105,12 @@ export function MealPlanList() {
       return { ...p, days };
     });
     save(updated);
-    saveToDailyMeals(dbMeal.name, dbMeal.nutrition.calories, addCategory);
-    toast.success(`${dbMeal.name} added to ${addDay} ${addCategory}`);
-    setAddMealName(''); setAddMealCalories(''); setAddOpen(false); setMealSearch('');
+    saveToDailyMeals(dbMeal.name, dbMeal.nutrition.calories, addCategory, addMealTime);
+    toast.success(`${dbMeal.name} added to ${addDay} ${addCategory} at ${addMealTime}`);
+    setAddMealName(''); setAddMealCalories(''); setAddMealTime(DEFAULT_MEAL_TIMES[addCategory]); setAddOpen(false); setMealSearch('');
   };
 
-  const saveToDailyMeals = (name: string, calories: number, category: string) => {
+  const saveToDailyMeals = (name: string, calories: number, category: string, time: string) => {
     try {
       const stored = JSON.parse(localStorage.getItem('th_daily_meals') || '[]');
       const dbMeal = MEAL_DATABASE.find(m => m.name === name);
@@ -97,6 +123,7 @@ export function MealPlanList() {
         fats: dbMeal?.nutrition.fats || 0,
         category,
         timestamp: new Date().toISOString(),
+        scheduledTime: time, // Add scheduled time
       });
       localStorage.setItem('th_daily_meals', JSON.stringify(stored));
     } catch {}
@@ -122,6 +149,7 @@ export function MealPlanList() {
     setEditingMeal({ day, category, meal });
     setEditMealName(meal.name);
     setEditMealCalories(String(meal.calories));
+    setEditMealTime(meal.time || DEFAULT_MEAL_TIMES[category]);
     setEditOpen(true);
   };
 
@@ -133,7 +161,12 @@ export function MealPlanList() {
       days[editingMeal.day] = {
         ...days[editingMeal.day],
         [editingMeal.category]: days[editingMeal.day][editingMeal.category].map((m: MealPlanItem) =>
-          m.id === editingMeal.meal.id ? { ...m, name: editMealName, calories: parseInt(editMealCalories) || 0 } : m
+          m.id === editingMeal.meal.id ? { 
+            ...m, 
+            name: editMealName, 
+            calories: parseInt(editMealCalories) || 0,
+            time: editMealTime || DEFAULT_MEAL_TIMES[editingMeal.category]
+          } : m
         ),
       };
       return { ...p, days };
@@ -144,8 +177,8 @@ export function MealPlanList() {
   };
 
   const t = language === 'fr'
-    ? { noPlan: "Aucun plan sélectionné", noPlans: "Aucun plan de repas", create: "Créez un plan pour commencer", selectPlan: "Sélectionner", delete: "Supprimer", addMeal: "Ajouter un repas", day: "Jour", category: "Catégorie", name: "Nom", calories: "Calories", add: "Ajouter", back: "Retour" }
-    : { noPlan: "No plan selected", noPlans: "No meal plans yet", create: "Create a plan to get started", selectPlan: "View", delete: "Delete", addMeal: "Add Meal", day: "Day", category: "Category", name: "Meal Name", calories: "Calories", add: "Add", back: "Back to Plans" };
+    ? { noPlan: "Aucun plan sélectionné", noPlans: "Aucun plan de repas", create: "Créez un plan pour commencer", selectPlan: "Sélectionner", delete: "Supprimer", addMeal: "Ajouter un repas", day: "Jour", category: "Catégorie", name: "Nom", calories: "Calories", time: "Heure", add: "Ajouter", back: "Retour" }
+    : { noPlan: "No plan selected", noPlans: "No meal plans yet", create: "Create a plan to get started", selectPlan: "View", delete: "Delete", addMeal: "Add Meal", day: "Day", category: "Category", name: "Meal Name", calories: "Calories", time: "Time", add: "Add", back: "Back to Plans" };
 
   if (selectedPlan && plan) {
     return (
@@ -163,9 +196,37 @@ export function MealPlanList() {
                     <Select value={addDay} onValueChange={setAddDay}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{DAYS_OF_WEEK.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent></Select>
                   </div>
                   <div><Label>{t.category}</Label>
-                    <Select value={addCategory} onValueChange={(v) => { setAddCategory(v as MealCategory); setMealSearch(''); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}</SelectContent></Select>
+                    <Select value={addCategory} onValueChange={(v) => { 
+                      setAddCategory(v as MealCategory); 
+                      setAddMealTime(DEFAULT_MEAL_TIMES[v as MealCategory]);
+                      setMealSearch(''); 
+                    }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}</SelectContent></Select>
                   </div>
                 </div>
+
+                {/* Time Selection */}
+                <div className="space-y-2">
+                  <Label>{t.time}</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      type="time" 
+                      value={addMealTime} 
+                      onChange={(e) => setAddMealTime(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Select value={addMealTime} onValueChange={setAddMealTime}>
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="Quick select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TIME_SUGGESTIONS.map(time => (
+                          <SelectItem key={time} value={time}>{time}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 <Tabs value={addMealMode} onValueChange={(v) => { setAddMealMode(v as 'database' | 'custom'); setAddMealName(''); setAddMealCalories(''); }}>
                   <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="database">From Database</TabsTrigger><TabsTrigger value="custom">Custom Meal</TabsTrigger></TabsList>
                   <TabsContent value="database" className="space-y-3">
@@ -198,20 +259,47 @@ export function MealPlanList() {
             <div className="space-y-4">
               <div><Label>Name</Label><Input value={editMealName} onChange={e => setEditMealName(e.target.value)} /></div>
               <div><Label>Calories</Label><Input type="number" value={editMealCalories} onChange={e => setEditMealCalories(e.target.value)} /></div>
+              <div>
+                <Label>Time</Label>
+                <div className="flex gap-2">
+                  <Input 
+                    type="time" 
+                    value={editMealTime} 
+                    onChange={(e) => setEditMealTime(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Select value={editMealTime} onValueChange={setEditMealTime}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue placeholder="Quick select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_SUGGESTIONS.map(time => (
+                        <SelectItem key={time} value={time}>{time}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               <Button onClick={saveEditMeal} className="w-full">Save Changes</Button>
             </div>
           </DialogContent>
         </Dialog>
 
-        {/* Stylish Timetable */}
+        {/* Stylish Timetable with Time */}
         <div className="overflow-x-auto rounded-xl border border-border shadow-sm">
-          <table className="w-full border-collapse min-w-[900px]">
+          <table className="w-full border-collapse min-w-[1000px]">
             <thead>
               <tr>
                 <th className="p-3 text-left font-semibold text-sm bg-gradient-to-r from-primary/5 to-primary/10 border-b border-r w-28">Day</th>
                 {CATEGORIES.map(c => (
                   <th key={c} className={`p-3 text-left font-semibold text-sm border-b border-r bg-gradient-to-r ${CATEGORY_COLORS[c]} capitalize`}>
-                    <span className="mr-1">{CATEGORY_ICONS[c]}</span>{c}
+                    <div className="flex items-center gap-2">
+                      <span className="mr-1">{CATEGORY_ICONS[c]}</span>
+                      <span>{c}</span>
+                      <Badge variant="outline" className="ml-1 text-[10px]">
+                        {DEFAULT_MEAL_TIMES[c]}
+                      </Badge>
+                    </div>
                   </th>
                 ))}
               </tr>
@@ -226,19 +314,34 @@ export function MealPlanList() {
                       <td className={`p-3 font-semibold text-sm border-b border-r ${DAY_COLORS[dayIdx]} rounded-l`}>
                         <div className="flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full bg-primary" />
-                          {day.slice(0, 3)}
+                          <div className="flex flex-col">
+                            <span>{day}</span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </span>
+                          </div>
                         </div>
                       </td>
                       {CATEGORIES.map(cat => (
-                        <td key={cat} className="p-2 align-top min-w-[200px] border-b border-r">
+                        <td key={cat} className="p-2 align-top min-w-[220px] border-b border-r">
                           <div className="space-y-1.5">
                             <AnimatePresence>
                               {dayData[cat].map((meal: MealPlanItem) => (
                                 <motion.div key={meal.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
                                   className="flex items-center justify-between bg-background border rounded-lg p-2 text-sm group hover:shadow-sm transition-all hover:border-primary/30">
                                   <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-1">
+                                      <Clock className="h-3 w-3 text-muted-foreground" />
+                                      <span className="text-xs font-mono text-muted-foreground">
+                                        {meal.time || DEFAULT_MEAL_TIMES[cat]}
+                                      </span>
+                                    </div>
                                     <span className="font-medium truncate block">{meal.name}</span>
-                                    {meal.calories > 0 && <Badge variant="secondary" className="text-[10px] mt-0.5">{meal.calories} kcal</Badge>}
+                                    {meal.calories > 0 && (
+                                      <Badge variant="secondary" className="text-[10px] mt-0.5">
+                                        {meal.calories} kcal
+                                      </Badge>
+                                    )}
                                   </div>
                                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => startEditMeal(day, cat, meal)}><Edit3 className="h-3 w-3 text-primary" /></Button>
@@ -248,7 +351,7 @@ export function MealPlanList() {
                               ))}
                             </AnimatePresence>
                             <Button variant="ghost" size="sm" className="w-full text-xs h-7 text-muted-foreground border border-dashed border-muted-foreground/20 hover:border-primary/40 hover:text-primary"
-                              onClick={() => { setAddDay(day); setAddCategory(cat); setAddOpen(true); }}>
+                              onClick={() => { setAddDay(day); setAddCategory(cat); setAddMealTime(DEFAULT_MEAL_TIMES[cat]); setAddOpen(true); }}>
                               <Plus className="h-3 w-3 mr-1" />Add
                             </Button>
                           </div>
@@ -260,6 +363,35 @@ export function MealPlanList() {
               </AnimatePresence>
             </tbody>
           </table>
+        </div>
+
+        {/* Daily Schedule Summary */}
+        <div className="mt-6 p-4 bg-muted/30 rounded-lg border">
+          <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <Clock className="h-4 w-4 text-primary" />
+            Today's Meal Schedule
+          </h3>
+          <div className="space-y-2">
+            {CATEGORIES.map(cat => {
+              const today = DAYS_OF_WEEK[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
+              const todayMeals = plan.days[today]?.[cat] || [];
+              if (todayMeals.length === 0) return null;
+              
+              return (
+                <div key={cat} className="flex items-center gap-3 text-sm">
+                  <Badge variant="outline" className="w-20 capitalize">{cat}</Badge>
+                  <div className="flex-1 flex flex-wrap gap-2">
+                    {todayMeals.map((meal: MealPlanItem) => (
+                      <Badge key={meal.id} variant="secondary" className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {meal.time || DEFAULT_MEAL_TIMES[cat]} - {meal.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </motion.div>
     );

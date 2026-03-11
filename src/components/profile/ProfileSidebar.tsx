@@ -25,17 +25,17 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
     : { dashboard: "Dashboard", mealPlanning: "Meal Planning", progress: "Progress", signOut: "Sign Out", games: "Nutrition Game", challenges: "Challenges", level: "Level", journal: "Daily Journal", cookingVideos: "Cooking Videos", healthTips: "Health Tips", howToUse: "How to Use" };
 
   const navItems = [
-    { path: "/dashboard", icon: <LayoutDashboard className="h-5 w-5" />, label: t.dashboard },
-    { path: "/progress", icon: <LineChart className="h-5 w-5" />, label: t.progress },
-    { path: "/meal-planning", icon: <Calendar className="h-5 w-5" />, label: t.mealPlanning },
-    { path: "/journal", icon: <Bookmark className="h-5 w-5" />, label: t.journal },
-    { path: "/games", icon: <Gamepad className="h-5 w-5" />, label: t.games },
-    { path: "/challenges", icon: <Mountain className="h-5 w-5" />, label: t.challenges },
-    { path: "/benefits", icon: <Gift className="h-5 w-5" />, label: t.level },
-    { path: "/cooking-videos", icon: <Video className="h-5 w-5" />, label: t.cookingVideos },
-    { path: "/health-tips", icon: <Stethoscope className="h-5 w-5" />, label: t.healthTips },
+    { path: "/dashboard", icon: <LayoutDashboard className="h-5 w-5 text-cyan-600" />, label: t.dashboard },
+    { path: "/progress", icon: <LineChart className="h-5 w-5 text-green-500" />, label: t.progress },
+    { path: "/meal-planning", icon: <Calendar className="h-5 w-5 text-blue-500" />, label: t.mealPlanning },
+    { path: "/journal", icon: <Bookmark className="h-5 w-5 text-red-600" />, label: t.journal },
+    { path: "/games", icon: <Gamepad className="h-5 w-5 text-purple-600" />, label: t.games },
+    { path: "/challenges", icon: <Mountain className="h-5 w-5 text-stone-600" />, label: t.challenges },
+    { path: "/benefits", icon: <Gift className="h-5 w-5 text-amber-500" />, label: t.level },
+    { path: "/cooking-videos", icon: <Video className="h-5 w-5 text-orange-500" />, label: t.cookingVideos },
+    { path: "/health-tips", icon: <Stethoscope className="h-5 w-5 text-slate-600" />, label: t.healthTips },
     // { path: "/settings", icon: <Settings className="h-5 w-5" />, label: t.settings },
-    { path: "/how-to-use", icon: <BookOpen className="h-5 w-5" />, label: t.howToUse },
+    { path: "/how-to-use", icon: <BookOpen className="h-5 w-5 text-indigo-600" />, label: t.howToUse },
   ];
 
   const handleSignOut = () => {

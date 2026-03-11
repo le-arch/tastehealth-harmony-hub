@@ -24,7 +24,7 @@ const NotificationButton: React.FC = () => {
         onClick={handleClick}
         className="relative bg-background shadow-lg border border-border hover:bg-accent transition-colors"
       >
-        <Bell className="h-6 w-6 text-primary" />
+        <Bell className="h-6 w-6 text-green-500" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white text-xs">
             {unreadCount}

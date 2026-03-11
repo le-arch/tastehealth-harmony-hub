@@ -98,9 +98,9 @@ const NutritionDashboard = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <ScrollableTabsList className="w-full">
-          <TabsTrigger value="dailyTools" className="flex items-center gap-2"><Wrench className="h-4 w-4" />{!isMobile && t.dailyTools}</TabsTrigger>
-          <TabsTrigger value="progressSummary" className="flex items-center gap-2"><TrendingUp className="h-4 w-4" />{!isMobile && t.progressSummary}</TabsTrigger>
-          <TabsTrigger value="achievements" className="flex items-center gap-2"><Trophy className="h-4 w-4" />{!isMobile && t.achievements}</TabsTrigger>
+          <TabsTrigger value="dailyTools" className="flex items-center gap-2"><Wrench className="h-4 w-4 text-teal-600" />{!isMobile && t.dailyTools}</TabsTrigger>
+          <TabsTrigger value="progressSummary" className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500" />{!isMobile && t.progressSummary}</TabsTrigger>
+          <TabsTrigger value="achievements" className="flex items-center gap-2"><Trophy className="h-4 w-4 text-orange-500" />{!isMobile && t.achievements}</TabsTrigger>
         </ScrollableTabsList>
 
         <TabsContent value="dailyTools" className="space-y-6">
