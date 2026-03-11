@@ -30,7 +30,8 @@ import {
   Medal,
   Calendar,
   Plus,
-  Sparkles
+  Sparkles,
+  TrendingUp
 } from "lucide-react";
 import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
 import { motion } from "framer-motion";
@@ -97,15 +98,15 @@ const DifficultyStars = ({ difficulty }: { difficulty: number }) => (
   </span>
 );
 
-// Icon mapping for categories
-const getCategoryIcon = (category: ChallengeCategory) => {
+// Icon mapping for categories - returns string names instead of elements
+const getCategoryIconName = (category: ChallengeCategory): string => {
   switch(category) {
-    case 'nutrition': return <Apple className="h-4 w-4" />;
-    case 'hydration': return <Droplet className="h-4 w-4" />;
-    case 'fitness': return <Dumbbell className="h-4 w-4" />;
-    case 'wellness': return <Heart className="h-4 w-4" />;
-    case 'mindfulness': return <Moon className="h-4 w-4" />;
-    default: return <Trophy className="h-4 w-4" />;
+    case 'nutrition': return 'apple';
+    case 'hydration': return 'droplet';
+    case 'fitness': return 'dumbbell';
+    case 'wellness': return 'heart';
+    case 'mindfulness': return 'moon';
+    default: return 'trophy';
   }
 };
 
@@ -123,7 +124,7 @@ const ChallengesPage: React.FC = () => {
       category: c.category || 'nutrition',
       color: c.color || 'green',
       description: c.description || '',
-      icon: c.icon || getCategoryIcon(c.category || 'nutrition')
+      icon: c.icon || <Trophy className="h-4 w-4" />
     }));
   });
   
@@ -195,7 +196,7 @@ const ChallengesPage: React.FC = () => {
         const pointsEarned = c.difficulty * 25;
         toast.success(`🎉 Challenge "${c.name}" completed! +${pointsEarned} pts`, {
           description: `You've earned the ${c.milestones?.slice(-1)[0]?.reward || 'Final Badge'}!`,
-          icon: <Medal className="h-5 w-5 text-yellow-500" />
+          icon: '🏆' // Use string emoji instead of React element
         });
 
         // Award points
