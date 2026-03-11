@@ -53,7 +53,7 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
             {/* <span className="ml-2 text-lg font-bold text-primary"></span> */}
           </Link>
           <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5 text-green-500" />
           </Button>
         </div>
 
@@ -84,7 +84,7 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
         <div className="p-4 border-t border-border space-y-3">
           <div className="flex items-center justify-between">
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8">
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === "dark" ? <Sun className="h-4 w-4 text-yellow-500" /> : <Moon className="h-4 w-4 text-yellow-600" />}
             </Button>
             <select value={language} onChange={(e) => setLanguage(e.target.value)} className="text-sm bg-transparent border border-border rounded-md px-2 py-1 focus:ring-1 focus:ring-primary">
               <option value="en">English</option>

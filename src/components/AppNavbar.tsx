@@ -72,7 +72,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ onToggleSidebar }) => {
                 <img src={profileImage} alt={displayName} className="h-full w-full object-cover rounded-full" />
               ) : (
                 <div className="h-full w-full bg-primary/10 flex items-center justify-center rounded-full">
-                  <User className="h-4 w-4 text-primary" />
+                  <User className="h-4 w-4 text-green-500" />
                 </div>
               )}
             </Button>
@@ -84,10 +84,10 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ onToggleSidebar }) => {
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate('/profile')}>
-              <User className="h-4 w-4 mr-2" />Profile
+              <User className="h-4 w-4 mr-2 tex-green-500" />Profile
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate('/settings')}>
-            <Settings className="h-4 w-4 mr-2" />
+            <Settings className="h-4 w-4 mr-2 text-slate-600" />
             Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-destructive" onClick={() => { localStorage.removeItem('th_current_user'); navigate('/'); }}>
