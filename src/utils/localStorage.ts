@@ -49,6 +49,8 @@ export interface ProfileData {
 
 export interface MealPlanItem {
   id: string; name: string; calories: number;
+  time?: string; // Make time optional for backward compatibility
+  date?: string; // Add date field to track which specific date this meal is for
 }
 
 export interface MealPlanDay {

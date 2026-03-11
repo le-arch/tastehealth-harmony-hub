@@ -79,12 +79,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ onToggleSidebar }) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <div className="px-3 py-2">
-              <p className="text-sm font-medium">{displayName}</p>
+              <p className="text-sm font-medium text-green-500">{displayName}</p>
               {currentUser?.email && <p className="text-xs text-muted-foreground">{currentUser.email}</p>}
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate('/profile')}>
-              <User className="h-4 w-4 mr-2 tex-green-500" />Profile
+              <User className="h-4 w-4 mr-2 text-green-500" />Profile
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate('/settings')}>
             <Settings className="h-4 w-4 mr-2 text-slate-600" />

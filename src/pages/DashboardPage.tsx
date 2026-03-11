@@ -33,8 +33,8 @@ const DashboardPage = () => {
             <TabsTrigger value="dashboard" className="flex items-center gap-2"><LayoutDashboard className="h-4 w-4 text-yellow-500" />{!isMobile && t.tabs.dashboard}</TabsTrigger>
             <TabsTrigger value="nutrition" className="flex items-center gap-2"><Apple className="h-4 w-4 text-red-500" />{!isMobile && t.tabs.nutrition}</TabsTrigger>
             <TabsTrigger value="summary" className="flex items-center gap-2"><Calendar className="h-4 w-4 text-blue-500" />{!isMobile && t.tabs.summary}</TabsTrigger>
-            <TabsTrigger value="mood" className="flex items-center gap-2"><Smile className="h-4 w-4 text-yellow-200" />{!isMobile && t.tabs.mood}</TabsTrigger>
-            <TabsTrigger value="points" className="flex items-center gap-2"><Award className="h-4 w-4 text-violet-200" />{!isMobile && t.tabs.points}</TabsTrigger>
+            <TabsTrigger value="mood" className="flex items-center gap-2"><Smile className="h-4 w-4 text-orange-500" />{!isMobile && t.tabs.mood}</TabsTrigger>
+            <TabsTrigger value="points" className="flex items-center gap-2"><Award className="h-4 w-4 text-indigo-600" />{!isMobile && t.tabs.points}</TabsTrigger>
           </ScrollableTabsList>
           <TabsContent value="dashboard" className="space-y-6">
             <ProgressTracker />
