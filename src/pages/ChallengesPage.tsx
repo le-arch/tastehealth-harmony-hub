@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import PageLayout from "@/components/PageLayout";
 import ChallengeCreator from "@/components/ChallengeCreator";
 import ProgressGuard from "@/components/ProgressGuard";
@@ -13,33 +13,20 @@ import {
   Trophy, 
   Target, 
   Trash2,
-  Apple,
-  Droplet,
-  Beef,
-  Salad,
-  Footprints,
-  Moon,
-  Heart,
-  Award,
-  CheckCircle2,
   Flame,
-  Zap,
-  Coffee,
-  Bike,
-  Dumbbell,
-  Medal,
   Calendar,
   Plus,
   Sparkles,
-  TrendingUp
+  CheckCircle2
 } from "lucide-react";
 import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import Confetti from "@/components/Confetti";
 import { playMilestoneSound } from "@/utils/sounds";
+import { TOAST_ICONS } from "@/utils/toastIcons";
 
-// Types
+// Types (keep all your existing types)
 type ChallengeCategory = 'nutrition' | 'hydration' | 'fitness' | 'wellness' | 'mindfulness';
 
 interface Milestone {
@@ -57,7 +44,7 @@ interface EnhancedChallenge {
   id: string;
   name: string;
   category: ChallengeCategory;
-  icon: React.ReactNode;
+  icon: React.ReactNode; // This is fine for rendering
   color: string;
   description: string;
   duration: number;
@@ -98,23 +85,10 @@ const DifficultyStars = ({ difficulty }: { difficulty: number }) => (
   </span>
 );
 
-// Icon mapping for categories - returns string names instead of elements
-const getCategoryIconName = (category: ChallengeCategory): string => {
-  switch(category) {
-    case 'nutrition': return 'apple';
-    case 'hydration': return 'droplet';
-    case 'fitness': return 'dumbbell';
-    case 'wellness': return 'heart';
-    case 'mindfulness': return 'moon';
-    default: return 'trophy';
-  }
-};
-
 const ChallengesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("active");
   const [challenges, setChallenges] = useState<EnhancedChallenge[]>(() => {
     const saved = getLS(LS_KEYS.CHALLENGES, []);
-    // Migrate old format to new format if needed
     return saved.map((c: any) => ({
       ...c,
       streak: c.streak || 0,
@@ -149,17 +123,17 @@ const ChallengesPage: React.FC = () => {
     const updated = challenges.map(c => {
       if (c.id !== id) return c;
 
-      // Check if already logged today
       const alreadyLoggedToday = c.dailyLogs.some(log => log.date === today);
       if (alreadyLoggedToday) {
-        toast.info("You've already logged today's progress!");
+        toast.info("You've already logged today's progress!", {
+          icon: TOAST_ICONS.info
+        });
         return c;
       }
 
       const newProgress = Math.min(c.progress + value, c.target);
       const completed = newProgress >= c.target;
       
-      // Calculate streak
       let newStreak = c.streak;
       const lastLogDate = c.lastUpdated ? new Date(c.lastUpdated).toISOString().split('T')[0] : null;
       
@@ -177,14 +151,14 @@ const ChallengesPage: React.FC = () => {
         newStreak = 1;
       }
 
-      // Add daily log
       const dailyLogs = [...c.dailyLogs];
       dailyLogs.push({ date: today, completed: true, value });
 
-      // Check for milestone achievements
       const newMilestone = c.milestones?.find(m => m.progress === newProgress);
       if (newMilestone) {
-        toast.success(`🎯 Milestone Unlocked: ${newMilestone.reward}!`);
+        toast.success(`🎯 Milestone Unlocked: ${newMilestone.reward}!`, {
+          icon: TOAST_ICONS.milestone
+        });
         playMilestoneSound('reward');
       }
 
@@ -196,14 +170,12 @@ const ChallengesPage: React.FC = () => {
         const pointsEarned = c.difficulty * 25;
         toast.success(`🎉 Challenge "${c.name}" completed! +${pointsEarned} pts`, {
           description: `You've earned the ${c.milestones?.slice(-1)[0]?.reward || 'Final Badge'}!`,
-          icon: '🏆' // Use string emoji instead of React element
+          icon: TOAST_ICONS.completed
         });
 
-        // Award points
         const pts = getLS<number>(LS_KEYS.POINTS, 0);
         setLS(LS_KEYS.POINTS, pts + pointsEarned);
 
-        // Save to points history
         const history = getLS<PointsTransaction[]>(LS_KEYS.POINTS_HISTORY, []);
         history.unshift({ 
           id: crypto.randomUUID(), 
@@ -230,7 +202,9 @@ const ChallengesPage: React.FC = () => {
   const deleteChallenge = (id: string) => {
     const updated = challenges.filter(c => c.id !== id);
     save(updated);
-    toast.success("Challenge deleted");
+    toast.success("Challenge deleted", {
+      icon: TOAST_ICONS.deleted
+    });
   };
 
   const resetChallenge = (id: string) => {
@@ -239,7 +213,9 @@ const ChallengesPage: React.FC = () => {
       return { ...c, progress: 0, completed: false, streak: 0, dailyLogs: [] };
     });
     save(updated);
-    toast.info("Challenge progress reset");
+    toast.info("Challenge progress reset", {
+      icon: TOAST_ICONS.reset
+    });
   };
 
   const filteredActiveChallenges = activeChallenges.filter(c => 
@@ -260,7 +236,6 @@ const ChallengesPage: React.FC = () => {
             </h1>
             <p className="text-muted-foreground mb-4 text-sm">Complete challenges to earn points. Track daily progress and unlock achievements!</p>
             
-            {/* Category Filters */}
             <div className="flex flex-wrap gap-2 mb-6">
               <Button 
                 size="sm" 
@@ -329,7 +304,6 @@ const ChallengesPage: React.FC = () => {
                         </CardHeader>
                         
                         <CardContent className="space-y-3">
-                          {/* Progress Bar */}
                           <div className="space-y-1">
                             <div className="flex justify-between text-sm">
                               <span className="text-muted-foreground">Daily Progress</span>
@@ -338,7 +312,6 @@ const ChallengesPage: React.FC = () => {
                             <Progress value={Math.min((c.progress / c.target) * 100, 100)} className="h-2" />
                           </div>
 
-                          {/* Streak and Stats */}
                           <div className="flex justify-between text-xs">
                             <span className="flex items-center gap-1 text-orange-500">
                               <Flame className="h-3 w-3" /> {c.streak} day streak
@@ -348,7 +321,6 @@ const ChallengesPage: React.FC = () => {
                             </span>
                           </div>
 
-                          {/* Weekly Calendar View */}
                           <div className="flex gap-1 pt-1">
                             {Array.from({ length: 7 }).map((_, i) => {
                               const date = new Date();
@@ -369,7 +341,6 @@ const ChallengesPage: React.FC = () => {
                             })}
                           </div>
 
-                          {/* Milestones */}
                           {c.milestones && c.milestones.length > 0 && (
                             <div className="flex flex-wrap gap-1 pt-1">
                               {c.milestones.map((milestone, i) => (
@@ -384,7 +355,6 @@ const ChallengesPage: React.FC = () => {
                             </div>
                           )}
 
-                          {/* Action Buttons */}
                           <div className="flex gap-2 mt-2">
                             <Button 
                               size="sm" 

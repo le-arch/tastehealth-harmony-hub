@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -25,14 +25,14 @@ import {
   Dumbbell,
   Medal,
   Calendar,
-  Sparkles,
-  TrendingUp
+  Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
 import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
 import { motion } from "framer-motion";
 import Confetti from "@/components/Confetti";
 import { playMilestoneSound } from "@/utils/sounds";
+import { TOAST_ICONS } from "@/utils/toastIcons";
 
 // Types
 type ChallengeCategory = 'nutrition' | 'hydration' | 'fitness' | 'wellness' | 'mindfulness';
@@ -92,18 +92,6 @@ const DifficultyStars = ({ difficulty }: { difficulty: number }) => (
     ))}
   </span>
 );
-
-// Icon mapping for categories - returns string names instead of elements
-const getCategoryIconName = (category: ChallengeCategory): string => {
-  switch(category) {
-    case 'nutrition': return 'apple';
-    case 'hydration': return 'droplet';
-    case 'fitness': return 'dumbbell';
-    case 'wellness': return 'heart';
-    case 'mindfulness': return 'moon';
-    default: return 'trophy';
-  }
-};
 
 // Preset Challenges
 const PRESET_CHALLENGES: Omit<EnhancedChallenge, 'id' | 'startDate' | 'progress' | 'completed' | 'streak' | 'lastUpdated' | 'dailyLogs'>[] = [
@@ -361,7 +349,7 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
     save([...challenges, challenge]);
     toast.success(`Joined "${preset.name}"!`, {
       description: preset.description,
-      icon: '🎯' // Use string emoji instead of React element
+      icon: TOAST_ICONS.joined
     });
     if (onChallengeJoined) onChallengeJoined();
   };
@@ -375,7 +363,9 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
       // Check if already logged today
       const alreadyLoggedToday = c.dailyLogs.some(log => log.date === today);
       if (alreadyLoggedToday) {
-        toast.info("You've already logged today's progress!");
+        toast.info("You've already logged today's progress!", {
+          icon: TOAST_ICONS.info
+        });
         return c;
       }
 
@@ -407,7 +397,9 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
       // Check for milestone achievements
       const newMilestone = c.milestones?.find(m => m.progress === newProgress);
       if (newMilestone) {
-        toast.success(`🎯 Milestone Unlocked: ${newMilestone.reward}!`);
+        toast.success(`🎯 Milestone Unlocked: ${newMilestone.reward}!`, {
+          icon: TOAST_ICONS.milestone
+        });
         playMilestoneSound('reward');
       }
 
@@ -419,7 +411,7 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
         const pointsEarned = c.difficulty * 25;
         toast.success(`🎉 Challenge "${c.name}" completed! +${pointsEarned} pts`, {
           description: `You've earned the ${c.milestones?.slice(-1)[0]?.reward || 'Final Badge'}!`,
-          icon: '🏆' // Use string emoji instead of React element
+          icon: TOAST_ICONS.completed
         });
 
         // Award points
@@ -453,7 +445,9 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
   const deleteChallenge = (id: string) => {
     const updated = challenges.filter(c => c.id !== id);
     save(updated);
-    toast.success("Challenge deleted");
+    toast.success("Challenge deleted", {
+      icon: TOAST_ICONS.deleted
+    });
   };
 
   const resetChallenge = (id: string) => {
@@ -462,7 +456,9 @@ const NutritionChallenge: React.FC<NutritionChallengeProps> = ({ onChallengeJoin
       return { ...c, progress: 0, completed: false, streak: 0, dailyLogs: [] };
     });
     save(updated);
-    toast.info("Challenge progress reset");
+    toast.info("Challenge progress reset", {
+      icon: TOAST_ICONS.reset
+    });
   };
 
   const filteredActiveChallenges = activeChallenges.filter(c => 
