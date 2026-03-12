@@ -41,7 +41,7 @@ const UserLevel = ({ level, points, pointsForNextLevel }: UserLevelProps) => {
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm flex items-center">
-          <Star className="h-4 w-4 mr-2 text-yellow-500" />
+          <Star className="h-4 w-4 mr-2 text-yellow-500 fill-yellow-500" />
           {t.yourLevel}
         </CardTitle>
       </CardHeader>

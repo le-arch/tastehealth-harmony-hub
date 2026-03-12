@@ -47,7 +47,7 @@ const DailyStreak = ({ updateStreak }: DailyStreakProps) => {
       <Confetti active={showConfetti} />
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center"><Flame className="h-4 w-4 mr-2 text-orange-500" />{t.dailyStreak}</CardTitle>
+          <CardTitle className="text-sm flex items-center"><Flame className="h-4 w-4 mr-2 text-orange-500 fill-yellow-500" />{t.dailyStreak}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center">

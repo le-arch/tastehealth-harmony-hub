@@ -329,7 +329,7 @@ const ChallengesPage: React.FC = () => {
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
               <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}>
-                <Trophy className="h-7 w-7 text-amber-500" />
+                <Trophy className="h-7 w-7 text-amber-500 fill-amber-500" />
               </motion.span>
               Challenges
             </h1>

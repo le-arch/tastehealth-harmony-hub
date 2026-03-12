@@ -105,7 +105,7 @@ const HealthTipsPage: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <motion.span animate={{ rotate: [0, -15, 15, 0] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}>
-                <Lightbulb className="h-7 w-7 text-yellow-500" />
+                <Lightbulb className="h-7 w-7 text-yellow-500 fill-yellow-500" />
               </motion.span>
               Daily Health Tips
             </h1>

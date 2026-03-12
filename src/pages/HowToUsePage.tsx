@@ -26,7 +26,7 @@ const HowToUsePage = () => {
     <PageLayout activePage="how to use">
       <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
         <div className="text-center space-y-3">
-          <div className="flex items-center justify-center gap-2"><BookOpen className="h-7 w-7 text-primary" /><h1 className="text-2xl sm:text-3xl font-bold text-primary">How to Use TasteHealth</h1></div>
+          <div className="flex items-center justify-center gap-2"><BookOpen className="h-7 w-7 text-primary fill-green-500" /><h1 className="text-2xl sm:text-3xl font-bold text-primary">How to Use TasteHealth</h1></div>
           <p className="text-sm text-muted-foreground max-w-2xl mx-auto">Your comprehensive guide to all features.</p>
           <Badge variant="secondary">{tutorialSteps.length} Features to Explore</Badge>
         </div>

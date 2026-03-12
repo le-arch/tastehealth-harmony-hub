@@ -6,15 +6,211 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotifications } from '@/contexts/NotificationContext';
-import { Bookmark, Calendar, Trash2, Search, Plus, ChefHat, Edit3, Upload, Image as ImageIcon } from 'lucide-react';
+import { Bookmark, Calendar, Trash2, Search, Plus, ChefHat, Edit3, Upload, Image as ImageIcon, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { TabsTrigger, ScrollableTabsList } from '@/components/ui/scrollable-tabs';
 import { toast } from 'sonner';
 import RichTextEditor from '@/components/journal/RichTextEditor';
 import { Badge } from '@/components/ui/badge';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface JournalEntry { id: string; date: string; title: string; content: string; mood: string; meals: string[]; createdAt: Date; updatedAt: Date; }
 interface CustomRecipe { id: string; name: string; ingredients: string; method: string; category: string; date: string; imageUrl?: string; }
+
+// Animated Date Picker Component
+const AnimatedDatePicker = ({ value, onChange, label = "Date" }: { value: string; onChange: (date: string) => void; label?: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [month, setMonth] = useState<Date>(value ? new Date(value) : new Date());
+  
+  const selectedDate = value ? new Date(value) : undefined;
+
+  // Animation variants
+  const popoverVariants = {
+    hidden: { opacity: 0, scale: 0.95, y: -10 },
+    visible: { 
+      opacity: 1, 
+      scale: 1, 
+      y: 0,
+      transition: { 
+        type: "spring", 
+        stiffness: 300, 
+        damping: 25,
+        when: "beforeChildren",
+        staggerChildren: 0.05
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      scale: 0.95, 
+      y: -10,
+      transition: { duration: 0.2 }
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <motion.label 
+        className="text-sm font-medium flex items-center gap-1"
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <Sparkles className="h-3 w-3 text-yellow-500" />
+        {label}
+      </motion.label>
+      
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          >
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal relative overflow-hidden group",
+                "border-2 hover:border-primary/50 transition-all duration-300",
+                "bg-gradient-to-r from-background to-muted/30",
+                !value && "text-muted-foreground"
+              )}
+            >
+              {/* Animated background gradient */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5"
+                animate={{
+                  x: ['-100%', '100%'],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              />
+              
+              <Calendar className="mr-2 h-4 w-4 relative z-10 group-hover:text-primary transition-colors" />
+              
+              <span className="relative z-10">
+                {value ? format(new Date(value), 'PPP') : <span>Select a date</span>}
+              </span>
+
+              {/* Decorative dot for today */}
+              {value && format(new Date(value), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
+                <motion.div
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 bg-green-500 rounded-full"
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.7, 1, 0.7],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              )}
+            </Button>
+          </motion.div>
+        </PopoverTrigger>
+        
+        <PopoverContent 
+          className="w-auto p-0 border-2 shadow-xl" 
+          align="start"
+          sideOffset={5}
+        >
+          <AnimatePresence mode="wait">
+            {isOpen && (
+              <motion.div
+                variants={popoverVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <CalendarComponent
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      onChange(format(date, 'yyyy-MM-dd'));
+                      setIsOpen(false);
+                    }
+                  }}
+                  month={month}
+                  onMonthChange={setMonth}
+                  initialFocus
+                  animated={true}
+                  highlightToday={true}
+                  className="rounded-md border-0"
+                  components={{
+                    IconLeft: ({ ...props }) => (
+                      <motion.div
+                        whileHover={{ x: -2 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </motion.div>
+                    ),
+                    IconRight: ({ ...props }) => (
+                      <motion.div
+                        whileHover={{ x: 2 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </motion.div>
+                    ),
+                  }}
+                />
+
+                {/* Footer with quick actions */}
+                <motion.div 
+                  className="p-3 border-t border-border flex items-center justify-between bg-muted/20"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => {
+                        const today = format(new Date(), 'yyyy-MM-dd');
+                        onChange(today);
+                        setIsOpen(false);
+                      }}
+                      className="text-xs"
+                    >
+                      Today
+                    </Button>
+                  </motion.div>
+                  
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setIsOpen(false)}
+                      className="text-xs"
+                    >
+                      Close
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+};
 
 const DailyJournalPage = () => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -165,7 +361,13 @@ const DailyJournalPage = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div><label className="text-sm font-medium">Date</label><Input type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="mt-1" /></div>
+                    {/* Replace the basic date input with AnimatedDatePicker */}
+                    <AnimatedDatePicker 
+                      value={formData.date} 
+                      onChange={(date) => setFormData({ ...formData, date })}
+                      label="Date"
+                    />
+                    
                     <div>
                       <label className="text-sm font-medium">Mood</label>
                       <div className="grid grid-cols-5 gap-2 mt-2">

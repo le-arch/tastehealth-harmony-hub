@@ -52,9 +52,9 @@ const SettingsPage: React.FC = () => {
         <h1 className="text-2xl font-bold mb-6 flex items-center gap-2"><SettingsIcon className="h-6 w-6" />Settings</h1>
         <Tabs defaultValue="general" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="general"><SettingsIcon className="h-4 w-4 mr-1 text-grey-500" />General</TabsTrigger>
-            <TabsTrigger value="nutrition"><Apple className="h-4 w-4 mr-1 text-red-500" />Nutrition</TabsTrigger>
-            <TabsTrigger value="feedback"><MessageSquare className="h-4 w-4 mr-1 text-green-700" />Feedback</TabsTrigger>
+            <TabsTrigger value="general"><SettingsIcon className="h-4 w-4 mr-1 text-grey-500 fill-grey-500" />General</TabsTrigger>
+            <TabsTrigger value="nutrition"><Apple className="h-4 w-4 mr-1 text-red-500 fill-red-500" />Nutrition</TabsTrigger>
+            <TabsTrigger value="feedback"><MessageSquare className="h-4 w-4 mr-1 text-green-700 fill-green-500" />Feedback</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general">
