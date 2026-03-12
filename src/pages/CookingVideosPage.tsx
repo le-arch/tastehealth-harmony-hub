@@ -38,7 +38,7 @@ const CookingVideosPage: React.FC = () => {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}>
-              <ChefHat className="h-7 w-7 text-orange-500" />
+              <ChefHat className="h-7 w-7 text-orange-500 fill-orange-300" />
             </motion.span>
             Healthy Cooking Videos
           </h1>

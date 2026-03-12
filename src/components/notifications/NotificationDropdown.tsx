@@ -21,7 +21,7 @@ const NotificationDropdown = () => {
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5 text-green-500" />
+          <Bell className="h-5 w-5 text-green-500 fill-green-500" />
           {unread > 0 && <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full w-4 h-4 text-xs flex items-center justify-center">{unread}</span>}
         </Button>
       </PopoverTrigger>

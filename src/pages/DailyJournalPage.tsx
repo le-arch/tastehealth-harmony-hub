@@ -139,7 +139,7 @@ const DailyJournalPage = () => {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}>
-              <Bookmark className="h-7 w-7 text-primary" />
+              <Bookmark className="h-7 w-7 text-red-500 fill-red-300" />
             </motion.span>
             Daily Journal
           </h1>
@@ -148,9 +148,9 @@ const DailyJournalPage = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <ScrollableTabsList className="mb-6">
-            <TabsTrigger value="journal"><Bookmark className="h-4 w-4 mr-1 inline text-amber-500" />Journal</TabsTrigger>
-            <TabsTrigger value="recipes"><ChefHat className="h-4 w-4 mr-1 inline text-orange-500" />My Recipes</TabsTrigger>
-            <TabsTrigger value="gallery"><ImageIcon className="h-4 w-4 mr-1 inline text-blue-500" />Meal Gallery</TabsTrigger>
+            <TabsTrigger value="journal"><Bookmark className="h-4 w-4 mr-1 inline text-amber-500 fill-amber-300" />Journal</TabsTrigger>
+            <TabsTrigger value="recipes"><ChefHat className="h-4 w-4 mr-1 inline text-orange-500 fill-orange-300" />My Recipes</TabsTrigger>
+            <TabsTrigger value="gallery"><ImageIcon className="h-4 w-4 mr-1 inline text-blue-500 fill-blue-200" />Meal Gallery</TabsTrigger>
           </ScrollableTabsList>
 
           <TabsContent value="journal">
