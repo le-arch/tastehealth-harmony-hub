@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
+import { Badge } from '@/components/ui/badge'; // <-- MISSING IMPORT ADDED HERE
 import { useLanguage } from '@/contexts/LanguageContext';
 import BMICalculator from '@/components/health/BMICalculator';
 import ProgressTracker from '@/components/health/ProgressTracker';
