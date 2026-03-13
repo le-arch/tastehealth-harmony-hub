@@ -16,7 +16,9 @@ import {
   HelpCircle,
   Undo,
   Redo,
-  Image
+  Image,
+  Code,
+  ListChecks
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -33,27 +35,14 @@ interface RichTextEditorProps {
 const TOOLBAR_BUTTONS = [
   { icon: Bold, label: 'Bold', prefix: '**', suffix: '**', shortcut: 'Ctrl+B' },
   { icon: Italic, label: 'Italic', prefix: '*', suffix: '*', shortcut: 'Ctrl+I' },
+  { icon: Code, label: 'Code', prefix: '`', suffix: '`', shortcut: 'Ctrl+`' },
   { icon: Heading1, label: 'Heading 1', prefix: '# ', suffix: '', shortcut: 'Ctrl+1' },
   { icon: Heading2, label: 'Heading 2', prefix: '## ', suffix: '', shortcut: 'Ctrl+2' },
   { icon: List, label: 'Bullet List', prefix: '- ', suffix: '', shortcut: 'Ctrl+L' },
   { icon: ListOrdered, label: 'Numbered List', prefix: '1. ', suffix: '', shortcut: 'Ctrl+Shift+L' },
-  { icon: CheckSquare, label: 'Checklist', prefix: '- [ ] ', suffix: '', shortcut: 'Ctrl+Shift+C' },
+  { icon: ListChecks, label: 'Checklist', prefix: '- [ ] ', suffix: '', shortcut: 'Ctrl+Shift+C' },
   { icon: Quote, label: 'Quote', prefix: '> ', suffix: '', shortcut: 'Ctrl+Q' },
   { icon: Minus, label: 'Divider', prefix: '\n---\n', suffix: '', shortcut: 'Ctrl+Shift+-' },
-];
-
-// Sample markdown examples for the help guide
-const MARKDOWN_EXAMPLES = [
-  { label: 'Bold', syntax: '**bold text**', preview: 'bold text' },
-  { label: 'Italic', syntax: '*italic text*', preview: 'italic text' },
-  { label: 'Heading 1', syntax: '# Heading 1', preview: 'Heading 1' },
-  { label: 'Heading 2', syntax: '## Heading 2', preview: 'Heading 2' },
-  { label: 'Bullet List', syntax: '- Item 1\n- Item 2', preview: '• Item 1\n• Item 2' },
-  { label: 'Numbered List', syntax: '1. First\n2. Second', preview: '1. First\n2. Second' },
-  { label: 'Checklist', syntax: '- [ ] Task\n- [x] Done', preview: '☐ Task\n☑ Done' },
-  { label: 'Quote', syntax: '> Quote text', preview: '“Quote text”' },
-  { label: 'Image', syntax: '![alt text](image-url)', preview: '🖼️ Image' },
-  { label: 'Link', syntax: '[link text](url)', preview: '🔗 link text' },
 ];
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ 
@@ -65,10 +54,14 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const splitLeftRef = useRef<HTMLTextAreaElement>(null);
+  const splitRightRef = useRef<HTMLDivElement>(null);
+  const [mode, setMode] = useState<'write' | 'preview' | 'split'>('write');
   const [history, setHistory] = useState<string[]>([value]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [showHelp, setShowHelp] = useState(false);
+  const [selectedText, setSelectedText] = useState({ start: 0, end: 0 });
 
   // Update history when value changes (debounced)
   useEffect(() => {
@@ -83,8 +76,35 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     return () => clearTimeout(timer);
   }, [value]);
 
+  // Sync scroll positions in split mode
+  useEffect(() => {
+    if (mode === 'split' && splitLeftRef.current && splitRightRef.current) {
+      const handleLeftScroll = () => {
+        if (splitRightRef.current) {
+          const leftPercent = splitLeftRef.current.scrollTop / (splitLeftRef.current.scrollHeight - splitLeftRef.current.clientHeight);
+          splitRightRef.current.scrollTop = leftPercent * (splitRightRef.current.scrollHeight - splitRightRef.current.clientHeight);
+        }
+      };
+
+      const handleRightScroll = () => {
+        if (splitLeftRef.current) {
+          const rightPercent = splitRightRef.current.scrollTop / (splitRightRef.current.scrollHeight - splitRightRef.current.clientHeight);
+          splitLeftRef.current.scrollTop = rightPercent * (splitLeftRef.current.scrollHeight - splitLeftRef.current.clientHeight);
+        }
+      };
+
+      splitLeftRef.current.addEventListener('scroll', handleLeftScroll);
+      splitRightRef.current.addEventListener('scroll', handleRightScroll);
+
+      return () => {
+        splitLeftRef.current?.removeEventListener('scroll', handleLeftScroll);
+        splitRightRef.current?.removeEventListener('scroll', handleRightScroll);
+      };
+    }
+  }, [mode]);
+
   const insertFormat = (prefix: string, suffix: string) => {
-    const ta = textareaRef.current;
+    const ta = mode === 'split' ? splitLeftRef.current : textareaRef.current;
     if (!ta) return;
     
     const start = ta.selectionStart;
@@ -144,6 +164,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           e.preventDefault();
           insertFormat('*', '*');
           break;
+        case '`':
+          e.preventDefault();
+          insertFormat('`', '`');
+          break;
         case '1':
           e.preventDefault();
           insertFormat('# ', '');
@@ -195,94 +219,102 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       return <p className="text-muted-foreground italic">{placeholder}</p>;
     }
 
-    return text.split('\n').map((line, i) => {
-      // Headers
-      if (line.startsWith('### ')) return <h3 key={i} className="text-md font-bold mt-3 mb-1">{processInline(line.slice(4))}</h3>;
-      if (line.startsWith('## ')) return <h2 key={i} className="text-lg font-bold mt-4 mb-2">{processInline(line.slice(3))}</h2>;
-      if (line.startsWith('# ')) return <h1 key={i} className="text-xl font-bold mt-5 mb-3 border-b pb-1">{processInline(line.slice(2))}</h1>;
-      
-      // Checklists
-      if (line.startsWith('- [x] ')) return (
-        <div key={i} className="flex items-center gap-2 my-1">
-          <input type="checkbox" checked readOnly className="h-4 w-4 rounded border-primary" />
-          <span className="line-through text-muted-foreground">{processInline(line.slice(6))}</span>
-        </div>
-      );
-      if (line.startsWith('- [ ] ')) return (
-        <div key={i} className="flex items-center gap-2 my-1">
-          <input type="checkbox" readOnly className="h-4 w-4 rounded border-input" />
-          <span>{processInline(line.slice(6))}</span>
-        </div>
-      );
-      
-      // Lists
-      if (line.startsWith('- ')) return <li key={i} className="ml-6 list-disc my-1">{processInline(line.slice(2))}</li>;
-      if (/^\d+\. /.test(line)) return <li key={i} className="ml-6 list-decimal my-1">{processInline(line.replace(/^\d+\. /, ''))}</li>;
-      
-      // Blockquotes
-      if (line.startsWith('> ')) return (
-        <blockquote key={i} className="border-l-4 border-primary pl-4 italic text-muted-foreground my-2 py-1 bg-muted/30 rounded-r">
-          {processInline(line.slice(2))}
-        </blockquote>
-      );
-      
-      // Horizontal rule
-      if (line.trim() === '---' || line.trim() === '***' || line.trim() === '___') {
-        return <hr key={i} className="my-4 border-t-2 border-muted" />;
+    const lines = text.split('\n');
+    const elements: React.ReactNode[] = [];
+    let inList = false;
+    let listType: 'ul' | 'ol' | 'check' | null = null;
+    let listItems: React.ReactNode[] = [];
+
+    const flushList = () => {
+      if (listItems.length > 0) {
+        if (listType === 'ul') {
+          elements.push(<ul key={`list-${elements.length}`} className="list-disc pl-6 my-2">{listItems}</ul>);
+        } else if (listType === 'ol') {
+          elements.push(<ol key={`list-${elements.length}`} className="list-decimal pl-6 my-2">{listItems}</ol>);
+        } else if (listType === 'check') {
+          elements.push(<div key={`list-${elements.length}`} className="my-2">{listItems}</div>);
+        }
+        listItems = [];
+        inList = false;
+        listType = null;
       }
+    };
+
+    lines.forEach((line, index) => {
+      // Check if line is a list item
+      const isBullet = line.startsWith('- ');
+      const isNumbered = /^\d+\. /.test(line);
+      const isCheckbox = line.startsWith('- [ ] ') || line.startsWith('- [x] ');
       
-      // Images
-      const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
-      if (imgMatch) {
-        return (
-          <div key={i} className="my-3">
-            <img 
-              src={imgMatch[2]} 
-              alt={imgMatch[1]} 
-              className="max-w-full rounded-lg max-h-64 object-cover shadow-md hover:shadow-lg transition-shadow"
-            />
-            {imgMatch[1] && (
-              <p className="text-xs text-center text-muted-foreground mt-1">{imgMatch[1]}</p>
-            )}
-          </div>
-        );
-      }
-      
-      // Links
-      const linkRegex = /\[(.*?)\]\((.*?)\)/g;
-      if (linkRegex.test(line)) {
-        const parts: React.ReactNode[] = [];
-        let lastIndex = 0;
-        let match;
-        linkRegex.lastIndex = 0;
+      if (isBullet || isNumbered || isCheckbox) {
+        if (!inList) {
+          flushList();
+          inList = true;
+          listType = isCheckbox ? 'check' : (isBullet ? 'ul' : 'ol');
+        }
         
-        while ((match = linkRegex.exec(line)) !== null) {
-          if (match.index > lastIndex) {
-            parts.push(line.slice(lastIndex, match.index));
-          }
-          parts.push(
-            <a key={i + '-' + match.index} href={match[2]} target="_blank" rel="noopener noreferrer" 
-               className="text-primary hover:underline inline-flex items-center gap-1">
-              {match[1]}
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
+        if (isCheckbox) {
+          const checked = line.startsWith('- [x] ');
+          const content = line.slice(6);
+          listItems.push(
+            <div key={`item-${index}`} className="flex items-center gap-2 my-1">
+              <input type="checkbox" checked={checked} readOnly className="h-4 w-4 rounded border-primary" />
+              <span className={checked ? 'line-through text-muted-foreground' : ''}>
+                {processInline(content)}
+              </span>
+            </div>
           );
-          lastIndex = match.index + match[0].length;
+        } else {
+          const content = isBullet ? line.slice(2) : line.replace(/^\d+\. /, '');
+          listItems.push(
+            <li key={`item-${index}`} className="my-1">{processInline(content)}</li>
+          );
         }
-        if (lastIndex < line.length) {
-          parts.push(line.slice(lastIndex));
+      } else {
+        flushList();
+
+        // Handle other elements
+        if (line.startsWith('### ')) {
+          elements.push(<h3 key={index} className="text-md font-bold mt-3 mb-1">{processInline(line.slice(4))}</h3>);
+        } else if (line.startsWith('## ')) {
+          elements.push(<h2 key={index} className="text-lg font-bold mt-4 mb-2">{processInline(line.slice(3))}</h2>);
+        } else if (line.startsWith('# ')) {
+          elements.push(<h1 key={index} className="text-xl font-bold mt-5 mb-3 border-b pb-1">{processInline(line.slice(2))}</h1>);
+        } else if (line.startsWith('> ')) {
+          elements.push(
+            <blockquote key={index} className="border-l-4 border-primary pl-4 italic text-muted-foreground my-2 py-1 bg-muted/30 rounded-r">
+              {processInline(line.slice(2))}
+            </blockquote>
+          );
+        } else if (line.trim() === '---' || line.trim() === '***' || line.trim() === '___') {
+          elements.push(<hr key={index} className="my-4 border-t-2 border-muted" />);
+        } else {
+          // Check for images
+          const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
+          if (imgMatch) {
+            elements.push(
+              <div key={index} className="my-3">
+                <img 
+                  src={imgMatch[2]} 
+                  alt={imgMatch[1]} 
+                  className="max-w-full rounded-lg max-h-64 object-cover shadow-md hover:shadow-lg transition-shadow"
+                />
+                {imgMatch[1] && (
+                  <p className="text-xs text-center text-muted-foreground mt-1">{imgMatch[1]}</p>
+                )}
+              </div>
+            );
+          } else if (line.trim() === '') {
+            elements.push(<br key={index} />);
+          } else {
+            elements.push(<p key={index} className="my-1">{processInline(line)}</p>);
+          }
         }
-        return <p key={i} className="my-1">{parts}</p>;
       }
-      
-      // Empty line
-      if (line.trim() === '') return <br key={i} />;
-      
-      // Regular paragraph
-      return <p key={i} className="my-1">{processInline(line)}</p>;
     });
+
+    flushList();
+    return elements;
   };
 
   const processInline = (text: string): React.ReactNode => {
@@ -294,12 +326,14 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       const boldMatch = remaining.match(/\*\*(.*?)\*\*/);
       const italicMatch = remaining.match(/\*(.*?)\*/);
       const codeMatch = remaining.match(/`(.*?)`/);
+      const linkMatch = remaining.match(/\[(.*?)\]\((.*?)\)/);
       
       // Find the earliest match
       const matches = [
         { match: boldMatch, type: 'bold', index: boldMatch?.index ?? Infinity },
         { match: italicMatch, type: 'italic', index: italicMatch?.index ?? Infinity },
         { match: codeMatch, type: 'code', index: codeMatch?.index ?? Infinity },
+        { match: linkMatch, type: 'link', index: linkMatch?.index ?? Infinity },
       ].sort((a, b) => a.index - b.index);
       
       const earliest = matches[0];
@@ -321,6 +355,14 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           case 'code':
             parts.push(<code key={key++} className="bg-muted px-1 py-0.5 rounded font-mono text-sm">{earliest.match[1]}</code>);
             break;
+          case 'link':
+            parts.push(
+              <a key={key++} href={earliest.match[2]} target="_blank" rel="noopener noreferrer" 
+                 className="text-primary hover:underline inline-flex items-center gap-1">
+                {earliest.match[1]}
+              </a>
+            );
+            break;
         }
         
         // Update remaining text
@@ -337,7 +379,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   return (
     <TooltipProvider>
-      <div className="border border-input rounded-lg overflow-hidden bg-background shadow-sm hover:shadow-md transition-shadow">
+      <div className="border border-input rounded-lg overflow-hidden bg-background shadow-sm hover:shadow-md transition-all duration-300">
         <input 
           type="file" 
           ref={fileInputRef} 
@@ -359,11 +401,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                   onClick={() => insertFormat(btn.prefix, btn.suffix)}
                 >
                   <btn.icon className="h-4 w-4" />
-                  {!preview && (
-                    <span className="absolute -top-1 -right-1 text-[8px] opacity-0 group-hover:opacity-100 transition-opacity">
-                      ⌨️
-                    </span>
-                  )}
+                  <span className="absolute -top-1 -right-1 text-[8px] opacity-0 group-hover:opacity-100 transition-opacity">
+                    ⌨️
+                  </span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="text-xs">
@@ -440,72 +480,183 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               <div className="space-y-3">
                 <h4 className="font-medium">Markdown Guide</h4>
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  {MARKDOWN_EXAMPLES.map((ex, i) => (
-                    <div key={i} className="p-2 bg-muted/30 rounded">
-                      <p className="font-mono text-[10px]">{ex.syntax}</p>
-                      <p className="text-muted-foreground mt-1">→ {ex.preview}</p>
-                    </div>
-                  ))}
+                  <div className="p-2 bg-muted/30 rounded">
+                    <p className="font-mono text-[10px]">**bold**</p>
+                    <p className="text-muted-foreground mt-1">→ <strong>bold</strong></p>
+                  </div>
+                  <div className="p-2 bg-muted/30 rounded">
+                    <p className="font-mono text-[10px]">*italic*</p>
+                    <p className="text-muted-foreground mt-1">→ <em>italic</em></p>
+                  </div>
+                  <div className="p-2 bg-muted/30 rounded">
+                    <p className="font-mono text-[10px]">`code`</p>
+                    <p className="text-muted-foreground mt-1">→ <code>code</code></p>
+                  </div>
+                  <div className="p-2 bg-muted/30 rounded">
+                    <p className="font-mono text-[10px]"># Heading</p>
+                    <p className="text-muted-foreground mt-1">→ Heading</p>
+                  </div>
+                  <div className="p-2 bg-muted/30 rounded">
+                    <p className="font-mono text-[10px]">- list</p>
+                    <p className="text-muted-foreground mt-1">→ • list</p>
+                  </div>
+                  <div className="p-2 bg-muted/30 rounded">
+                    <p className="font-mono text-[10px]">1. numbered</p>
+                    <p className="text-muted-foreground mt-1">→ 1. numbered</p>
+                  </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Tip: Select text and click buttons to format, or use keyboard shortcuts.
+                  Select text and click buttons to format, or use keyboard shortcuts.
                 </p>
               </div>
             </PopoverContent>
           </Popover>
           
-          {/* Preview Toggle */}
-          <Button 
-            type="button" 
-            variant={preview ? "default" : "outline"} 
-            size="sm" 
-            className="h-7 gap-1 text-xs px-3 ml-1"
-            onClick={() => setPreview(!preview)}
-          >
-            {preview ? (
-              <>
-                <Edit3 className="h-3 w-3" />
-                Edit
-              </>
-            ) : (
-              <>
-                <Eye className="h-3 w-3" />
-                Preview
-              </>
-            )}
-          </Button>
+          {/* Mode Toggle */}
+          <div className="flex items-center gap-1 ml-1 border-l border-border pl-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  type="button" 
+                  variant={mode === 'write' ? "default" : "ghost"} 
+                  size="sm" 
+                  className="h-7 w-7 p-0"
+                  onClick={() => setMode('write')}
+                >
+                  <Edit3 className="h-3 w-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Write mode</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  type="button" 
+                  variant={mode === 'split' ? "default" : "ghost"} 
+                  size="sm" 
+                  className="h-7 w-7 p-0"
+                  onClick={() => setMode('split')}
+                >
+                  <div className="flex gap-0.5">
+                    <div className="w-1 h-3 bg-current rounded" />
+                    <div className="w-1 h-3 bg-current rounded" />
+                  </div>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Split view</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  type="button" 
+                  variant={mode === 'preview' ? "default" : "ghost"} 
+                  size="sm" 
+                  className="h-7 w-7 p-0"
+                  onClick={() => setMode('preview')}
+                >
+                  <Eye className="h-3 w-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Preview mode</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
 
         {/* Editor/Preview Area */}
         <AnimatePresence mode="wait">
-          {preview ? (
-            <motion.div 
-              key="preview"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="p-4 min-h-[200px] prose prose-sm dark:prose-invert max-w-none text-sm bg-white dark:bg-gray-950"
-            >
-              {renderMarkdown(value)}
-            </motion.div>
-          ) : (
+          {mode === 'write' && (
             <motion.div
-              key="edit"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              key="write"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
+              className="overflow-y-auto"
+              style={{ maxHeight: `${minRows * 1.5}rem` }}
             >
               <textarea 
                 ref={textareaRef} 
                 value={value} 
                 onChange={(e) => onChange(e.target.value)} 
                 onKeyDown={handleKeyDown}
+                onSelect={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  setSelectedText({
+                    start: target.selectionStart,
+                    end: target.selectionEnd
+                  });
+                }}
                 placeholder={placeholder}
                 rows={minRows} 
-                className="w-full p-4 resize-y bg-transparent text-sm focus:outline-none min-h-[200px] font-mono"
+                className="w-full p-4 resize-none bg-transparent text-sm focus:outline-none min-h-[200px] font-mono"
               />
+            </motion.div>
+          )}
+
+          {mode === 'preview' && (
+            <motion.div 
+              key="preview"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-y-auto"
+              style={{ maxHeight: `${minRows * 1.5}rem` }}
+            >
+              <div 
+                ref={previewRef}
+                className="p-4 prose prose-sm dark:prose-invert max-w-none text-sm bg-white dark:bg-gray-950"
+                onClick={() => setMode('split')}
+              >
+                {renderMarkdown(value)}
+              </div>
+            </motion.div>
+          )}
+
+          {mode === 'split' && (
+            <motion.div 
+              key="split"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="grid grid-cols-2 divide-x divide-border"
+              style={{ height: `${minRows * 1.5}rem` }}
+            >
+              {/* Left side - Editor */}
+              <div className="overflow-y-auto h-full">
+                <textarea 
+                  ref={splitLeftRef} 
+                  value={value} 
+                  onChange={(e) => onChange(e.target.value)} 
+                  onKeyDown={handleKeyDown}
+                  onSelect={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    setSelectedText({
+                      start: target.selectionStart,
+                      end: target.selectionEnd
+                    });
+                  }}
+                  placeholder={placeholder}
+                  className="w-full h-full p-4 resize-none bg-transparent text-sm focus:outline-none font-mono"
+                />
+              </div>
+              
+              {/* Right side - Preview */}
+              <div 
+                ref={splitRightRef}
+                className="overflow-y-auto h-full p-4 prose prose-sm dark:prose-invert max-w-none text-sm bg-muted/20"
+              >
+                {renderMarkdown(value)}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -515,11 +666,16 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <span>
             {value.length} characters • {value.split('\n').length} lines
           </span>
-          {!preview && (
+          <div className="flex items-center gap-2">
+            {mode !== 'preview' && (
+              <span className={value.trim() ? 'text-green-500' : 'text-muted-foreground'}>
+                {value.trim() ? '✓' : '○'}
+              </span>
+            )}
             <span>
-              {value.trim() ? 'Ready' : 'Empty'}
+              Mode: {mode}
             </span>
-          )}
+          </div>
         </div>
       </div>
     </TooltipProvider>

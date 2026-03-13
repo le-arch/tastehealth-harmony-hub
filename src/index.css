@@ -14,6 +14,8 @@
 
     --card: 10 0% 100%;
     --card-foreground: 150 10% 10%;
+    --card-hover-rgb: 250, 250, 250; /* Slightly off-white */
+    --destructive-rgb: 239, 68, 68; /* Red */
 
     --popover: 0 0% 100%;
     --popover-foreground: 150 10% 10%;
@@ -53,8 +55,10 @@
     --background: 150 15% 10%;
     --foreground: 150 10% 95%;
 
-    --card: 150 10% 15%;
+    --card: 150 15% 10%;
     --card-foreground: 150 10% 95%;
+    --card-rgb: 30, 41, 59; /* Dark slate */
+    --card-hover-rgb: 51, 65, 85; /* Lighter slate */
 
     --popover: 150 10% 15%;
     --popover-foreground: 150 10% 95%;
@@ -146,9 +150,81 @@
   }
 }
 
-/*
-  NOTE: removed global scrollbar hiding because it caused layout issues
-  (pages failing to render properly for the user). Instead, styles are now
-  applied to specific scrollable-containing classes (below) so scrollbars
-  are hidden only where intended.
-*/
+/* Scrollbar styling */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(var(--primary-rgb), 0.2);
+    border-radius: 3px;
+    transition: background 0.3s;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--primary-rgb), 0.3);
+  }
+  
+  .scrollbar-thumb-primary\/20::-webkit-scrollbar-thumb {
+    background: rgba(var(--primary-rgb), 0.2);
+  }
+  
+  .scrollbar-thumb-primary\/30::-webkit-scrollbar-thumb {
+    background: rgba(var(--primary-rgb), 0.3);
+  }
+  
+  .scrollbar-track-transparent::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* Card scroll container styles */
+.card-scroll-container {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.card-scroll-content {
+  scroll-snap-align: start;
+}
+
+
+/* Animation keyframes */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes color-wave {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 200%;
+  }
+}

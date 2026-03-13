@@ -491,7 +491,7 @@ export function MealPlanList() {
               <tr>
                 <th className="p-3 text-left font-semibold text-sm bg-gradient-to-r from-primary/5 to-primary/10 border-b border-r w-28">
                   <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
+                    <Calendar className="h-4 w-4 text-blue-500" />
                     Day
                   </div>
                 </th>

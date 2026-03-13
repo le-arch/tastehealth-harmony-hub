@@ -1,5 +1,6 @@
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
+import { motion, AnimatePresence } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
@@ -32,6 +33,70 @@ function useChart() {
   return context
 }
 
+// Animation variants for chart container
+const chartContainerVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut"
+    }
+  },
+  hover: {
+    scale: 1.01,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut"
+    }
+  }
+}
+
+// Animation variants for tooltip
+const tooltipVariants = {
+  initial: { opacity: 0, scale: 0.9, y: 10 },
+  animate: { 
+    opacity: 1, 
+    scale: 1, 
+    y: 0,
+    transition: {
+      type: "spring",
+      damping: 20,
+      stiffness: 300
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    scale: 0.9, 
+    y: 10,
+    transition: {
+      duration: 0.2
+    }
+  }
+}
+
+// Animation variants for legend items
+const legendItemVariants = {
+  initial: { opacity: 0, x: -10 },
+  animate: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: i * 0.05,
+      duration: 0.3,
+      ease: "easeOut"
+    }
+  }),
+  hover: {
+    scale: 1.05,
+    transition: {
+      duration: 0.2,
+      ease: "easeInOut"
+    }
+  }
+}
+
 const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
@@ -39,27 +104,153 @@ const ChartContainer = React.forwardRef<
     children: React.ComponentProps<
       typeof RechartsPrimitive.ResponsiveContainer
     >["children"]
+    animated?: boolean
   }
->(({ id, className, children, config, ...props }, ref) => {
+>(({ id, className, children, config, animated = true, ...props }, ref) => {
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
+  const [isHovered, setIsHovered] = React.useState(false)
 
-  return (
-    <ChartContext.Provider value={{ config }}>
+  const baseClasses = cn(
+    "flex aspect-video justify-center text-xs relative overflow-hidden",
+    "rounded-xl bg-gradient-to-br from-background/50 to-muted/30",
+    "backdrop-blur-sm border border-border/50",
+    "shadow-lg hover:shadow-xl transition-shadow duration-300",
+    "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground",
+    "[&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50",
+    "[&_.recharts-curve.recharts-tooltip-cursor]:stroke-border",
+    "[&_.recharts-dot[stroke='#fff']]:stroke-transparent",
+    "[&_.recharts-layer]:outline-none",
+    "[&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border",
+    "[&_.recharts-radial-bar-background-sector]:fill-muted",
+    "[&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted/50",
+    "[&_.recharts-reference-line_[stroke='#ccc']]:stroke-border",
+    "[&_.recharts-sector[stroke='#fff']]:stroke-transparent",
+    "[&_.recharts-sector]:outline-none",
+    "[&_.recharts-surface]:outline-none",
+    className
+  )
+
+  if (!animated) {
+    return (
       <div
         data-chart={chartId}
         ref={ref}
-        className={cn(
-          "flex aspect-video justify-center text-xs [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-sector]:outline-none [&_.recharts-surface]:outline-none",
-          className
-        )}
+        className={baseClasses}
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
+        
+        {/* Decorative elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-tr from-destructive/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+        
         <RechartsPrimitive.ResponsiveContainer>
           {children}
         </RechartsPrimitive.ResponsiveContainer>
       </div>
+    )
+  }
+
+  return (
+    <ChartContext.Provider value={{ config }}>
+      <motion.div
+        data-chart={chartId}
+        ref={ref}
+        variants={chartContainerVariants}
+        initial="initial"
+        animate="animate"
+        whileHover="hover"
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
+        className={baseClasses}
+        {...props}
+      >
+        <ChartStyle id={chartId} config={config} />
+        
+        {/* Animated gradient background */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none"
+          animate={{
+            opacity: isHovered ? 0.8 : 0.3,
+            scale: isHovered ? 1.02 : 1,
+          }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+        />
+
+        {/* Decorative animated orbs */}
+        <motion.div
+          className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-full blur-3xl pointer-events-none"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+            x: [0, 10, 0],
+            y: [0, -10, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        
+        <motion.div
+          className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-tr from-destructive/20 via-destructive/10 to-transparent rounded-full blur-3xl pointer-events-none"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.3, 0.5, 0.3],
+            x: [0, -10, 0],
+            y: [0, 10, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        />
+
+        {/* Shimmer effect on hover */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"
+          initial={{ x: "-100%" }}
+          animate={isHovered ? { x: "100%" } : { x: "-100%" }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+        />
+
+        {/* Corner accents */}
+        <motion.div
+          className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-primary/20 to-transparent rounded-br-3xl pointer-events-none"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.5, ease: "easeInOut" }}
+        />
+        
+        <motion.div
+          className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-primary/20 to-transparent rounded-tl-3xl pointer-events-none"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.5, ease: "easeInOut" }}
+        />
+
+        {/* Main chart content */}
+        <div className="relative z-10 w-full h-full">
+          <RechartsPrimitive.ResponsiveContainer>
+            {children}
+          </RechartsPrimitive.ResponsiveContainer>
+        </div>
+
+        {/* Pulsing border effect */}
+        <motion.div
+          className="absolute inset-0 rounded-xl border-2 border-primary/0 pointer-events-none"
+          animate={{
+            borderColor: isHovered ? "rgba(147, 51, 234, 0.3)" : "rgba(147, 51, 234, 0)",
+            boxShadow: isHovered ? "0 0 30px rgba(147, 51, 234, 0.2)" : "0 0 0 rgba(147, 51, 234, 0)",
+          }}
+          transition={{ duration: 0.3 }}
+        />
+      </motion.div>
     </ChartContext.Provider>
   )
 })
@@ -109,6 +300,7 @@ const ChartTooltipContent = React.forwardRef<
       indicator?: "line" | "dot" | "dashed"
       nameKey?: string
       labelKey?: string
+      animated?: boolean
     }
 >(
   (
@@ -126,10 +318,15 @@ const ChartTooltipContent = React.forwardRef<
       color,
       nameKey,
       labelKey,
+      animated = true,
     },
     ref
   ) => {
     const { config } = useChart()
+
+    if (!active || !payload?.length) {
+      return null
+    }
 
     const tooltipLabel = React.useMemo(() => {
       if (hideLabel || !payload?.length) {
@@ -146,9 +343,14 @@ const ChartTooltipContent = React.forwardRef<
 
       if (labelFormatter) {
         return (
-          <div className={cn("font-medium", labelClassName)}>
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className={cn("font-medium", labelClassName)}
+          >
             {labelFormatter(value, payload)}
-          </div>
+          </motion.div>
         )
       }
 
@@ -156,7 +358,16 @@ const ChartTooltipContent = React.forwardRef<
         return null
       }
 
-      return <div className={cn("font-medium", labelClassName)}>{value}</div>
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className={cn("font-medium", labelClassName)}
+        >
+          {value}
+        </motion.div>
+      )
     }, [
       label,
       labelFormatter,
@@ -167,88 +378,117 @@ const ChartTooltipContent = React.forwardRef<
       labelKey,
     ])
 
-    if (!active || !payload?.length) {
-      return null
-    }
-
-    const nestLabel = payload.length === 1 && indicator !== "dot"
+    const Content = animated ? motion.div : 'div'
+    const contentProps = animated ? {
+      variants: tooltipVariants,
+      initial: "initial",
+      animate: "animate",
+      exit: "exit"
+    } : {}
 
     return (
-      <div
-        ref={ref}
-        className={cn(
-          "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl",
-          className
-        )}
-      >
-        {!nestLabel ? tooltipLabel : null}
-        <div className="grid gap-1.5">
-          {payload.map((item, index) => {
-            const key = `${nameKey || item.name || item.dataKey || "value"}`
-            const itemConfig = getPayloadConfigFromPayload(config, item, key)
-            const indicatorColor = color || item.payload.fill || item.color
+      <AnimatePresence mode="wait">
+        <Content
+          ref={ref}
+          className={cn(
+            "grid min-w-[12rem] items-start gap-2 rounded-xl",
+            "bg-gradient-to-br from-background to-muted/90",
+            "border border-primary/20 shadow-2xl",
+            "backdrop-blur-md",
+            "px-3 py-2.5 text-xs",
+            className
+          )}
+          {...contentProps}
+        >
+          {tooltipLabel}
+          <motion.div 
+            className="grid gap-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, staggerChildren: 0.05 }}
+          >
+            {payload.map((item, index) => {
+              const key = `${nameKey || item.name || item.dataKey || "value"}`
+              const itemConfig = getPayloadConfigFromPayload(config, item, key)
+              const indicatorColor = color || item.payload.fill || item.color
 
-            return (
-              <div
-                key={item.dataKey}
-                className={cn(
-                  "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
-                  indicator === "dot" && "items-center"
-                )}
-              >
-                {formatter && item?.value !== undefined && item.name ? (
-                  formatter(item.value, item.name, item, index, item.payload)
-                ) : (
-                  <>
-                    {itemConfig?.icon ? (
-                      <itemConfig.icon />
-                    ) : (
-                      !hideIndicator && (
-                        <div
-                          className={cn(
-                            "shrink-0 rounded-[2px] border-[--color-border] bg-[--color-bg]",
-                            {
-                              "h-2.5 w-2.5": indicator === "dot",
-                              "w-1": indicator === "line",
-                              "w-0 border-[1.5px] border-dashed bg-transparent":
-                                indicator === "dashed",
-                              "my-0.5": nestLabel && indicator === "dashed",
+              return (
+                <motion.div
+                  key={item.dataKey}
+                  variants={{
+                    initial: { opacity: 0, x: -10 },
+                    animate: { opacity: 1, x: 0 }
+                  }}
+                  transition={{ delay: index * 0.05 }}
+                  className={cn(
+                    "flex w-full flex-wrap items-stretch gap-2",
+                    "[&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground",
+                    indicator === "dot" && "items-center"
+                  )}
+                >
+                  {formatter && item?.value !== undefined && item.name ? (
+                    formatter(item.value, item.name, item, index, item.payload)
+                  ) : (
+                    <>
+                      {itemConfig?.icon ? (
+                        <motion.div
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                          transition={{ type: "spring", stiffness: 400 }}
+                        >
+                          <itemConfig.icon />
+                        </motion.div>
+                      ) : (
+                        !hideIndicator && (
+                          <motion.div
+                            className={cn(
+                              "shrink-0 rounded-[2px] border-[--color-border] bg-[--color-bg]",
+                              {
+                                "h-2.5 w-2.5": indicator === "dot",
+                                "w-1": indicator === "line",
+                                "w-0 border-[1.5px] border-dashed bg-transparent":
+                                  indicator === "dashed",
+                              }
+                            )}
+                            style={
+                              {
+                                "--color-bg": indicatorColor,
+                                "--color-border": indicatorColor,
+                              } as React.CSSProperties
                             }
-                          )}
-                          style={
-                            {
-                              "--color-bg": indicatorColor,
-                              "--color-border": indicatorColor,
-                            } as React.CSSProperties
-                          }
-                        />
-                      )
-                    )}
-                    <div
-                      className={cn(
-                        "flex flex-1 justify-between leading-none",
-                        nestLabel ? "items-end" : "items-center"
+                            animate={{
+                              scale: [1, 1.2, 1],
+                            }}
+                            transition={{
+                              duration: 1,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        )
                       )}
-                    >
-                      <div className="grid gap-1.5">
-                        {nestLabel ? tooltipLabel : null}
+                      <div className="flex flex-1 justify-between leading-none">
                         <span className="text-muted-foreground">
                           {itemConfig?.label || item.name}
                         </span>
+                        {item.value && (
+                          <motion.span
+                            className="font-mono font-medium tabular-nums text-foreground"
+                            initial={{ scale: 0.8 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 400 }}
+                          >
+                            {item.value.toLocaleString()}
+                          </motion.span>
+                        )}
                       </div>
-                      {item.value && (
-                        <span className="font-mono font-medium tabular-nums text-foreground">
-                          {item.value.toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
+                    </>
+                  )}
+                </motion.div>
+              )
+            })}
+          </motion.div>
+        </Content>
+      </AnimatePresence>
     )
   }
 )
@@ -262,10 +502,11 @@ const ChartLegendContent = React.forwardRef<
     Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
       hideIcon?: boolean
       nameKey?: string
+      animated?: boolean
     }
 >(
   (
-    { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey },
+    { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey, animated = true },
     ref
   ) => {
     const { config } = useChart()
@@ -274,41 +515,70 @@ const ChartLegendContent = React.forwardRef<
       return null
     }
 
+    const Component = animated ? motion.div : 'div'
+    const componentProps = animated ? {
+      initial: { opacity: 0, y: 10 },
+      animate: { opacity: 1, y: 0 },
+      transition: { delay: 0.3 }
+    } : {}
+
     return (
-      <div
+      <Component
         ref={ref}
         className={cn(
-          "flex items-center justify-center gap-4",
+          "flex items-center justify-center gap-4 flex-wrap",
           verticalAlign === "top" ? "pb-3" : "pt-3",
           className
         )}
+        {...componentProps}
       >
-        {payload.map((item) => {
+        {payload.map((item, index) => {
           const key = `${nameKey || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
 
           return (
-            <div
+            <motion.div
               key={item.value}
+              variants={legendItemVariants}
+              custom={index}
+              initial="initial"
+              animate="animate"
+              whileHover="hover"
               className={cn(
-                "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
+                "flex items-center gap-1.5 px-2 py-1 rounded-md",
+                "hover:bg-muted/50 transition-colors cursor-default",
+                "[&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
               )}
             >
               {itemConfig?.icon && !hideIcon ? (
-                <itemConfig.icon />
+                <motion.div
+                  whileHover={{ rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <itemConfig.icon />
+                </motion.div>
               ) : (
-                <div
+                <motion.div
                   className="h-2 w-2 shrink-0 rounded-[2px]"
                   style={{
                     backgroundColor: item.color,
                   }}
+                  animate={{
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: index * 0.2,
+                    ease: "easeInOut"
+                  }}
                 />
               )}
-              {itemConfig?.label}
-            </div>
+              <span className="text-xs font-medium">{itemConfig?.label}</span>
+            </motion.div>
           )
         })}
-      </div>
+      </Component>
     )
   }
 )

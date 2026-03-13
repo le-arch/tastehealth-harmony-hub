@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Confetti from '@/components/Confetti';
-import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useAnimation, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
-import { Badge } from '@/components/ui/badge'; // <-- MISSING IMPORT ADDED HERE
+import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
 import BMICalculator from '@/components/health/BMICalculator';
 import ProgressTracker from '@/components/health/ProgressTracker';
@@ -15,6 +15,7 @@ import SleepTracker from '@/components/health/SleepTracker';
 import ExerciseTracker from '@/components/health/ExerciseTracker';
 import HydrationInput from '@/components/health/HydrationInput';
 import GoalWizard from './GoalWizard';
+
 import { 
   BarChart as BarChartIcon, 
   TrendingUp, 
@@ -32,308 +33,606 @@ import {
   Footprints,
   Activity,
   Zap,
-  Award
+  Award,
+  Sparkles,
+  Sun,
+  Cloud,
+  Leaf,
+  Star
 } from 'lucide-react';
 import { useScreenSize } from '@/utils/mobile';
 import { getLS, setLS, LS_KEYS, CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry, BMIEntry } from '@/utils/localStorage';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { toast } from 'sonner';
 
-// Jogging Lady SVG Component with animations
-const JoggingLady = ({ progress = 0, isActive = false }) => {
+// Enhanced Realistic Human SVG Component with beautiful animations
+const RealisticRunner = ({ progress = 0, isActive = false }) => {
   const controls = useAnimation();
   const progressValue = useMotionValue(0);
-  const xPosition = useTransform(progressValue, [0, 1], [0, 200]);
-  const rotation = useTransform(progressValue, [0, 0.2, 0.4, 0.6, 0.8, 1], [0, -5, 5, -5, 5, 0]);
+  const springProgress = useSpring(progressValue, { stiffness: 100, damping: 30 });
+  
+  // Transform values for smooth animations
+  const xPosition = useTransform(springProgress, [0, 1], [0, 220]);
+  const scale = useTransform(springProgress, [0, 0.5, 1], [1, 1.05, 1]);
+  const opacity = useTransform(springProgress, [0, 0.1, 1], [0.7, 1, 1]);
+  
+  // Leg and arm rotation springs
+  const leftLegRotation = useSpring(0, { stiffness: 300, damping: 20 });
+  const rightLegRotation = useSpring(0, { stiffness: 300, damping: 20 });
+  const leftArmRotation = useSpring(0, { stiffness: 300, damping: 20 });
+  const rightArmRotation = useSpring(0, { stiffness: 300, damping: 20 });
 
   useEffect(() => {
+    progressValue.set(progress);
+    
     if (isActive) {
+      // Continuous running animation
+      const animate = () => {
+        leftLegRotation.set(Math.sin(Date.now() * 0.01) * 25);
+        rightLegRotation.set(Math.sin(Date.now() * 0.01 + Math.PI) * 25);
+        leftArmRotation.set(Math.sin(Date.now() * 0.01 + 0.5) * 20);
+        rightArmRotation.set(Math.sin(Date.now() * 0.01 + Math.PI + 0.5) * 20);
+        requestAnimationFrame(animate);
+      };
+      
+      const animationId = requestAnimationFrame(animate);
+      
       controls.start({
-        scale: [1, 1.05, 1],
-        transition: { duration: 0.5, repeat: Infinity }
+        scale: [1, 1.02, 1],
+        transition: { duration: 1, repeat: Infinity, ease: "easeInOut" }
       });
-      progressValue.set(progress);
+      
+      return () => cancelAnimationFrame(animationId);
     } else {
+      leftLegRotation.set(0);
+      rightLegRotation.set(0);
+      leftArmRotation.set(0);
+      rightArmRotation.set(0);
       controls.stop();
-      controls.set({ scale: 1 });
     }
-  }, [isActive, progress, controls, progressValue]);
+  }, [isActive, progress, controls, leftLegRotation, rightLegRotation, leftArmRotation, rightArmRotation, progressValue]);
 
-  // Pulse animation for the heart
-  const heartControls = useAnimation();
-  useEffect(() => {
-    if (isActive) {
-      heartControls.start({
-        scale: [1, 1.2, 1],
-        opacity: [0.8, 1, 0.8],
-        transition: { duration: 1, repeat: Infinity }
-      });
-    }
-  }, [isActive, heartControls]);
+  // Floating particles for magical effect
+  const particles = Array.from({ length: 12 }, (_, i) => ({
+    id: i,
+    delay: i * 0.2,
+    duration: 2 + Math.random() * 2,
+    x: Math.random() * 200 - 100,
+    y: Math.random() * 100 - 50
+  }));
 
   return (
     <motion.div 
-      className="relative w-full h-48 overflow-hidden rounded-xl bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5"
+      className="relative w-full h-64 overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/30 dark:via-purple-950/30 dark:to-pink-950/30"
       animate={controls}
+      style={{ scale, opacity }}
     >
-      {/* Progress path */}
-      <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-        <motion.path
-          d="M 50,120 Q 150,80 250,100"
-          stroke="hsl(var(--primary))"
-          strokeWidth="2"
-          strokeDasharray="5,5"
-          fill="none"
-          opacity="0.3"
-          animate={{
-            strokeDashoffset: [0, 20],
-          }}
-          transition={{
-            duration: 1,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-      </svg>
+      {/* Animated background elements */}
+      <motion.div
+        className="absolute inset-0"
+        animate={{
+          background: [
+            "radial-gradient(circle at 20% 50%, rgba(236, 72, 153, 0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 20% 50%, rgba(236, 72, 153, 0.1) 0%, transparent 50%)"
+          ]
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+      />
 
-      {/* Progress markers */}
-      {[0.2, 0.4, 0.6, 0.8].map((marker, i) => (
+      {/* Floating particles */}
+      {particles.map((particle) => (
         <motion.div
-          key={i}
-          className="absolute bottom-8 w-1 h-1 bg-primary/30 rounded-full"
-          style={{ left: `${marker * 100}%` }}
+          key={particle.id}
+          className="absolute w-1 h-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full"
+          initial={{ x: '50%', y: '50%', opacity: 0 }}
           animate={{
-            scale: [1, 1.5, 1],
-            opacity: [0.3, 0.8, 0.3],
+            x: [`${50 + particle.x}%`, `${50 + particle.x + (Math.random() * 40 - 20)}%`],
+            y: [`${50 + particle.y}%`, `${50 + particle.y - 40}%`],
+            opacity: [0, 0.8, 0],
+            scale: [0, 1, 0]
           }}
           transition={{
-            duration: 1.5,
-            delay: i * 0.2,
+            duration: particle.duration,
+            delay: particle.delay,
             repeat: Infinity,
+            ease: "easeOut"
           }}
         />
       ))}
 
-      {/* Running track */}
-      <div className="absolute bottom-6 left-0 w-full h-0.5 bg-gradient-to-r from-primary/20 via-primary/40 to-primary/20" />
-
-      {/* Jogging Lady SVG */}
+      {/* Decorative elements */}
       <motion.div
-        className="absolute bottom-6"
+        className="absolute top-4 left-4 flex gap-1"
+        animate={{ rotate: [0, 10, 0] }}
+        transition={{ duration: 4, repeat: Infinity }}
+      >
+        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+        <Sparkles className="h-4 w-4 text-purple-400" />
+      </motion.div>
+
+      <motion.div
+        className="absolute top-4 right-4"
+        animate={{ y: [0, -5, 0] }}
+        transition={{ duration: 3, repeat: Infinity }}
+      >
+        <Sun className="h-6 w-6 text-yellow-400" />
+      </motion.div>
+
+      <motion.div
+        className="absolute bottom-4 left-4"
+        animate={{ x: [0, 5, 0] }}
+        transition={{ duration: 4, repeat: Infinity }}
+      >
+        <Cloud className="h-5 w-5 text-blue-300" />
+      </motion.div>
+
+      <motion.div
+        className="absolute bottom-4 right-4"
+        animate={{ rotate: [0, 15, 0] }}
+        transition={{ duration: 5, repeat: Infinity }}
+      >
+        <Leaf className="h-5 w-5 text-green-400" />
+      </motion.div>
+
+      {/* Progress path with animated dashes */}
+      <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+        <motion.path
+          d="M 40,160 Q 120,120 200,140 Q 280,160 360,130"
+          stroke="url(#pathGradient)"
+          strokeWidth="3"
+          strokeDasharray="8,8"
+          fill="none"
+          animate={{
+            strokeDashoffset: [0, 40],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+        
+        {/* Energy orbs along the path */}
+        {[0.2, 0.4, 0.6, 0.8].map((position, i) => {
+          const x = 40 + position * 320;
+          const y = 160 - Math.sin(position * Math.PI) * 30;
+          return (
+            <motion.circle
+              key={i}
+              cx={x}
+              cy={y}
+              r="4"
+              fill={`url(#orbGradient${i})`}
+              initial={{ opacity: 0.3, scale: 0.5 }}
+              animate={{
+                opacity: [0.3, 1, 0.3],
+                scale: [0.5, 1.2, 0.5],
+                filter: [
+                  'drop-shadow(0 0 2px rgba(236, 72, 153, 0.3))',
+                  'drop-shadow(0 0 8px rgba(236, 72, 153, 0.6))',
+                  'drop-shadow(0 0 2px rgba(236, 72, 153, 0.3))'
+                ]
+              }}
+              transition={{
+                duration: 2,
+                delay: i * 0.3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          );
+        })}
+      </svg>
+
+      {/* Running track with glow */}
+      <div className="absolute bottom-8 left-0 w-full h-1">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-30 blur-sm" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent" style={{ width: `${progress * 100}%` }} />
+      </div>
+
+      {/* Distance markers */}
+      {[0, 25, 50, 75, 100].map((marker) => (
+        <motion.div
+          key={marker}
+          className="absolute bottom-6 w-0.5 h-3 bg-gradient-to-t from-primary/40 to-transparent"
+          style={{ left: `${marker}%` }}
+          animate={{
+            height: [3, 6, 3],
+            opacity: [0.4, 0.8, 0.4]
+          }}
+          transition={{
+            duration: 2,
+            delay: marker * 0.02,
+            repeat: Infinity
+          }}
+        />
+      ))}
+
+      {/* Realistic Human Runner */}
+      <motion.div
+        className="absolute bottom-8"
         style={{ 
           left: xPosition,
           x: '-50%',
-          rotate: rotation,
+          filter: 'drop-shadow(0 10px 8px rgba(0, 0, 0, 0.1))'
         }}
-        animate={isActive ? {
-          y: [0, -3, 0, -3, 0],
-          transition: { duration: 0.5, repeat: Infinity }
-        } : {}}
       >
-        <svg width="60" height="80" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Head with ponytail */}
+        <svg width="80" height="120" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Enhanced gradients */}
+          <defs>
+            <linearGradient id="skinGradient" x1="30" y1="20" x2="50" y2="50">
+              <stop stopColor="#FEE3C0" />
+              <stop offset="0.5" stopColor="#FAD2A8" />
+              <stop offset="1" stopColor="#E6B88A" />
+            </linearGradient>
+            
+            <linearGradient id="hairGradient" x1="30" y1="10" x2="50" y2="30">
+              <stop stopColor="#2C1810" />
+              <stop offset="0.5" stopColor="#4A2A1A" />
+              <stop offset="1" stopColor="#2C1810" />
+            </linearGradient>
+            
+            <linearGradient id="topGradient" x1="25" y1="35" x2="55" y2="60">
+              <stop stopColor="#FF1493" />
+              <stop offset="0.5" stopColor="#FF69B4" />
+              <stop offset="1" stopColor="#FF1493" />
+            </linearGradient>
+            
+            <linearGradient id="shortsGradient" x1="30" y1="55" x2="50" y2="70">
+              <stop stopColor="#4A0E4A" />
+              <stop offset="0.5" stopColor="#6B2D6B" />
+              <stop offset="1" stopColor="#4A0E4A" />
+            </linearGradient>
+            
+            <linearGradient id="legGradient" x1="30" y1="60" x2="50" y2="95">
+              <stop stopColor="#8B5A2B" />
+              <stop offset="0.5" stopColor="#A8753B" />
+              <stop offset="1" stopColor="#8B5A2B" />
+            </linearGradient>
+            
+            <linearGradient id="shoeGradient" x1="35" y1="95" x2="55" y2="100">
+              <stop stopColor="#FF4500" />
+              <stop offset="0.5" stopColor="#FF6347" />
+              <stop offset="1" stopColor="#FF4500" />
+            </linearGradient>
+            
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            
+            <radialGradient id="pathGradient">
+              <stop stopColor="#EC4899" />
+              <stop offset="0.5" stopColor="#8B5CF6" />
+              <stop offset="1" stopColor="#3B82F6" />
+            </radialGradient>
+          </defs>
+
+          {/* Hair with movement */}
+          <motion.g
+            animate={isActive ? {
+              y: [0, -2, 0],
+              rotate: [-2, 2, -2]
+            } : {}}
+            transition={{ duration: 0.5, repeat: Infinity }}
+          >
+            <path d="M30 18 Q40 10, 50 18" fill="url(#hairGradient)" />
+            <circle cx="40" cy="17" r="10" fill="url(#hairGradient)" />
+          </motion.g>
+
+          {/* Head with glow */}
           <motion.circle
-            cx="30"
-            cy="25"
-            r="12"
+            cx="40"
+            cy="30"
+            r="14"
             fill="url(#skinGradient)"
-            stroke="#E0AFA0"
-            strokeWidth="1"
+            stroke="#E6B88A"
+            strokeWidth="1.5"
             animate={isActive ? {
               y: [0, -1, 0],
               transition: { duration: 0.3, repeat: Infinity }
             } : {}}
+            filter="url(#glow)"
           />
-          <path d="M35 20 Q40 15, 45 18" stroke="#8B5E3C" strokeWidth="2" fill="none" />
           
-          {/* Happy face */}
-          <circle cx="26" cy="23" r="1.5" fill="#2D1B0E" />
-          <circle cx="34" cy="23" r="1.5" fill="#2D1B0E" />
-          <path d="M26 28 Q30 32, 34 28" stroke="#FF69B4" strokeWidth="1.5" fill="none" />
+          {/* Beautiful face */}
+          <circle cx="35" cy="26" r="2" fill="#2C1810" />
+          <circle cx="45" cy="26" r="2" fill="#2C1810" />
           
-          {/* Sporty headband */}
-          <path d="M22 18 L38 18" stroke="#FF6B6B" strokeWidth="3" />
-          <circle cx="30" cy="18" r="2" fill="#FF6B6B" />
+          {/* Eyelashes */}
+          <path d="M32 23 L28 21" stroke="#2C1810" strokeWidth="1" />
+          <path d="M48 23 L52 21" stroke="#2C1810" strokeWidth="1" />
           
-          {/* Running top */}
+          {/* Smile with animation */}
+          <motion.path
+            d="M35 33 Q40 38, 45 33"
+            stroke="#FF69B4"
+            strokeWidth="2"
+            fill="none"
+            animate={isActive ? {
+              d: ["M35 33 Q40 38, 45 33", "M35 34 Q40 39, 45 34", "M35 33 Q40 38, 45 33"]
+            } : {}}
+            transition={{ duration: 0.5, repeat: Infinity }}
+          />
+          
+          {/* Blush */}
+          <circle cx="32" cy="32" r="2.5" fill="#FFB6C1" opacity="0.4" />
+          <circle cx="48" cy="32" r="2.5" fill="#FFB6C1" opacity="0.4" />
+          
+          {/* Sporty headband with sparkle */}
+          <path d="M28 18 L52 18" stroke="#FFD700" strokeWidth="4" strokeLinecap="round" />
+          <motion.circle
+            cx="40"
+            cy="18"
+            r="2"
+            fill="#FFD700"
+            animate={{ scale: [1, 1.5, 1], opacity: [1, 0.8, 1] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          />
+          
+          {/* Athletic top with shimmer */}
           <motion.rect
-            x="22"
-            y="32"
-            width="16"
+            x="30"
+            y="38"
+            width="20"
             height="20"
             fill="url(#topGradient)"
-            rx="4"
+            rx="5"
             animate={isActive ? {
-              x: [22, 23, 22],
+              x: [30, 31, 30],
+              transition: { duration: 0.3, repeat: Infinity }
+            } : {}}
+            filter="url(#glow)"
+          />
+          
+          {/* Running shorts */}
+          <motion.rect
+            x="32"
+            y="56"
+            width="16"
+            height="8"
+            fill="url(#shortsGradient)"
+            rx="3"
+            animate={isActive ? {
+              y: [56, 57, 56],
               transition: { duration: 0.3, repeat: Infinity }
             } : {}}
           />
           
-          {/* Arms swinging */}
+          {/* Arms with natural swinging motion */}
           <motion.g
-            animate={isActive ? {
-              rotate: [-15, 15, -15],
-              transition: { duration: 0.5, repeat: Infinity }
-            } : {}}
-            style={{ originX: "22px", originY: "40px" }}
+            style={{ rotate: leftArmRotation, originX: 35, originY: 45 }}
           >
-            <rect x="8" y="36" width="16" height="6" rx="3" fill="url(#armGradient)" transform="rotate(-10)" />
+            <rect x="18" y="42" width="12" height="6" rx="3" fill="url(#skinGradient)" transform="rotate(-10)" />
+            <circle cx="18" cy="45" r="4" fill="url(#skinGradient)" /> {/* Hand */}
           </motion.g>
           
           <motion.g
-            animate={isActive ? {
-              rotate: [15, -15, 15],
-              transition: { duration: 0.5, repeat: Infinity }
-            } : {}}
-            style={{ originX: "38px", originY: "40px" }}
+            style={{ rotate: rightArmRotation, originX: 45, originY: 45 }}
           >
-            <rect x="36" y="36" width="16" height="6" rx="3" fill="url(#armGradient)" transform="rotate(10)" />
+            <rect x="42" y="42" width="12" height="6" rx="3" fill="url(#skinGradient)" transform="rotate(10)" />
+            <circle cx="54" cy="45" r="4" fill="url(#skinGradient)" /> {/* Hand */}
           </motion.g>
           
-          {/* Legs running */}
+          {/* Legs with realistic running motion */}
           <motion.g
-            animate={isActive ? {
-              rotate: [-20, 0, -20],
-              y: [0, -2, 0],
-              transition: { duration: 0.4, repeat: Infinity }
-            } : {}}
-            style={{ originX: "25px", originY: "50px" }}
+            style={{ rotate: leftLegRotation, originX: 38, originY: 65 }}
           >
-            <rect x="20" y="48" width="8" height="20" rx="4" fill="url(#legGradient)" />
+            <rect x="32" y="64" width="10" height="26" rx="5" fill="url(#legGradient)" />
+            <motion.ellipse
+              cx="37"
+              cy="90"
+              rx="6"
+              ry="4"
+              fill="url(#shoeGradient)"
+              animate={isActive ? {
+                scaleX: [1, 1.1, 1],
+                scaleY: [1, 0.9, 1]
+              } : {}}
+              transition={{ duration: 0.2, repeat: Infinity }}
+            />
           </motion.g>
           
           <motion.g
-            animate={isActive ? {
-              rotate: [20, 0, 20],
-              y: [0, -2, 0],
-              transition: { duration: 0.4, repeat: Infinity, delay: 0.2 }
-            } : {}}
-            style={{ originX: "35px", originY: "50px" }}
+            style={{ rotate: rightLegRotation, originX: 42, originY: 65 }}
           >
-            <rect x="32" y="48" width="8" height="20" rx="4" fill="url(#legGradient)" />
+            <rect x="38" y="64" width="10" height="26" rx="5" fill="url(#legGradient)" />
+            <motion.ellipse
+              cx="43"
+              cy="90"
+              rx="6"
+              ry="4"
+              fill="url(#shoeGradient)"
+              animate={isActive ? {
+                scaleX: [1, 1.1, 1],
+                scaleY: [1, 0.9, 1]
+              } : {}}
+              transition={{ duration: 0.2, repeat: Infinity, delay: 0.1 }}
+            />
           </motion.g>
           
-          {/* Running shoes */}
-          <motion.ellipse
-            cx="24"
-            cy="68"
-            rx="5"
-            ry="3"
-            fill="#FF6B6B"
-            animate={isActive ? {
-              x: [24, 26, 24],
-              transition: { duration: 0.4, repeat: Infinity }
-            } : {}}
-          />
-          <motion.ellipse
-            cx="36"
-            cy="68"
-            rx="5"
-            ry="3"
-            fill="#FF6B6B"
-            animate={isActive ? {
-              x: [36, 38, 36],
-              transition: { duration: 0.4, repeat: Infinity, delay: 0.2 }
-            } : {}}
-          />
-          
-          {/* Sweat droplets when active */}
+          {/* Sweat droplets with trail effect */}
           {isActive && (
             <>
-              <motion.circle
-                cx="40"
-                cy="25"
-                r="2"
-                fill="#4FC3F7"
-                initial={{ opacity: 0, y: 0 }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  y: [0, 10],
-                  x: [40, 45],
-                }}
-                transition={{
-                  duration: 1,
-                  repeat: Infinity,
-                  delay: 0.5
-                }}
-              />
-              <motion.circle
-                cx="45"
-                cy="30"
-                r="1.5"
-                fill="#4FC3F7"
-                initial={{ opacity: 0, y: 0 }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  y: [0, 15],
-                  x: [45, 52],
-                }}
-                transition={{
-                  duration: 1.2,
-                  repeat: Infinity,
-                  delay: 0.8
-                }}
-              />
+              {[0, 1, 2].map((i) => (
+                <motion.g key={i}>
+                  <motion.circle
+                    cx={50 + i * 5}
+                    cy={25 - i * 3}
+                    r="2"
+                    fill="#4FC3F7"
+                    initial={{ opacity: 0, y: 0 }}
+                    animate={{
+                      opacity: [0, 1, 0],
+                      y: [0, 15],
+                      x: [50 + i * 5, 55 + i * 8],
+                    }}
+                    transition={{
+                      duration: 1.2,
+                      repeat: Infinity,
+                      delay: i * 0.3
+                    }}
+                  />
+                  <motion.circle
+                    cx={50 + i * 5}
+                    cy={25 - i * 3}
+                    r="1"
+                    fill="white"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 0.8, 0] }}
+                    transition={{
+                      duration: 1.2,
+                      repeat: Infinity,
+                      delay: i * 0.3 + 0.1
+                    }}
+                  />
+                </motion.g>
+              ))}
             </>
           )}
 
-          {/* Gradients */}
-          <defs>
-            <linearGradient id="skinGradient" x1="20" y1="15" x2="40" y2="35">
-              <stop stopColor="#FFE0BD" />
-              <stop offset="1" stopColor="#FFD4A8" />
-            </linearGradient>
-            <linearGradient id="topGradient" x1="22" y1="32" x2="38" y2="52">
-              <stop stopColor="#FF6B6B" />
-              <stop offset="1" stopColor="#FF8E8E" />
-            </linearGradient>
-            <linearGradient id="armGradient" x1="8" y1="36" x2="24" y2="42">
-              <stop stopColor="#FF6B6B" />
-              <stop offset="1" stopColor="#FF8E8E" />
-            </linearGradient>
-            <linearGradient id="legGradient" x1="20" y1="48" x2="28" y2="68">
-              <stop stopColor="#4A5568" />
-              <stop offset="1" stopColor="#2D3748" />
-            </linearGradient>
-          </defs>
+          {/* Energy aura */}
+          <motion.circle
+            cx="40"
+            cy="50"
+            r="30"
+            fill="url(#pathGradient)"
+            opacity="0.1"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.1, 0.15, 0.1]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
         </svg>
       </motion.div>
 
-      {/* Heart rate indicator */}
+      {/* Heart rate monitor with beautiful animation */}
       <motion.div 
-        className="absolute top-4 right-4 flex items-center gap-1 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm"
-        animate={heartControls}
+        className="absolute top-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-pink-200 dark:border-pink-800"
+        animate={{
+          y: [0, -2, 0],
+          boxShadow: [
+            '0 4px 12px rgba(236, 72, 153, 0.2)',
+            '0 6px 16px rgba(236, 72, 153, 0.3)',
+            '0 4px 12px rgba(236, 72, 153, 0.2)'
+          ]
+        }}
+        transition={{ duration: 2, repeat: Infinity }}
       >
-        <Heart className="h-4 w-4 text-red-500 fill-red-500" />
-        <span className="text-xs font-medium">{Math.round(progress * 100)}%</span>
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        >
+          <Heart className="h-5 w-5 text-red-500 fill-red-500" />
+        </motion.div>
+        <span className="text-sm font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+          {Math.round(progress * 100)}%
+        </span>
+        <Activity className="h-4 w-4 text-purple-400" />
       </motion.div>
 
-      {/* Progress stats */}
-      <div className="absolute bottom-0 left-0 right-0 flex justify-between px-4 text-xs text-muted-foreground">
-        <span>Start</span>
-        <span className="flex items-center gap-1">
-          <Footprints className="h-3 w-3" />
-          {Math.round(progress * 1000)} steps
-        </span>
-        <span>Goal</span>
+      {/* Progress stats with beautiful cards */}
+      <div className="absolute bottom-0 left-0 right-0 flex justify-between px-4 py-2 bg-gradient-to-t from-black/5 to-transparent">
+        <motion.div
+          className="text-xs font-medium text-pink-600 dark:text-pink-400"
+          animate={{ y: [0, -2, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          🏁 Start
+        </motion.div>
+        
+        <motion.div
+          className="flex items-center gap-1 text-xs font-medium bg-white/60 dark:bg-gray-800/60 px-2 py-1 rounded-full backdrop-blur-sm"
+          animate={{
+            scale: [1, 1.05, 1],
+            backgroundColor: ['rgba(255,255,255,0.6)', 'rgba(236,72,153,0.2)', 'rgba(255,255,255,0.6)']
+          }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <Footprints className="h-3 w-3 text-purple-500" />
+          <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-bold">
+            {Math.round(progress * 5000)} steps
+          </span>
+        </motion.div>
+        
+        <motion.div
+          className="text-xs font-medium text-purple-600 dark:text-purple-400"
+          animate={{ y: [0, -2, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
+        >
+          Goal 🏆
+        </motion.div>
       </div>
 
-      {/* Activity rings */}
-      <svg className="absolute top-2 left-2 w-12 h-12">
+      {/* Achievement ring with progress */}
+      <svg className="absolute top-2 right-2 w-16 h-16">
+        <defs>
+          <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#EC4899" />
+            <stop offset="100%" stopColor="#8B5CF6" />
+          </linearGradient>
+        </defs>
         <circle
-          cx="20"
-          cy="20"
-          r="16"
+          cx="32"
+          cy="32"
+          r="24"
           fill="none"
-          stroke="hsl(var(--primary))"
-          strokeWidth="2"
-          strokeDasharray="100"
-          strokeDashoffset={100 - progress * 100}
-          transform="rotate(-90 20 20)"
+          stroke="url(#ringGradient)"
+          strokeWidth="3"
+          strokeDasharray={`${progress * 151} 151`}
           strokeLinecap="round"
-          opacity="0.3"
+          transform="rotate(-90 32 32)"
+          opacity="0.8"
         />
+        <motion.circle
+          cx="32"
+          cy="32"
+          r="18"
+          fill="white"
+          className="dark:fill-gray-800"
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
+        <text x="32" y="36" textAnchor="middle" className="text-xs font-bold fill-current">
+          {Math.round(progress * 100)}%
+        </text>
       </svg>
+
+      {/* Floating motivational words */}
+      {isActive && (
+        <>
+          {['💪', '⚡', '🌟', '✨'].map((emoji, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-2xl"
+              initial={{ x: 20 + i * 30, y: 100, opacity: 0 }}
+              animate={{
+                x: 20 + i * 30,
+                y: [100, 50, 100],
+                opacity: [0, 1, 0],
+                rotate: [0, 10, -10, 0]
+              }}
+              transition={{
+                duration: 3,
+                delay: i * 0.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              {emoji}
+            </motion.div>
+          ))}
+        </>
+      )}
     </motion.div>
   );
 };
@@ -399,7 +698,7 @@ const ProgressPage = () => {
     const hydrationLog = getLS<HydrationEntry[]>(LS_KEYS.HYDRATION_LOG, []);
     const sleepLog = getLS<SleepEntry[]>(LS_KEYS.SLEEP_LOG, []);
 
-    // Calculate progress based on tracked data (customize based on your goals)
+    // Calculate progress based on tracked data
     const today = new Date().toDateString();
     const todayCalories = calorieLog.filter(e => new Date(e.date).toDateString() === today).length;
     const todayExercise = exerciseLog.filter(e => new Date(e.date).toDateString() === today).length;
@@ -407,7 +706,7 @@ const ProgressPage = () => {
     const todaySleep = sleepLog.filter(e => new Date(e.date).toDateString() === today).length;
 
     const totalTracked = todayCalories + todayExercise + todayHydration + todaySleep;
-    const maxDaily = 8; // Example: 2 meals + 1 exercise + 4 water + 1 sleep
+    const maxDaily = 8;
     const progress = Math.min(totalTracked / maxDaily, 1);
     
     setJoggerProgress(progress);
@@ -448,6 +747,7 @@ const ProgressPage = () => {
     setSavedGoals(updated);
     localStorage.setItem('th_saved_goals', JSON.stringify(updated));
     setGoalText('');
+    toast.success("Goal added! 🎯");
   };
   
   const toggleGoal = (id: string) => {
@@ -521,7 +821,13 @@ const ProgressPage = () => {
         >
           <div>
             <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-              <motion.span animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }}>
+              <motion.span 
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0]
+                }} 
+                transition={{ duration: 3, repeat: Infinity }}
+              >
                 <BarChartIcon className="h-6 w-6 text-primary" />
               </motion.span>
               {t.title}
@@ -535,25 +841,35 @@ const ProgressPage = () => {
               variant="outline"
               size="sm"
               onClick={() => setShowJogger(!showJogger)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 relative overflow-hidden group"
             >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 opacity-0 group-hover:opacity-10"
+                animate={showJogger ? { scale: [1, 1.2, 1] } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
               <Footprints className={`h-4 w-4 ${showJogger ? 'text-primary' : ''}`} />
               {showJogger ? 'Hide' : 'Show'} Progress
             </Button>
             
             <Button 
               variant="default" 
-              className="flex items-center bg-gradient-to-r from-primary to-primary/80" 
+              className="flex items-center bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 relative overflow-hidden group" 
               onClick={() => setActiveTab("trackers")} 
               size={isSmallScreen ? "icon" : "default"}
             >
+              <motion.div
+                className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20"
+                animate={{ x: ['-100%', '100%'] }}
+                transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
+              />
               {activeTab === "trackers" ? <Edit className="h-4 w-4" /> : <PlusCircle className="h-4 w-4" />}
               {!isSmallScreen && <span className="ml-1">{activeTab === "trackers" ? t.editProgress : t.addProgress}</span>}
             </Button>
           </div>
         </motion.div>
 
-        {/* Jogging Lady Progress Animation */}
+        {/* Enhanced Jogging Animation */}
         {showJogger && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -561,39 +877,61 @@ const ProgressPage = () => {
             exit={{ opacity: 0, y: -20 }}
             className="mb-6"
           >
-            <Card className="border-primary/20 overflow-hidden">
+            <Card className="border-primary/20 overflow-hidden bg-gradient-to-br from-white to-pink-50 dark:from-gray-900 dark:to-purple-950/30">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold">{t.weeklyProgress}</h3>
+                    <motion.div
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Activity className="h-5 w-5 text-primary" />
+                    </motion.div>
+                    <h3 className="font-semibold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+                      {t.weeklyProgress}
+                    </h3>
                   </div>
-                  <Badge variant="outline" className="flex items-center gap-1">
-                    <Zap className="h-3 w-3 text-yellow-500" />
-                    {getMotivationalMessage()}
+                  <Badge variant="outline" className="flex items-center gap-1 border-pink-200 dark:border-pink-800">
+                    <motion.div
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <Zap className="h-3 w-3 text-yellow-500" />
+                    </motion.div>
+                    <span className="bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent font-bold">
+                      {getMotivationalMessage()}
+                    </span>
                   </Badge>
                 </div>
                 
-                <JoggingLady progress={joggerProgress} isActive={joggerProgress > 0} />
+                <RealisticRunner progress={joggerProgress} isActive={joggerProgress > 0} />
                 
-                {/* Progress stats */}
-                <div className="mt-3 grid grid-cols-4 gap-2 text-center text-xs">
-                  <div className="p-2 bg-primary/5 rounded-lg">
-                    <div className="font-semibold text-primary">{Math.round(joggerProgress * 100)}%</div>
-                    <div className="text-muted-foreground">Overall</div>
-                  </div>
-                  <div className="p-2 bg-orange-500/5 rounded-lg">
-                    <div className="font-semibold text-orange-500">{weeklyData[weeklyData.length-1]?.calories || 0}</div>
-                    <div className="text-muted-foreground">Calories</div>
-                  </div>
-                  <div className="p-2 bg-green-500/5 rounded-lg">
-                    <div className="font-semibold text-green-500">{weeklyData[weeklyData.length-1]?.exercise || 0}min</div>
-                    <div className="text-muted-foreground">Exercise</div>
-                  </div>
-                  <div className="p-2 bg-blue-500/5 rounded-lg">
-                    <div className="font-semibold text-blue-500">{weeklyData[weeklyData.length-1]?.water || 0}cups</div>
-                    <div className="text-muted-foreground">Water</div>
-                  </div>
+                {/* Enhanced progress stats */}
+                <div className="mt-4 grid grid-cols-4 gap-2">
+                  {[
+                    { label: 'Overall', value: `${Math.round(joggerProgress * 100)}%`, icon: Award, color: 'from-pink-500 to-purple-500' },
+                    { label: 'Calories', value: weeklyData[weeklyData.length-1]?.calories || 0, icon: Flame, color: 'from-orange-500 to-red-500' },
+                    { label: 'Exercise', value: `${weeklyData[weeklyData.length-1]?.exercise || 0}min`, icon: Dumbbell, color: 'from-green-500 to-emerald-500' },
+                    { label: 'Water', value: `${weeklyData[weeklyData.length-1]?.water || 0}cups`, icon: Droplet, color: 'from-blue-500 to-cyan-500' },
+                  ].map((stat, index) => (
+                    <motion.div
+                      key={index}
+                      className="relative overflow-hidden rounded-lg p-2 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-sm"
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-5`} />
+                      <div className="relative flex items-center gap-1">
+                        <stat.icon className={`h-3 w-3 bg-gradient-to-r ${stat.color} bg-clip-text`} />
+                        <span className="text-xs text-muted-foreground">{stat.label}</span>
+                      </div>
+                      <div className={`text-sm font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mt-1`}>
+                        {stat.value}
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -699,7 +1037,7 @@ const ProgressPage = () => {
                     value={goalText} 
                     onChange={e => setGoalText(e.target.value)} 
                     placeholder="Add a new goal..." 
-                    className="flex-1 px-3 py-2 border border-input rounded-md text-sm bg-background" 
+                    className="flex-1 px-3 py-2 border border-input rounded-md text-sm bg-background focus:ring-2 focus:ring-primary/20 outline-none" 
                     onKeyDown={e => e.key === 'Enter' && saveGoal()} 
                   />
                   <Button onClick={saveGoal} size="sm" className="bg-gradient-to-r from-primary to-primary/80">
@@ -708,31 +1046,63 @@ const ProgressPage = () => {
                   </Button>
                 </div>
                 {Object.keys(goalsByWeek).length === 0 ? (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8">
-                    <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-                      <Target className="h-12 w-12 mx-auto text-primary/30" />
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    className="text-center py-8"
+                  >
+                    <motion.div 
+                      animate={{ 
+                        y: [0, -10, 0],
+                        rotate: [0, 5, -5, 0]
+                      }} 
+                      transition={{ duration: 4, repeat: Infinity }}
+                    >
+                      <Target className="h-16 w-16 mx-auto text-primary/30" />
                     </motion.div>
-                    <p className="text-muted-foreground text-sm mt-2">No goals saved yet.</p>
+                    <p className="text-muted-foreground text-sm mt-4">No goals saved yet. Start by adding one above!</p>
                   </motion.div>
                 ) : (
                   Object.entries(goalsByWeek).map(([week, goals]) => (
-                    <motion.div key={week} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">{week}</h4>
+                    <motion.div 
+                      key={week} 
+                      initial={{ opacity: 0, y: 10 }} 
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-2 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-primary" />
+                        {week}
+                      </h4>
                       <div className="space-y-2">
-                        {goals.map(g => (
+                        {goals.map((g, index) => (
                           <motion.div 
                             key={g.id} 
-                            whileHover={{ scale: 1.01 }} 
-                            className={`flex items-center gap-3 p-3 rounded-lg transition-all ${g.completed ? 'bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800/30' : 'bg-muted/50 hover:bg-muted'}`}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            whileHover={{ scale: 1.01, x: 2 }} 
+                            className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                              g.completed 
+                                ? 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800/30' 
+                                : 'bg-muted/50 hover:bg-muted'
+                            }`}
                           >
                             <input 
                               type="checkbox" 
                               checked={g.completed} 
                               onChange={() => toggleGoal(g.id)} 
-                              className="h-4 w-4 rounded accent-primary" 
+                              className="h-4 w-4 rounded accent-primary cursor-pointer" 
                             />
-                            <span className={`flex-1 text-sm ${g.completed ? 'line-through text-muted-foreground' : ''}`}>{g.text}</span>
-                            <button onClick={() => deleteGoal(g.id)} className="text-destructive hover:text-destructive/80 text-xs">✕</button>
+                            <span className={`flex-1 text-sm ${g.completed ? 'line-through text-muted-foreground' : ''}`}>
+                              {g.text}
+                            </span>
+                            <button 
+                              onClick={() => deleteGoal(g.id)} 
+                              className="text-destructive hover:text-destructive/80 text-xs px-2 py-1 rounded hover:bg-destructive/10 transition-colors"
+                            >
+                              ✕
+                            </button>
                           </motion.div>
                         ))}
                       </div>
@@ -754,18 +1124,38 @@ const ProgressPage = () => {
               </CardHeader>
               <CardContent>
                 {!hasHistoryData ? (
-                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
-                    <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-                      <BarChartIcon className="h-16 w-16 mx-auto text-primary/30" />
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }} 
+                    animate={{ opacity: 1, scale: 1 }} 
+                    className="text-center py-12"
+                  >
+                    <motion.div 
+                      animate={{ 
+                        y: [0, -10, 0],
+                        rotate: [0, 5, -5, 0]
+                      }} 
+                      transition={{ duration: 3, repeat: Infinity }}
+                    >
+                      <BarChartIcon className="h-20 w-20 mx-auto text-primary/30" />
                     </motion.div>
-                    <p className="text-muted-foreground mt-4">No history data yet. Start tracking!</p>
+                    <p className="text-muted-foreground mt-4">No history data yet. Start tracking your progress!</p>
                   </motion.div>
                 ) : (
                   <div className="space-y-8">
-                    {chartConfigs.map(chart => (
-                      <motion.div key={chart.key} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+                    {chartConfigs.map((chart, index) => (
+                      <motion.div 
+                        key={chart.key} 
+                        initial={{ opacity: 0, y: 20 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                      >
                         <h3 className="font-semibold mb-3 flex items-center gap-2">
-                          {chart.icon}
+                          <motion.div
+                            animate={{ rotate: [0, 360] }}
+                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                          >
+                            {chart.icon}
+                          </motion.div>
                           {chart.label}
                         </h3>
                         <ResponsiveContainer width="100%" height={200}>
@@ -783,7 +1173,9 @@ const ProgressPage = () => {
                               contentStyle={{ 
                                 borderRadius: '12px', 
                                 border: 'none', 
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)' 
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                                background: 'rgba(255,255,255,0.9)',
+                                backdropFilter: 'blur(8px)'
                               }} 
                             />
                             <Area 
