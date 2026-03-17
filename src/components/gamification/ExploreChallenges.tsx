@@ -23,12 +23,23 @@ const FEATURED_CHALLENGES = [
   { id: "fruit-rainbow", name: "Fruit Rainbow", description: "Eat fruits of 5 different colors in a week", types: ["nutrition"], duration_days: 7, difficulty_level: 2, points_reward: 80, icon: "🌈" },
 ];
 
-interface ExploreChallengesProps { userId?: string; }
+interface ExploreChallengesProps {
+  userId?: string;
+  onJoin?: (challenge: Challenge) => void;
+}
 
-const ExploreChallenges = ({ userId }: ExploreChallengesProps) => {
+const ExploreChallenges = ({ userId, onJoin }: ExploreChallengesProps) => {
   const [joined, setJoined] = useState<Set<string>>(new Set());
 
   const handleJoin = (challenge: typeof FEATURED_CHALLENGES[0]) => {
+    const existingAll = getLS<Challenge[]>(LS_KEYS.CHALLENGES, []);
+    const alreadyJoined = existingAll.some(c => c.name === challenge.name && !c.completed);
+    if (alreadyJoined) {
+      toast.info(`Already joined "${challenge.name}"`);
+      setJoined(prev => new Set([...prev, challenge.id]));
+      return;
+    }
+
     const newChallenge: Challenge = {
       id: crypto.randomUUID(),
       name: challenge.name,
@@ -40,8 +51,13 @@ const ExploreChallenges = ({ userId }: ExploreChallengesProps) => {
       target: challenge.duration_days,
       completed: false,
     };
-    const existing = getLS<Challenge[]>(LS_KEYS.CHALLENGES, []);
-    setLS(LS_KEYS.CHALLENGES, [newChallenge, ...existing]);
+
+    if (onJoin) {
+      onJoin(newChallenge);
+    } else {
+      setLS(LS_KEYS.CHALLENGES, [newChallenge, ...existingAll]);
+    }
+
     setJoined(prev => new Set([...prev, challenge.id]));
     playMilestoneSound('success');
     toast.success(`Joined "${challenge.name}" — check Active Challenges!`);

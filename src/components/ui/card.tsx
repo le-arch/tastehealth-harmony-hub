@@ -75,14 +75,16 @@ const glowingOrb = {
   }
 }
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+type CardProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'style'> & {
+  children?: React.ReactNode;
   animated?: boolean;
   withGlow?: boolean;
   withRainbow?: boolean;
   withPulse?: boolean;
   interactive?: boolean;
   delay?: number;
-}
+  style?: React.CSSProperties | MotionProps['style'];
+} & Partial<MotionProps>
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ 
@@ -94,6 +96,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     interactive = true,
     delay = 0,
     children,
+    style,
     ...props 
   }, ref) => {
     const [isHovered, setIsHovered] = React.useState(false);
@@ -132,8 +135,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       return (
         <div
           ref={ref}
-          className={baseClasses}
-          {...props}
+          className={baseClasses}          style={style as React.CSSProperties}          {...(props as unknown as React.HTMLAttributes<HTMLDivElement>)}
         >
           {/* Static decorative elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -150,6 +152,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           baseClasses,
           interactive && "cursor-pointer group"
         )}
+        style={style}
         variants={getAnimationVariants()}
         initial="initial"
         animate="animate"
@@ -268,169 +271,317 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
 )
 Card.displayName = "Card"
 
+type CardPartProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'style'> & {
+  children?: React.ReactNode;
+  animated?: boolean;
+  delay?: number;
+  style?: React.CSSProperties | MotionProps['style'];
+} & Partial<MotionProps>
+
 const CardHeader = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { animated?: boolean; delay?: number }
->(({ className, animated = true, delay = 0.1, children, ...props }, ref) => {
-  const Component = animated ? motion.div : 'div';
+  CardPartProps
+>(({ className, animated = true, delay = 0.1, children, style, ...props }, ref) => {
   const animationProps = animated ? {
     initial: { opacity: 0, x: -20 },
     animate: { opacity: 1, x: 0 },
     transition: { delay, ease: "easeInOut" }
   } : {};
 
+  if (!animated) {
+    return (
+      <div
+        ref={ref}
+        className={cn("flex flex-col space-y-1.5 p-4 sm:p-5", className)}
+        style={style as React.CSSProperties}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+
   return (
-    <Component
+    <motion.div
       ref={ref}
       className={cn("flex flex-col space-y-1.5 p-4 sm:p-5", className)}
+      style={style}
       {...animationProps}
       {...props}
     >
       {children}
-    </Component>
+    </motion.div>
   )
 })
 CardHeader.displayName = "CardHeader"
 
+type CardTitleProps = Omit<React.HTMLAttributes<HTMLHeadingElement>, 'style'> & {
+  children?: React.ReactNode;
+  animated?: boolean;
+  delay?: number;
+  style?: React.CSSProperties | MotionProps['style'];
+} & Partial<MotionProps>
+
 const CardTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement> & { animated?: boolean; delay?: number }
->(({ className, animated = true, delay = 0.15, children, ...props }, ref) => {
-  const Component = animated ? motion.h3 : 'h3';
+  HTMLHeadingElement,
+  CardTitleProps
+>(({ className, animated = true, delay = 0.15, children, style, ...props }, ref) => {
   const animationProps = animated ? {
     initial: { opacity: 0, y: -5 },
     animate: { opacity: 1, y: 0 },
     transition: { delay, ease: "easeInOut" }
   } : {};
 
+  if (!animated) {
+    return (
+      <h3
+        ref={ref}
+        className={cn(
+          "text-lg sm:text-xl font-semibold leading-none tracking-tight",
+          "bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent",
+          className
+        )}
+        style={style as React.CSSProperties}
+        {...props}
+      >
+        {children}
+      </h3>
+    )
+  }
+
   return (
-    <Component
+    <motion.h3
       ref={ref}
       className={cn(
         "text-lg sm:text-xl font-semibold leading-none tracking-tight",
         "bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent",
         className
       )}
+      style={style}
       {...animationProps}
       {...props}
     >
       {children}
-    </Component>
+    </motion.h3>
   )
 })
 CardTitle.displayName = "CardTitle"
 
+type CardDescriptionProps = Omit<React.HTMLAttributes<HTMLParagraphElement>, 'style'> & {
+  children?: React.ReactNode;
+  animated?: boolean;
+  delay?: number;
+  style?: React.CSSProperties | MotionProps['style'];
+} & Partial<MotionProps>
+
 const CardDescription = React.forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement> & { animated?: boolean; delay?: number }
->(({ className, animated = true, delay = 0.2, children, ...props }, ref) => {
-  const Component = animated ? motion.p : 'p';
+  CardDescriptionProps
+>(({ className, animated = true, delay = 0.2, children, style, ...props }, ref) => {
   const animationProps = animated ? {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     transition: { delay, ease: "easeInOut" }
   } : {};
 
+  if (!animated) {
+    return (
+      <p
+        ref={ref}
+        className={cn("text-sm text-muted-foreground/90 leading-relaxed", className)}
+        style={style as React.CSSProperties}
+        {...props}
+      >
+        {children}
+      </p>
+    )
+  }
+
   return (
-    <Component
+    <motion.p
       ref={ref}
       className={cn("text-sm text-muted-foreground/90 leading-relaxed", className)}
+      style={style}
       {...animationProps}
       {...props}
     >
       {children}
-    </Component>
+    </motion.p>
   )
 })
 CardDescription.displayName = "CardDescription"
 
+type CardContentProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'style'> & {
+  children?: React.ReactNode;
+  animated?: boolean;
+  delay?: number;
+  style?: React.CSSProperties | MotionProps['style'];
+} & Partial<MotionProps>
+
 const CardContent = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { animated?: boolean; delay?: number }
->(({ className, animated = true, delay = 0.25, children, ...props }, ref) => {
-  const Component = animated ? motion.div : 'div';
+  CardContentProps
+>(({ className, animated = true, delay = 0.25, children, style, ...props }, ref) => {
   const animationProps = animated ? {
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
     transition: { delay, ease: "easeInOut" }
   } : {};
 
+  if (!animated) {
+    return (
+      <div
+        ref={ref}
+        className={cn("p-4 sm:p-5 pt-0", className)}
+        style={style as React.CSSProperties}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+
   return (
-    <Component
+    <motion.div
       ref={ref}
       className={cn("p-4 sm:p-5 pt-0", className)}
+      style={style}
       {...animationProps}
       {...props}
     >
       {children}
-    </Component>
+    </motion.div>
   )
 })
 CardContent.displayName = "CardContent"
 
+type CardFooterProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'style'> & {
+  children?: React.ReactNode;
+  animated?: boolean;
+  delay?: number;
+  style?: React.CSSProperties | MotionProps['style'];
+} & Partial<MotionProps>
+
 const CardFooter = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { animated?: boolean; delay?: number }
->(({ className, animated = true, delay = 0.3, children, ...props }, ref) => {
-  const Component = animated ? motion.div : 'div';
+  CardFooterProps
+>(({ className, animated = true, delay = 0.3, children, style, ...props }, ref) => {
   const animationProps = animated ? {
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
     transition: { delay, ease: "easeInOut" }
   } : {};
 
+  if (!animated) {
+    return (
+      <div
+        ref={ref}
+        className={cn("flex flex-col sm:flex-row items-center justify-end gap-2 p-4 sm:p-5 pt-0", className)}
+        style={style as React.CSSProperties}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+
   return (
-    <Component
+    <motion.div
       ref={ref}
       className={cn("flex flex-col sm:flex-row items-center justify-end gap-2 p-4 sm:p-5 pt-0", className)}
+      style={style}
       {...animationProps}
       {...props}
     >
       {children}
-    </Component>
+    </motion.div>
   )
 })
 CardFooter.displayName = "CardFooter"
 
 // Card grid container with animations
+type CardGridProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'style'> & {
+  animated?: boolean;
+  style?: React.CSSProperties | MotionProps['style'];
+  children?: React.ReactNode;
+} & Partial<MotionProps>
+
 const CardGrid = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { animated?: boolean }
->(({ className, animated = true, children, ...props }, ref) => {
-  const Component = animated ? motion.div : 'div';
+  CardGridProps
+>(({ className, animated = true, children, style, ...props }, ref) => {
   const animationProps = animated ? {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     transition: { staggerChildren: 0.1, ease: "easeInOut" }
   } : {};
 
+  if (!animated) {
+    return (
+      <div
+        ref={ref}
+        className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 auto-rows-fr", className)}
+        style={style as React.CSSProperties}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+
   return (
-    <Component
+    <motion.div
       ref={ref}
       className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 auto-rows-fr", className)}
+      style={style}
       {...animationProps}
       {...props}
     >
       {children}
-    </Component>
+    </motion.div>
   )
 })
 CardGrid.displayName = "CardGrid"
 
 // Horizontal scrolling cards container with snap
+type ScrollableCardContainerProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'style'> & {
+  animated?: boolean;
+  style?: React.CSSProperties | MotionProps['style'];
+  children?: React.ReactNode;
+} & Partial<MotionProps>
+
 const ScrollableCardContainer = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { animated?: boolean }
->(({ className, animated = true, children, ...props }, ref) => {
-  const Component = animated ? motion.div : 'div';
+  ScrollableCardContainerProps
+>(({ className, animated = true, children, style, ...props }, ref) => {
   const animationProps = animated ? {
     initial: { opacity: 0, x: -20 },
     animate: { opacity: 1, x: 0 },
     transition: { duration: 0.5, ease: "easeInOut" }
   } : {};
 
+  if (!animated) {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "card-scroll-container",
+          "overflow-x-auto overflow-y-hidden",
+          "scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent",
+          "hover:scrollbar-thumb-primary/30",
+          "pb-2",
+          className
+        )}
+        style={style as React.CSSProperties}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+
   return (
-    <Component
+    <motion.div
       ref={ref}
       className={cn(
         "card-scroll-container",
@@ -440,35 +591,71 @@ const ScrollableCardContainer = React.forwardRef<
         "pb-2",
         className
       )}
+      style={style}
       {...animationProps}
       {...props}
     >
       {children}
-    </Component>
+    </motion.div>
   )
 })
 ScrollableCardContainer.displayName = "ScrollableCardContainer"
 
 // Content container for scrollable cards
+type ScrollableCardContentProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'style'> & {
+  animated?: boolean;
+  style?: React.CSSProperties | MotionProps['style'];
+  children?: React.ReactNode;
+} & Partial<MotionProps>
+
 const ScrollableCardContent = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { animated?: boolean }
->(({ className, animated = true, children, ...props }, ref) => {
-  const Component = animated ? motion.div : 'div';
+  ScrollableCardContentProps
+>(({ className, animated = true, children, style, ...props }, ref) => {
   const animationProps = animated ? {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     transition: { staggerChildren: 0.05, ease: "easeInOut" }
   } : {};
 
+  if (!animated) {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "card-scroll-content",
+          "flex gap-3 sm:gap-4",
+          className
+        )}
+        style={style as React.CSSProperties}
+        {...props}
+      >
+        {React.Children.map(children, (child, index) => (
+          <motion.div
+            key={index}
+            variants={{
+              initial: { opacity: 0, x: 20 },
+              animate: { opacity: 1, x: 0 }
+            }}
+            transition={{ delay: index * 0.05, ease: "easeInOut" }}
+            className="flex-shrink-0"
+          >
+            {child}
+          </motion.div>
+        ))}
+      </div>
+    )
+  }
+
   return (
-    <Component
+    <motion.div
       ref={ref}
       className={cn(
         "card-scroll-content",
         "flex gap-3 sm:gap-4",
         className
       )}
+      style={style}
       {...animationProps}
       {...props}
     >
@@ -485,7 +672,7 @@ const ScrollableCardContent = React.forwardRef<
           {child}
         </motion.div>
       ))}
-    </Component>
+    </motion.div>
   )
 })
 ScrollableCardContent.displayName = "ScrollableCardContent"

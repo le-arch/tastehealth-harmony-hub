@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Menu, Star, Flame, User, Home, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import Logo from '@/components/Logo';
+import LogoHealth from '@/components/LogoHealth';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
 import { getLS, LS_KEYS } from '@/utils/localStorage';
 import {
@@ -45,7 +45,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ onToggleSidebar }) => {
           <Menu className="h-5 w-5" />
         </Button>
         <Link to="/dashboard" className="flex items-center gap-1.5">
-          <Logo size="sm" />
+          <LogoHealth size="sm" />
           {/* <span className="font-bold text-sm hidden sm:inline">Dashboard</span> */}
         </Link>
       </div>

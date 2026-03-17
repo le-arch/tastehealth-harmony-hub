@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, type MotionProps } from "framer-motion"
 import {
   Controller,
   ControllerProps,
@@ -207,7 +207,7 @@ const FormItem = React.forwardRef<
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         className={baseClasses}
-        {...props}
+        {...(props as any)}
       >
         {/* Animated gradient background */}
         <motion.div
@@ -427,7 +427,7 @@ const FormDescription = React.forwardRef<
       animate="animate"
       exit="exit"
       className={baseClasses}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </motion.p>
@@ -474,7 +474,7 @@ const FormMessage = React.forwardRef<
         animate="animate"
         exit="exit"
         className={baseClasses}
-        {...props}
+        {...(props as any)}
       >
         <motion.span
           animate={{
@@ -531,7 +531,7 @@ const FormContainer = React.forwardRef<
         stiffness: 300
       }}
       className={baseClasses}
-      {...props}
+      {...(props as any)}
     >
       {/* Animated decorative elements */}
       <motion.div

@@ -13,7 +13,7 @@ import { Activity, Target, TrendingUp, Calendar, Award, Flame, Droplet, Utensils
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useScreenSize } from "@/utils/mobile";
 import MealPrepTimer from "./MealPrepTimer";
-import HydrationTracker from "./HydrationTracker";
+//import HydrationTracker from "./HydrationTracker";
 import NutritionProgressWheel from "./NutritionProgressWheel";
 import DailyMealSelector from "./DailyMealSelector";
 import { getLS, LS_KEYS, Challenge } from "@/utils/localStorage";
@@ -91,8 +91,8 @@ const NutritionDashboard = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl sm:text-3xl font-bold">{t.title}</h1>
         <div className="flex items-center space-x-2">
-          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-          <span className="text-xs sm:text-sm text-muted-foreground">{new Date().toLocaleDateString()}</span>
+          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground text-green-500 fill-green-700" />
+          <span className="text-xs sm:text-sm text-muted-foreground text-green-500">{new Date().toLocaleDateString()}</span>
         </div>
       </div>
 
@@ -120,7 +120,7 @@ const NutritionDashboard = () => {
               <Card><CardHeader><CardTitle className="flex items-center text-lg"><Timer className="h-5 w-5 mr-2 text-orange-500" />Meal Prep Timer</CardTitle></CardHeader><CardContent><MealPrepTimer /></CardContent></Card>
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}>
-              <Card><CardHeader><CardTitle className="flex items-center text-lg"><Droplet className="h-5 w-5 mr-2 text-blue-500" />Hydration Tracker</CardTitle></CardHeader><CardContent><HydrationTracker /></CardContent></Card>
+              {/* <Card><CardHeader><CardTitle className="flex items-center text-lg"><Droplet className="h-5 w-5 mr-2 text-blue-500" />Hydration Tracker</CardTitle></CardHeader><CardContent><HydrationTracker /></CardContent></Card> */}
             </motion.div>
           </div>
         </TabsContent>

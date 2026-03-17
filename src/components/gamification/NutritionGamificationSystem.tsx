@@ -57,7 +57,7 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
         <UserLevel level={userLevel} points={userPoints} pointsForNextLevel={getPointsForNextLevel(userLevel)} />
         <DailyStreak streak={streak} updateStreak={updateStreak} />
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center"><Zap className="h-4 w-4 mr-2 text-purple-500 fill-puple-500" />{t.yourPoints}</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center"><Zap className="h-4 w-4 mr-2 text-purple-500 fill-purple-500" />{t.yourPoints}</CardTitle></CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{userPoints}</div>
             <div className="text-xs text-muted-foreground mt-1">{getPointsForNextLevel(userLevel) - userPoints} {t.pointsNeeded}</div>

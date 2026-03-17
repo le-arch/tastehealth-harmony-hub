@@ -315,18 +315,70 @@ const DailyJournalPage = () => {
   };
 
   const renderMarkdownPreview = (text: string) => {
-    return text.split('\n').map((line, i) => {
-      if (line.startsWith('## ')) return <h3 key={i} className="font-semibold text-sm mt-1">{line.slice(3)}</h3>;
-      if (line.startsWith('# ')) return <h2 key={i} className="font-bold text-sm mt-1">{line.slice(2)}</h2>;
-      if (line.startsWith('- [x] ')) return <div key={i} className="flex items-center gap-1 text-xs"><input type="checkbox" checked readOnly className="h-3 w-3" /><span className="line-through text-muted-foreground">{line.slice(6)}</span></div>;
-      if (line.startsWith('- [ ] ')) return <div key={i} className="flex items-center gap-1 text-xs"><input type="checkbox" readOnly className="h-3 w-3" /><span>{line.slice(6)}</span></div>;
-      if (line.startsWith('- ')) return <li key={i} className="text-xs ml-3 list-disc">{line.slice(2)}</li>;
-      if (/^\d+\. /.test(line)) return <li key={i} className="text-xs ml-3 list-decimal">{line.replace(/^\d+\. /, '')}</li>;
-      if (line.startsWith('> ')) return <blockquote key={i} className="border-l-2 border-primary pl-2 text-xs italic text-muted-foreground">{line.slice(2)}</blockquote>;
-      const imgMatch = line.match(/!\[.*?\]\((.*?)\)/);
-      if (imgMatch) return <img key={i} src={imgMatch[1]} alt="" className="max-w-full rounded max-h-24 object-cover my-1" />;
-      return <p key={i} className="text-xs">{line}</p>;
+    const lines = text.split('\n');
+    const elements: React.ReactNode[] = [];
+    let currentListType: 'ul' | 'ol' | null = null;
+    let listItems: React.ReactNode[] = [];
+
+    const flushList = () => {
+      if (!currentListType) return;
+      if (currentListType === 'ul') {
+        elements.push(<ul key={`ul-${elements.length}`} className="text-xs list-disc pl-5 space-y-1">{listItems}</ul>);
+      } else {
+        elements.push(<ol key={`ol-${elements.length}`} className="text-xs list-decimal pl-5 space-y-1">{listItems}</ol>);
+      }
+      currentListType = null;
+      listItems = [];
+    };
+
+    lines.forEach((line, i) => {
+      if (line.startsWith('## ')) {
+        flushList();
+        elements.push(<h3 key={`h3-${i}`} className="font-semibold text-sm mt-1">{line.slice(3)}</h3>);
+      } else if (line.startsWith('# ')) {
+        flushList();
+        elements.push(<h2 key={`h2-${i}`} className="font-bold text-sm mt-1">{line.slice(2)}</h2>);
+      } else if (line.startsWith('- [x] ')) {
+        flushList();
+        elements.push(<div key={`check-${i}`} className="flex items-center gap-1 text-xs"><input type="checkbox" checked readOnly className="h-3 w-3" /><span className="line-through text-muted-foreground">{line.slice(6)}</span></div>);
+      } else if (line.startsWith('- [ ] ')) {
+        flushList();
+        elements.push(<div key={`check-${i}`} className="flex items-center gap-1 text-xs"><input type="checkbox" readOnly className="h-3 w-3" /><span>{line.slice(6)}</span></div>);
+      } else if (line.startsWith('- ')) {
+        if (currentListType !== 'ul') {
+          flushList();
+          currentListType = 'ul';
+          listItems = [];
+        }
+        listItems.push(<li key={`li-${i}`} className="pl-2">{line.slice(2)}</li>);
+      } else if (/^\d+\. /.test(line)) {
+        if (currentListType !== 'ol') {
+          flushList();
+          currentListType = 'ol';
+          listItems = [];
+        }
+        const value = line.replace(/^\d+\. /, '');
+        listItems.push(<li key={`li-${i}`} className="pl-2">{value}</li>);
+      } else if (line.startsWith('> ')) {
+        flushList();
+        elements.push(<blockquote key={`bq-${i}`} className="border-l-2 border-primary pl-2 text-xs italic text-muted-foreground">{line.slice(2)}</blockquote>);
+      } else {
+        const imgMatch = line.match(/!\[.*?\]\((.*?)\)/);
+        if (imgMatch) {
+          flushList();
+          elements.push(<img key={`img-${i}`} src={imgMatch[1]} alt="" className="max-w-full rounded max-h-24 object-cover my-1" />);
+        } else if (line.trim() === '') {
+          flushList();
+          elements.push(<br key={`br-${i}`} />);
+        } else {
+          flushList();
+          elements.push(<p key={`p-${i}`} className="text-xs">{line}</p>);
+        }
+      }
     });
+
+    flushList();
+    return elements;
   };
 
   return (

@@ -26,18 +26,18 @@ const LevelBenefits: React.FC<LevelBenefitsProps> = () => {
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
-      case 'star': return <Star className="h-5 w-5" />;
-      case 'zap': return <Zap className="h-5 w-5" />;
-      case 'gift': return <Gift className="h-5 w-5" />;
-      case 'crown': return <Crown className="h-5 w-5" />;
-      default: return <Star className="h-5 w-5" />;
+      case 'star': return <Star className="h-5 w-5 text-yellow-600 fill-yellow-600" />;
+      case 'zap': return <Zap className="h-5 w-5 text-purple-500 fill-purple-500" />;
+      case 'gift': return <Gift className="h-5 w-5 text-orange-700 fill-yellow-600" />;
+      case 'crown': return <Crown className="h-5 w-5 text-yellow-600 fill-yellow-600" />;
+      default: return <Star className="h-5 w-5 text-yellow-600 fill-yellow-600" />;
     }
   };
 
   return (
     <div className="space-y-4">
       <Card>
-        <CardHeader><CardTitle className="flex items-center gap-2"><Crown className="h-5 w-5 text-amber-500" />Level Progress</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="flex items-center gap-2"><Crown className="h-5 w-5 text-amber-500 fill-amber-500" />Level Progress</CardTitle></CardHeader>
         <CardContent>
           <div className="space-y-2">
             <div className="flex justify-between items-center">

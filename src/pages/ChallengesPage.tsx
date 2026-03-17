@@ -24,7 +24,7 @@ import {
   Heart,
   Moon
 } from "lucide-react";
-import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
+import { getLS, setLS, LS_KEYS, PointsTransaction, Challenge as LSChallenge } from "@/utils/localStorage";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import Confetti from "@/components/Confetti";
@@ -49,19 +49,10 @@ const TOAST_ICONS = {
 
 type ChallengeCategory = 'nutrition' | 'hydration' | 'fitness' | 'wellness' | 'mindfulness';
 
-// SIMPLIFIED TYPE - no React elements in stored data
-interface Challenge {
-  id: string;
-  name: string;
+interface Challenge extends LSChallenge {
   category: ChallengeCategory;
   color: string;
   description: string;
-  duration: number;
-  difficulty: number;
-  target: number;
-  progress: number;
-  completed: boolean;
-  startDate: string;
   streak: number;
   lastUpdated: string | null;
   dailyLogs: { date: string; completed: boolean }[];
@@ -288,19 +279,41 @@ const ChallengesPage: React.FC = () => {
     save(updated);
   };
 
-  const joinChallenge = (preset: typeof PRESET_CHALLENGES[0]) => {
+  const addChallenge = (incoming: LSChallenge) => {
     const challenge: Challenge = {
-      ...preset,
-      id: crypto.randomUUID(),
-      startDate: new Date().toISOString(),
-      progress: 0,
-      completed: false,
+      ...incoming,
+      category: 'nutrition',
+      color: 'green',
+      description: incoming.name,
       streak: 0,
       lastUpdated: null,
-      dailyLogs: []
+      dailyLogs: [],
     };
+
+    const alreadyActive = challenges.some(c => c.id === challenge.id || c.name === challenge.name);
+    if (alreadyActive) {
+      showToast('info', `Challenge "${challenge.name}" is already active.`);
+      return;
+    }
+
     save([...challenges, challenge]);
-    showToast('joined', `Joined "${preset.name}"!`, preset.description);
+    showToast('joined', `Joined "${challenge.name}"!`, challenge.description);
+  };
+
+  const joinChallenge = (preset: typeof PRESET_CHALLENGES[0]) => {
+    const challenge: LSChallenge = {
+      id: crypto.randomUUID(),
+      name: preset.name,
+      types: preset.types,
+      duration: preset.duration,
+      difficulty: preset.difficulty,
+      startDate: new Date().toISOString(),
+      progress: 0,
+      target: preset.target,
+      completed: false,
+    };
+
+    addChallenge(challenge);
   };
 
   const deleteChallenge = (id: string) => {
@@ -433,11 +446,11 @@ const ChallengesPage: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="create">
-              <ChallengeCreator />
+              <ChallengeCreator onCreate={addChallenge} />
             </TabsContent>
 
             <TabsContent value="explore">
-              <ExploreChallenges userId="local" />
+              <ExploreChallenges userId="local" onJoin={addChallenge} />
             </TabsContent>
 
             <TabsContent value="completed">

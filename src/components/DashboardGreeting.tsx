@@ -60,7 +60,7 @@ const DashboardGreeting: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5 text-center">
-              <Flame className="h-5 w-5 text-orange-300" />
+              <Flame className="h-5 w-5 text-orange-600 fill-yellow-600" />
               <span className="text-xl font-bold">{streak}</span>
               <span className="text-xs opacity-80 hidden sm:block">Day Streak</span>
             </div>

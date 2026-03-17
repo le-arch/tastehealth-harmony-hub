@@ -12,12 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useTheme } from "../contexts/ThemeContext";
-import { SettingsIcon, MessageSquare, Apple, Star } from "lucide-react";
+import { SettingsIcon, MessageSquare, Apple, Star, Volume2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getLS, setLS, LS_KEYS } from "@/utils/localStorage";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect } from "react";
+import { isSoundEnabled, setSoundEnabled, playNotificationSound } from "@/utils/sounds";
 
 interface SettingsData { notifications: boolean; emailNotifications: boolean; useMetric: boolean; }
 interface NutritionPrefs { dietType: string; allergies: string; calorieGoal: string; proteinGoal: string; carbsGoal: string; fatsGoal: string; mealFrequency: string; }
@@ -30,6 +31,7 @@ const SettingsPage: React.FC = () => {
   const [notifications, setNotifications] = useState(saved.notifications);
   const [emailNotifications, setEmailNotifications] = useState(saved.emailNotifications);
   const [useMetric, setUseMetric] = useState(saved.useMetric);
+  const [soundOn, setSoundOn] = useState(isSoundEnabled());
   const savedPrefs = getLS<NutritionPrefs>('th_nutrition_prefs', { dietType: 'balanced', allergies: '', calorieGoal: '2000', proteinGoal: '50', carbsGoal: '250', fatsGoal: '65', mealFrequency: '3' });
   const [nutritionPrefs, setNutritionPrefs] = useState(savedPrefs);
   const [feedbackRating, setFeedbackRating] = useState(5);
@@ -44,6 +46,15 @@ const SettingsPage: React.FC = () => {
     const item: FeedbackItem = { id: crypto.randomUUID(), date: new Date().toISOString(), rating: feedbackRating, category: feedbackCategory, message: feedbackMessage };
     const updated = [item, ...feedbackHistory]; setFeedbackHistory(updated); setLS('th_feedback', updated);
     setFeedbackMessage(''); setFeedbackRating(5); toast.success("Thank you for your feedback!");
+  };
+
+  const handleSoundToggle = (checked: boolean) => {
+    setSoundOn(checked);
+    setSoundEnabled(checked);
+    if (checked) {
+      playNotificationSound();
+    }
+    toast.success(checked ? "Sound enabled 🔊" : "Sound muted 🔇");
   };
 
   return (
@@ -62,6 +73,17 @@ const SettingsPage: React.FC = () => {
               <CardHeader><CardTitle>App Settings</CardTitle></CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between"><div><Label className="font-medium">Dark Mode</Label><p className="text-sm text-muted-foreground">Switch themes</p></div><Switch checked={theme === "dark"} onCheckedChange={toggleTheme} /></div>
+                <Separator />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="font-medium flex items-center gap-2">
+                      <Volume2 className="h-4 w-4 text-primary" />
+                      Sound Effects
+                    </Label>
+                    <p className="text-sm text-muted-foreground">Play sounds on reminders, notifications & achievements</p>
+                  </div>
+                  <Switch checked={soundOn} onCheckedChange={handleSoundToggle} />
+                </div>
                 <Separator />
                 <div className="flex items-center justify-between"><div><Label className="font-medium">Push Notifications</Label></div><Switch checked={notifications} onCheckedChange={v => { setNotifications(v); toast.success("Saved!"); }} /></div>
                 <Separator />

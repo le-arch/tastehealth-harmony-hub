@@ -90,7 +90,7 @@ const ALL_TIPS: HealthTip[] = [
     detailedDescription: 'Proper hydration is essential for every cell in your body. Water regulates temperature, lubricates joints, transports nutrients, and flushes waste. Learn how to optimize your hydration for peak performance and health.',
     category: 'hydration',
     icon: '💧',
-    image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=800&auto=format&fit=crop',
+    image: '/health/hydration.jpeg',
     benefits: [
       'Improves energy levels and brain function by up to 30%',
       'Flushes toxins through urine and sweat',
@@ -158,7 +158,7 @@ const ALL_TIPS: HealthTip[] = [
     detailedDescription: 'The Mediterranean diet is more than a meal plan—it\'s a lifestyle rich in fruits, vegetables, whole grains, olive oil, and fish. Studies show it reduces heart disease, diabetes, and cognitive decline.',
     category: 'nutrition',
     icon: '🌊',
-    image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&auto=format&fit=crop',
+    image: '/health/meal.jpeg',
     benefits: [
       'Reduces heart disease risk by 30%',
       'Lowers inflammation throughout the body',
@@ -226,7 +226,7 @@ const ALL_TIPS: HealthTip[] = [
     detailedDescription: 'Quality sleep is the foundation of good health. This comprehensive guide helps you optimize your sleep environment, routine, and habits for restorative rest that repairs your body and consolidates memory.',
     category: 'sleep',
     icon: '😴',
-    image: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=800&auto=format&fit=crop',
+    image: '/health/sleep.jpeg',
     benefits: [
       'Enhances memory consolidation by 40%',
       'Reduces cortisol and stress hormones',
@@ -294,7 +294,7 @@ const ALL_TIPS: HealthTip[] = [
     detailedDescription: 'Chronic stress damages your health. Learn mindfulness-based stress reduction (MBSR) techniques proven to lower cortisol, reduce anxiety, and improve quality of life.',
     category: 'mental',
     icon: '🧘',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop',
+    image: '/health/meditation.jpeg',
     benefits: [
       'Reduces cortisol levels by 25-30%',
       'Lowers blood pressure naturally',
@@ -362,7 +362,7 @@ const ALL_TIPS: HealthTip[] = [
     detailedDescription: 'Functional fitness trains your muscles to work together for daily activities. These exercises improve balance, coordination, and strength for everything from carrying groceries to playing with kids.',
     category: 'exercise',
     icon: '🏋️',
-    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&auto=format&fit=crop',
+    image: '/health/fitness.jpeg',
     benefits: [
       'Prevents falls in older adults by 35%',
       'Improves posture and reduces back pain',
@@ -432,7 +432,7 @@ const ALL_TIPS: HealthTip[] = [
     detailedDescription: 'Your heart is your body\'s engine. Learn to monitor key indicators, understand your numbers, and implement lifestyle changes that strengthen your cardiovascular system for longevity.',
     category: 'wellness',
     icon: '❤️',
-    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format&fit=crop',
+    image: '/health/heart.jpeg',
     benefits: [
       'Early detection of potential issues',
       'Reduces heart attack risk by 40%',
@@ -662,7 +662,7 @@ const HealthTipsPage: React.FC = () => {
                       className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                       onError={(e) => {
                         // Fallback image if the main image fails to load
-                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&auto=format&fit=crop';
+                        (e.target as HTMLImageElement).src = '/health';
                       }}
                     />
                     <div className={`absolute inset-0 bg-gradient-to-t from-black/60 to-transparent`} />

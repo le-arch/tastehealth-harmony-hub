@@ -126,7 +126,7 @@ function Calendar({
 
       {/* Calendar Header Decoration */}
       <motion.div 
-        className="absolute top-3 left-1/2 transform -translate-x-1/2 flex items-center gap-1 text-xs text-muted-foreground"
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 flex items-center gap-2 text-xs text-muted-foreground"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -212,7 +212,7 @@ function Calendar({
               whileHover={{ x: -2 }}
               whileTap={{ scale: 0.9 }}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 mr-2" />
             </motion.div>
           ),
           IconRight: ({ ..._props }) => (
@@ -225,10 +225,12 @@ function Calendar({
           ),
           Day: ({ date, ...dayProps }) => {
             const isTodayDate = isToday(date);
-            const isSelected = props.selected && 
-              (Array.isArray(props.selected) 
-                ? props.selected.some(d => d && d.toDateString() === date.toDateString())
-                : props.selected?.toDateString() === date.toDateString());
+            const selected = props.selected;
+            const isSelected = Array.isArray(selected)
+              ? selected.some((d): d is Date => d instanceof Date && d.toDateString() === date.toDateString())
+              : selected instanceof Date
+                ? selected.toDateString() === date.toDateString()
+                : false;
 
             return (
               <motion.button

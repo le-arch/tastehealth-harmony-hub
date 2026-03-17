@@ -27,15 +27,15 @@ const DEFAULT_REWARDS: Reward[] = [
 ];
 
 const iconMap: Record<string, React.ReactNode> = {
-  star: <Star className="h-5 w-5 text-yellow-500" />,
-  zap: <Zap className="h-5 w-5 text-purple-500" />,
-  trophy: <Trophy className="h-5 w-5 text-amber-500" />,
-  gift: <Gift className="h-5 w-5 text-green-500" />,
-  crown: <Crown className="h-5 w-5 text-amber-600" />,
-  heart: <Heart className="h-5 w-5 text-red-500" />,
-  sparkles: <Sparkles className="h-5 w-5 text-blue-500" />,
-  gem: <Gem className="h-5 w-5 text-cyan-500" />,
-  medal: <Medal className="h-5 w-5 text-orange-500" />,
+  star: <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />,
+  zap: <Zap className="h-5 w-5 text-purple-500 fill-purple-500" />,
+  trophy: <Trophy className="h-5 w-5 text-amber-500 fill-amber-500" />,
+  gift: <Gift className="h-5 w-5 text-green-500 fill-yellow-500" />,
+  crown: <Crown className="h-5 w-5 text-amber-600 fill-yellow-700" />,
+  heart: <Heart className="h-5 w-5 text-red-500 fill-red-500" />,
+  sparkles: <Sparkles className="h-5 w-5 text-blue-500 fill-blue-500" />,
+  gem: <Gem className="h-5 w-5 text-cyan-500 fill-cyan-500" />,
+  medal: <Medal className="h-5 w-5 text-orange-500 fill-orange-300" />,
 };
 
 const RewardsSystem = () => {
@@ -121,7 +121,7 @@ const RewardsSystem = () => {
       <Card>
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-yellow-500" />
+            <Trophy className="h-5 w-5 text-yellow-500 fill-orange-300" />
             {language === 'fr' ? "Récompenses & Succès" : "Rewards & Achievements"}
           </CardTitle>
           <p className="text-sm text-muted-foreground">{claimed}/{rewards.length} {language === 'fr' ? 'réclamés' : 'claimed'}</p>

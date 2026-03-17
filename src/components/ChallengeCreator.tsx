@@ -18,7 +18,11 @@ const challengeTypes = [
   { id: "sleep", label: "Sleep", description: "Improve sleep habits" }
 ];
 
-const ChallengeCreator: React.FC = () => {
+interface ChallengeCreatorProps {
+  onCreate?: (challenge: Challenge) => void;
+}
+
+const ChallengeCreator: React.FC<ChallengeCreatorProps> = ({ onCreate }) => {
   const [name, setName] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [duration, setDuration] = useState<number>(7);
@@ -50,6 +54,7 @@ const ChallengeCreator: React.FC = () => {
     const existing = getLS<Challenge[]>(LS_KEYS.CHALLENGES, []);
     const updated = [challenge, ...existing];
     setLS(LS_KEYS.CHALLENGES, updated);
+    onCreate?.(challenge);
 
     toast.success(`Challenge "${name}" created and added to active challenges!`);
     setShowConfetti(true);

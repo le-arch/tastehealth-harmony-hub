@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { playNotificationSound } from "@/utils/sounds";
 
 export interface Notification {
   id: string;
   title: string;
   message: string;
-  type: 'water' | 'achievement' | 'meal' | 'reminder' | 'info';
+  type: 'water' | 'achievement' | 'meal' | 'reminder' | 'info' | 'success';
   isRead: boolean;
   timestamp: Date;
   actionUrl?: string;
@@ -101,6 +102,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       timestamp: new Date(),
     };
     setNotifications(prev => [newNotification, ...prev]);
+    playNotificationSound();
 
     // Persist to localStorage
     const stored = JSON.parse(localStorage.getItem('th_notifications') || '[]');

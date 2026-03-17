@@ -164,11 +164,13 @@ const AlertDialogContent = React.forwardRef<
 })
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName
 
+type AlertDialogHeaderProps = Omit<React.ComponentPropsWithoutRef<typeof motion.div>, 'children'> & { children?: React.ReactNode }
+
 const AlertDialogHeader = ({
   className,
   children,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+}: AlertDialogHeaderProps) => (
   <motion.div
     initial={{ opacity: 0, x: -20 }}
     animate={{ opacity: 1, x: 0 }}
@@ -184,11 +186,13 @@ const AlertDialogHeader = ({
 )
 AlertDialogHeader.displayName = "AlertDialogHeader"
 
+type AlertDialogFooterProps = Omit<React.ComponentPropsWithoutRef<typeof motion.div>, 'children'> & { children?: React.ReactNode }
+
 const AlertDialogFooter = ({
   className,
   children,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+}: AlertDialogFooterProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}

@@ -38,7 +38,7 @@ const MealMoodTracker = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center text-lg font-medium"><span role="img" aria-label="mood" className="mr-2 text-xl">😋</span>Meal Mood Tracker</CardTitle>
+        <CardTitle className="flex items-center text-lg font-medium"><span role="img" aria-label="mood" className="mr-2 text-xl text-yellow-700"> 😋 </span>Meal Mood Tracker</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div><Label>Meal Name (optional)</Label><Input value={mealName} onChange={e => setMealName(e.target.value)} placeholder="e.g. Lunch salad" /></div>

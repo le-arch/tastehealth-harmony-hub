@@ -45,69 +45,34 @@ import { getLS, setLS, LS_KEYS, CalorieEntry, SleepEntry, ExerciseEntry, Hydrati
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { toast } from 'sonner';
 
-// Enhanced Realistic Human SVG Component with beautiful animations
+// Video-based Progress Runner Component
 const RealisticRunner = ({ progress = 0, isActive = false }) => {
-  const controls = useAnimation();
+  const videoRef = React.useRef<HTMLVideoElement>(null);
   const progressValue = useMotionValue(0);
   const springProgress = useSpring(progressValue, { stiffness: 100, damping: 30 });
-  
-  // Transform values for smooth animations
   const xPosition = useTransform(springProgress, [0, 1], [0, 220]);
   const scale = useTransform(springProgress, [0, 0.5, 1], [1, 1.05, 1]);
-  const opacity = useTransform(springProgress, [0, 0.1, 1], [0.7, 1, 1]);
-  
-  // Leg and arm rotation springs
-  const leftLegRotation = useSpring(0, { stiffness: 300, damping: 20 });
-  const rightLegRotation = useSpring(0, { stiffness: 300, damping: 20 });
-  const leftArmRotation = useSpring(0, { stiffness: 300, damping: 20 });
-  const rightArmRotation = useSpring(0, { stiffness: 300, damping: 20 });
 
   useEffect(() => {
     progressValue.set(progress);
-    
-    if (isActive) {
-      // Continuous running animation
-      const animate = () => {
-        leftLegRotation.set(Math.sin(Date.now() * 0.01) * 25);
-        rightLegRotation.set(Math.sin(Date.now() * 0.01 + Math.PI) * 25);
-        leftArmRotation.set(Math.sin(Date.now() * 0.01 + 0.5) * 20);
-        rightArmRotation.set(Math.sin(Date.now() * 0.01 + Math.PI + 0.5) * 20);
-        requestAnimationFrame(animate);
-      };
-      
-      const animationId = requestAnimationFrame(animate);
-      
-      controls.start({
-        scale: [1, 1.02, 1],
-        transition: { duration: 1, repeat: Infinity, ease: "easeInOut" }
-      });
-      
-      return () => cancelAnimationFrame(animationId);
-    } else {
-      leftLegRotation.set(0);
-      rightLegRotation.set(0);
-      leftArmRotation.set(0);
-      rightArmRotation.set(0);
-      controls.stop();
-    }
-  }, [isActive, progress, controls, leftLegRotation, rightLegRotation, leftArmRotation, rightArmRotation, progressValue]);
+  }, [progress, progressValue]);
 
-  // Floating particles for magical effect
-  const particles = Array.from({ length: 12 }, (_, i) => ({
-    id: i,
-    delay: i * 0.2,
-    duration: 2 + Math.random() * 2,
-    x: Math.random() * 200 - 100,
-    y: Math.random() * 100 - 50
-  }));
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isActive) {
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isActive]);
 
   return (
     <motion.div 
       className="relative w-full h-64 overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/30 dark:via-purple-950/30 dark:to-pink-950/30"
-      animate={controls}
-      style={{ scale, opacity }}
+      style={{ scale }}
     >
-      {/* Animated background elements */}
+      {/* Animated background */}
       <motion.div
         className="absolute inset-0"
         animate={{
@@ -121,417 +86,67 @@ const RealisticRunner = ({ progress = 0, isActive = false }) => {
       />
 
       {/* Floating particles */}
-      {particles.map((particle) => (
+      {Array.from({ length: 8 }, (_, i) => (
         <motion.div
-          key={particle.id}
+          key={i}
           className="absolute w-1 h-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full"
-          initial={{ x: '50%', y: '50%', opacity: 0 }}
+          initial={{ x: `${20 + i * 10}%`, y: '60%', opacity: 0 }}
           animate={{
-            x: [`${50 + particle.x}%`, `${50 + particle.x + (Math.random() * 40 - 20)}%`],
-            y: [`${50 + particle.y}%`, `${50 + particle.y - 40}%`],
+            y: ['60%', '20%'],
             opacity: [0, 0.8, 0],
             scale: [0, 1, 0]
           }}
           transition={{
-            duration: particle.duration,
-            delay: particle.delay,
+            duration: 2 + Math.random() * 2,
+            delay: i * 0.3,
             repeat: Infinity,
             ease: "easeOut"
           }}
         />
       ))}
 
-      {/* Decorative elements */}
-      <motion.div
-        className="absolute top-4 left-4 flex gap-1"
-        animate={{ rotate: [0, 10, 0] }}
-        transition={{ duration: 4, repeat: Infinity }}
-      >
+      {/* Decorative icons */}
+      <motion.div className="absolute top-4 left-4 flex gap-1" animate={{ rotate: [0, 10, 0] }} transition={{ duration: 4, repeat: Infinity }}>
         <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
         <Sparkles className="h-4 w-4 text-purple-400" />
       </motion.div>
-
-      <motion.div
-        className="absolute top-4 right-4"
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      >
+      <motion.div className="absolute top-4 right-4" animate={{ y: [0, -5, 0] }} transition={{ duration: 3, repeat: Infinity }}>
         <Sun className="h-6 w-6 text-yellow-400" />
       </motion.div>
 
-      <motion.div
-        className="absolute bottom-4 left-4"
-        animate={{ x: [0, 5, 0] }}
-        transition={{ duration: 4, repeat: Infinity }}
-      >
-        <Cloud className="h-5 w-5 text-blue-300" />
-      </motion.div>
-
-      <motion.div
-        className="absolute bottom-4 right-4"
-        animate={{ rotate: [0, 15, 0] }}
-        transition={{ duration: 5, repeat: Infinity }}
-      >
-        <Leaf className="h-5 w-5 text-green-400" />
-      </motion.div>
-
-      {/* Progress path with animated dashes */}
-      <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-        <motion.path
-          d="M 40,160 Q 120,120 200,140 Q 280,160 360,130"
-          stroke="url(#pathGradient)"
-          strokeWidth="3"
-          strokeDasharray="8,8"
-          fill="none"
-          animate={{
-            strokeDashoffset: [0, 40],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-        
-        {/* Energy orbs along the path */}
-        {[0.2, 0.4, 0.6, 0.8].map((position, i) => {
-          const x = 40 + position * 320;
-          const y = 160 - Math.sin(position * Math.PI) * 30;
-          return (
-            <motion.circle
-              key={i}
-              cx={x}
-              cy={y}
-              r="4"
-              fill={`url(#orbGradient${i})`}
-              initial={{ opacity: 0.3, scale: 0.5 }}
-              animate={{
-                opacity: [0.3, 1, 0.3],
-                scale: [0.5, 1.2, 0.5],
-                filter: [
-                  'drop-shadow(0 0 2px rgba(236, 72, 153, 0.3))',
-                  'drop-shadow(0 0 8px rgba(236, 72, 153, 0.6))',
-                  'drop-shadow(0 0 2px rgba(236, 72, 153, 0.3))'
-                ]
-              }}
-              transition={{
-                duration: 2,
-                delay: i * 0.3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          );
-        })}
-      </svg>
-
-      {/* Running track with glow */}
+      {/* Running track glow */}
       <div className="absolute bottom-8 left-0 w-full h-1">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-30 blur-sm" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent" style={{ width: `${progress * 100}%` }} />
       </div>
 
-      {/* Distance markers */}
-      {[0, 25, 50, 75, 100].map((marker) => (
-        <motion.div
-          key={marker}
-          className="absolute bottom-6 w-0.5 h-3 bg-gradient-to-t from-primary/40 to-transparent"
-          style={{ left: `${marker}%` }}
-          animate={{
-            height: [3, 6, 3],
-            opacity: [0.4, 0.8, 0.4]
-          }}
-          transition={{
-            duration: 2,
-            delay: marker * 0.02,
-            repeat: Infinity
-          }}
-        />
-      ))}
-
-      {/* Realistic Human Runner */}
+      {/* Video Runner */}
       <motion.div
-        className="absolute bottom-8"
+        className="absolute bottom-4"
         style={{ 
           left: xPosition,
           x: '-50%',
           filter: 'drop-shadow(0 10px 8px rgba(0, 0, 0, 0.1))'
         }}
       >
-        <svg width="80" height="120" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Enhanced gradients */}
-          <defs>
-            <linearGradient id="skinGradient" x1="30" y1="20" x2="50" y2="50">
-              <stop stopColor="#FEE3C0" />
-              <stop offset="0.5" stopColor="#FAD2A8" />
-              <stop offset="1" stopColor="#E6B88A" />
-            </linearGradient>
-            
-            <linearGradient id="hairGradient" x1="30" y1="10" x2="50" y2="30">
-              <stop stopColor="#2C1810" />
-              <stop offset="0.5" stopColor="#4A2A1A" />
-              <stop offset="1" stopColor="#2C1810" />
-            </linearGradient>
-            
-            <linearGradient id="topGradient" x1="25" y1="35" x2="55" y2="60">
-              <stop stopColor="#FF1493" />
-              <stop offset="0.5" stopColor="#FF69B4" />
-              <stop offset="1" stopColor="#FF1493" />
-            </linearGradient>
-            
-            <linearGradient id="shortsGradient" x1="30" y1="55" x2="50" y2="70">
-              <stop stopColor="#4A0E4A" />
-              <stop offset="0.5" stopColor="#6B2D6B" />
-              <stop offset="1" stopColor="#4A0E4A" />
-            </linearGradient>
-            
-            <linearGradient id="legGradient" x1="30" y1="60" x2="50" y2="95">
-              <stop stopColor="#8B5A2B" />
-              <stop offset="0.5" stopColor="#A8753B" />
-              <stop offset="1" stopColor="#8B5A2B" />
-            </linearGradient>
-            
-            <linearGradient id="shoeGradient" x1="35" y1="95" x2="55" y2="100">
-              <stop stopColor="#FF4500" />
-              <stop offset="0.5" stopColor="#FF6347" />
-              <stop offset="1" stopColor="#FF4500" />
-            </linearGradient>
-            
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-            
-            <radialGradient id="pathGradient">
-              <stop stopColor="#EC4899" />
-              <stop offset="0.5" stopColor="#8B5CF6" />
-              <stop offset="1" stopColor="#3B82F6" />
-            </radialGradient>
-          </defs>
-
-          {/* Hair with movement */}
-          <motion.g
-            animate={isActive ? {
-              y: [0, -2, 0],
-              rotate: [-2, 2, -2]
-            } : {}}
-            transition={{ duration: 0.5, repeat: Infinity }}
-          >
-            <path d="M30 18 Q40 10, 50 18" fill="url(#hairGradient)" />
-            <circle cx="40" cy="17" r="10" fill="url(#hairGradient)" />
-          </motion.g>
-
-          {/* Head with glow */}
-          <motion.circle
-            cx="40"
-            cy="30"
-            r="14"
-            fill="url(#skinGradient)"
-            stroke="#E6B88A"
-            strokeWidth="1.5"
-            animate={isActive ? {
-              y: [0, -1, 0],
-              transition: { duration: 0.3, repeat: Infinity }
-            } : {}}
-            filter="url(#glow)"
-          />
-          
-          {/* Beautiful face */}
-          <circle cx="35" cy="26" r="2" fill="#2C1810" />
-          <circle cx="45" cy="26" r="2" fill="#2C1810" />
-          
-          {/* Eyelashes */}
-          <path d="M32 23 L28 21" stroke="#2C1810" strokeWidth="1" />
-          <path d="M48 23 L52 21" stroke="#2C1810" strokeWidth="1" />
-          
-          {/* Smile with animation */}
-          <motion.path
-            d="M35 33 Q40 38, 45 33"
-            stroke="#FF69B4"
-            strokeWidth="2"
-            fill="none"
-            animate={isActive ? {
-              d: ["M35 33 Q40 38, 45 33", "M35 34 Q40 39, 45 34", "M35 33 Q40 38, 45 33"]
-            } : {}}
-            transition={{ duration: 0.5, repeat: Infinity }}
-          />
-          
-          {/* Blush */}
-          <circle cx="32" cy="32" r="2.5" fill="#FFB6C1" opacity="0.4" />
-          <circle cx="48" cy="32" r="2.5" fill="#FFB6C1" opacity="0.4" />
-          
-          {/* Sporty headband with sparkle */}
-          <path d="M28 18 L52 18" stroke="#FFD700" strokeWidth="4" strokeLinecap="round" />
-          <motion.circle
-            cx="40"
-            cy="18"
-            r="2"
-            fill="#FFD700"
-            animate={{ scale: [1, 1.5, 1], opacity: [1, 0.8, 1] }}
-            transition={{ duration: 1, repeat: Infinity }}
-          />
-          
-          {/* Athletic top with shimmer */}
-          <motion.rect
-            x="30"
-            y="38"
-            width="20"
-            height="20"
-            fill="url(#topGradient)"
-            rx="5"
-            animate={isActive ? {
-              x: [30, 31, 30],
-              transition: { duration: 0.3, repeat: Infinity }
-            } : {}}
-            filter="url(#glow)"
-          />
-          
-          {/* Running shorts */}
-          <motion.rect
-            x="32"
-            y="56"
-            width="16"
-            height="8"
-            fill="url(#shortsGradient)"
-            rx="3"
-            animate={isActive ? {
-              y: [56, 57, 56],
-              transition: { duration: 0.3, repeat: Infinity }
-            } : {}}
-          />
-          
-          {/* Arms with natural swinging motion */}
-          <motion.g
-            style={{ rotate: leftArmRotation, originX: 35, originY: 45 }}
-          >
-            <rect x="18" y="42" width="12" height="6" rx="3" fill="url(#skinGradient)" transform="rotate(-10)" />
-            <circle cx="18" cy="45" r="4" fill="url(#skinGradient)" /> {/* Hand */}
-          </motion.g>
-          
-          <motion.g
-            style={{ rotate: rightArmRotation, originX: 45, originY: 45 }}
-          >
-            <rect x="42" y="42" width="12" height="6" rx="3" fill="url(#skinGradient)" transform="rotate(10)" />
-            <circle cx="54" cy="45" r="4" fill="url(#skinGradient)" /> {/* Hand */}
-          </motion.g>
-          
-          {/* Legs with realistic running motion */}
-          <motion.g
-            style={{ rotate: leftLegRotation, originX: 38, originY: 65 }}
-          >
-            <rect x="32" y="64" width="10" height="26" rx="5" fill="url(#legGradient)" />
-            <motion.ellipse
-              cx="37"
-              cy="90"
-              rx="6"
-              ry="4"
-              fill="url(#shoeGradient)"
-              animate={isActive ? {
-                scaleX: [1, 1.1, 1],
-                scaleY: [1, 0.9, 1]
-              } : {}}
-              transition={{ duration: 0.2, repeat: Infinity }}
-            />
-          </motion.g>
-          
-          <motion.g
-            style={{ rotate: rightLegRotation, originX: 42, originY: 65 }}
-          >
-            <rect x="38" y="64" width="10" height="26" rx="5" fill="url(#legGradient)" />
-            <motion.ellipse
-              cx="43"
-              cy="90"
-              rx="6"
-              ry="4"
-              fill="url(#shoeGradient)"
-              animate={isActive ? {
-                scaleX: [1, 1.1, 1],
-                scaleY: [1, 0.9, 1]
-              } : {}}
-              transition={{ duration: 0.2, repeat: Infinity, delay: 0.1 }}
-            />
-          </motion.g>
-          
-          {/* Sweat droplets with trail effect */}
-          {isActive && (
-            <>
-              {[0, 1, 2].map((i) => (
-                <motion.g key={i}>
-                  <motion.circle
-                    cx={50 + i * 5}
-                    cy={25 - i * 3}
-                    r="2"
-                    fill="#4FC3F7"
-                    initial={{ opacity: 0, y: 0 }}
-                    animate={{
-                      opacity: [0, 1, 0],
-                      y: [0, 15],
-                      x: [50 + i * 5, 55 + i * 8],
-                    }}
-                    transition={{
-                      duration: 1.2,
-                      repeat: Infinity,
-                      delay: i * 0.3
-                    }}
-                  />
-                  <motion.circle
-                    cx={50 + i * 5}
-                    cy={25 - i * 3}
-                    r="1"
-                    fill="white"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 0.8, 0] }}
-                    transition={{
-                      duration: 1.2,
-                      repeat: Infinity,
-                      delay: i * 0.3 + 0.1
-                    }}
-                  />
-                </motion.g>
-              ))}
-            </>
-          )}
-
-          {/* Energy aura */}
-          <motion.circle
-            cx="40"
-            cy="50"
-            r="30"
-            fill="url(#pathGradient)"
-            opacity="0.1"
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.1, 0.15, 0.1]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        </svg>
+        <video
+          ref={videoRef}
+          src="/videos/progress.mp4"
+          loop
+          muted
+          playsInline
+          className="w-20 h-28 object-contain"
+          style={{ mixBlendMode: 'multiply' }}
+        />
       </motion.div>
 
-      {/* Heart rate monitor with beautiful animation */}
+      {/* Heart rate monitor */}
       <motion.div 
         className="absolute top-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-pink-200 dark:border-pink-800"
-        animate={{
-          y: [0, -2, 0],
-          boxShadow: [
-            '0 4px 12px rgba(236, 72, 153, 0.2)',
-            '0 6px 16px rgba(236, 72, 153, 0.3)',
-            '0 4px 12px rgba(236, 72, 153, 0.2)'
-          ]
-        }}
+        animate={{ y: [0, -2, 0], boxShadow: ['0 4px 12px rgba(236,72,153,0.2)', '0 6px 16px rgba(236,72,153,0.3)', '0 4px 12px rgba(236,72,153,0.2)'] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <motion.div
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        >
+        <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1, repeat: Infinity }}>
           <Heart className="h-5 w-5 text-red-500 fill-red-500" />
         </motion.div>
         <span className="text-sm font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
@@ -540,22 +155,14 @@ const RealisticRunner = ({ progress = 0, isActive = false }) => {
         <Activity className="h-4 w-4 text-purple-400" />
       </motion.div>
 
-      {/* Progress stats with beautiful cards */}
+      {/* Bottom stats */}
       <div className="absolute bottom-0 left-0 right-0 flex justify-between px-4 py-2 bg-gradient-to-t from-black/5 to-transparent">
-        <motion.div
-          className="text-xs font-medium text-pink-600 dark:text-pink-400"
-          animate={{ y: [0, -2, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
+        <motion.div className="text-xs font-medium text-pink-600 dark:text-pink-400" animate={{ y: [0, -2, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
           🏁 Start
         </motion.div>
-        
         <motion.div
           className="flex items-center gap-1 text-xs font-medium bg-white/60 dark:bg-gray-800/60 px-2 py-1 rounded-full backdrop-blur-sm"
-          animate={{
-            scale: [1, 1.05, 1],
-            backgroundColor: ['rgba(255,255,255,0.6)', 'rgba(236,72,153,0.2)', 'rgba(255,255,255,0.6)']
-          }}
+          animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
           <Footprints className="h-3 w-3 text-purple-500" />
@@ -563,17 +170,12 @@ const RealisticRunner = ({ progress = 0, isActive = false }) => {
             {Math.round(progress * 5000)} steps
           </span>
         </motion.div>
-        
-        <motion.div
-          className="text-xs font-medium text-purple-600 dark:text-purple-400"
-          animate={{ y: [0, -2, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
-        >
+        <motion.div className="text-xs font-medium text-purple-600 dark:text-purple-400" animate={{ y: [0, -2, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}>
           Goal 🏆
         </motion.div>
       </div>
 
-      {/* Achievement ring with progress */}
+      {/* Achievement ring */}
       <svg className="absolute top-2 right-2 w-16 h-16">
         <defs>
           <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -581,58 +183,23 @@ const RealisticRunner = ({ progress = 0, isActive = false }) => {
             <stop offset="100%" stopColor="#8B5CF6" />
           </linearGradient>
         </defs>
-        <circle
-          cx="32"
-          cy="32"
-          r="24"
-          fill="none"
-          stroke="url(#ringGradient)"
-          strokeWidth="3"
-          strokeDasharray={`${progress * 151} 151`}
-          strokeLinecap="round"
-          transform="rotate(-90 32 32)"
-          opacity="0.8"
-        />
-        <motion.circle
-          cx="32"
-          cy="32"
-          r="18"
-          fill="white"
-          className="dark:fill-gray-800"
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-        <text x="32" y="36" textAnchor="middle" className="text-xs font-bold fill-current">
-          {Math.round(progress * 100)}%
-        </text>
+        <circle cx="32" cy="32" r="24" fill="none" stroke="url(#ringGradient)" strokeWidth="3" strokeDasharray={`${progress * 151} 151`} strokeLinecap="round" transform="rotate(-90 32 32)" opacity="0.8" />
+        <motion.circle cx="32" cy="32" r="18" fill="white" className="dark:fill-gray-800" animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} />
+        <text x="32" y="36" textAnchor="middle" className="text-xs font-bold fill-current">{Math.round(progress * 100)}%</text>
       </svg>
 
-      {/* Floating motivational words */}
-      {isActive && (
-        <>
-          {['💪', '⚡', '🌟', '✨'].map((emoji, i) => (
-            <motion.div
-              key={i}
-              className="absolute text-2xl"
-              initial={{ x: 20 + i * 30, y: 100, opacity: 0 }}
-              animate={{
-                x: 20 + i * 30,
-                y: [100, 50, 100],
-                opacity: [0, 1, 0],
-                rotate: [0, 10, -10, 0]
-              }}
-              transition={{
-                duration: 3,
-                delay: i * 0.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              {emoji}
-            </motion.div>
-          ))}
-        </>
-      )}
+      {/* Floating emojis when active */}
+      {isActive && ['💪', '⚡', '🌟', '✨'].map((emoji, i) => (
+        <motion.div
+          key={i}
+          className="absolute text-2xl"
+          initial={{ x: 20 + i * 30, y: 100, opacity: 0 }}
+          animate={{ x: 20 + i * 30, y: [100, 50, 100], opacity: [0, 1, 0], rotate: [0, 10, -10, 0] }}
+          transition={{ duration: 3, delay: i * 0.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          {emoji}
+        </motion.div>
+      ))}
     </motion.div>
   );
 };

@@ -7,8 +7,10 @@ import { MEAL_DATABASE, MealDBItem } from '@/data/mealDatabase';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { getLS, setLS, LS_KEYS, CalorieEntry, MealPlanItem } from '@/utils/localStorage';
-import { Plus, Trash2, Activity, Clock, CheckCircle2, Calendar } from 'lucide-react';
-import { format, isToday, parseISO } from 'date-fns';
+import { Plus, Trash2, Activity, Clock, CheckCircle2, Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format, isToday } from 'date-fns';
 
 interface DailyMealEntry {
   id: string;
@@ -31,6 +33,7 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
   const [selectedMeals, setSelectedMeals] = useState<DailyMealEntry[]>([]);
   const [expandedCategory, setExpandedCategory] = useState<string | null>('breakfast');
   const [viewDate, setViewDate] = useState<Date>(selectedDate);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const { language } = useLanguage();
   const { addNotification } = useNotifications();
 
@@ -233,15 +236,49 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
     <div className="space-y-4">
       {/* Date Selector */}
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <input
-            type="date"
-            value={format(viewDate, 'yyyy-MM-dd')}
-            onChange={(e) => setViewDate(new Date(e.target.value))}
-            className="text-sm bg-transparent border rounded px-2 py-1"
-          />
-        </div>
+        <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+          <PopoverTrigger asChild>
+            <button className="flex items-center gap-2 text-sm bg-transparent border rounded px-2 py-1 hover:bg-muted/80 transition-colors">
+              <CalendarIcon className="h-4 w-4 text-muted-foreground text-green-500 fill-green-700" />
+              <span>{format(viewDate, 'PPP')}</span>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-2 border border-border bg-popover shadow-lg">
+            <CalendarComponent
+              mode="single"
+              selected={viewDate}
+              onSelect={(date) => {
+                if (date) {
+                  setViewDate(date);
+                  setIsDatePickerOpen(false);
+                }
+              }}
+              month={viewDate}
+              onMonthChange={(month) => setViewDate(month)}
+              animated
+              highlightToday
+              className="rounded-md border-0"
+            />
+            <div className="mt-4 flex justify-between gap-4">
+              <button
+                className="text-xs text-primary hover:text-primary/80"
+                onClick={() => {
+                  const today = new Date();
+                  setViewDate(today);
+                  setIsDatePickerOpen(false);
+                }}
+              >
+                Today
+              </button>
+              <button
+                className="text-xs text-muted-foreground hover:text-foreground"
+                onClick={() => setIsDatePickerOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
         {isToday(viewDate) && (
           <Badge variant="outline" className="text-xs">Today</Badge>
         )}
