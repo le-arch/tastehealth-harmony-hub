@@ -58,7 +58,7 @@ interface Challenge extends LSChallenge {
   dailyLogs: { date: string; completed: boolean }[];
 }
 
-const colorClasses = {
+const colorClasses: Record<string, string> = {
   green: 'bg-green-100 dark:bg-green-950',
   red: 'bg-red-100 dark:bg-red-950',
   blue: 'bg-blue-100 dark:bg-blue-950',
@@ -102,7 +102,8 @@ const PRESET_CHALLENGES: Omit<Challenge, 'id' | 'startDate' | 'progress' | 'comp
     description: "Eat 5 servings of fruits and vegetables daily",
     duration: 7,
     difficulty: 1,
-    target: 35
+    target: 35,
+    types: [] // Added missing types property
   },
   {
     name: "Hydration Hero",
@@ -111,7 +112,8 @@ const PRESET_CHALLENGES: Omit<Challenge, 'id' | 'startDate' | 'progress' | 'comp
     description: "Drink 8 glasses of water daily",
     duration: 7,
     difficulty: 2,
-    target: 56
+    target: 56,
+    types: [] // Added missing types property
   },
   {
     name: "10K Steps",
@@ -120,7 +122,8 @@ const PRESET_CHALLENGES: Omit<Challenge, 'id' | 'startDate' | 'progress' | 'comp
     description: "Walk 10,000 steps daily",
     duration: 30,
     difficulty: 3,
-    target: 30
+    target: 30,
+    types: [] // Added missing types property
   },
   {
     name: "Sleep Champion",
@@ -129,7 +132,8 @@ const PRESET_CHALLENGES: Omit<Challenge, 'id' | 'startDate' | 'progress' | 'comp
     description: "Get 7-8 hours of sleep",
     duration: 14,
     difficulty: 2,
-    target: 14
+    target: 14,
+    types: [] // Added missing types property
   },
   {
     name: "Meditation",
@@ -138,7 +142,8 @@ const PRESET_CHALLENGES: Omit<Challenge, 'id' | 'startDate' | 'progress' | 'comp
     description: "Meditate for 10 minutes daily",
     duration: 21,
     difficulty: 3,
-    target: 21
+    target: 21,
+    types: [] // Added missing types property
   }
 ];
 
@@ -170,7 +175,8 @@ const ChallengesPage: React.FC = () => {
         startDate: c.startDate || new Date().toISOString(),
         streak: c.streak || 0,
         lastUpdated: c.lastUpdated || null,
-        dailyLogs: Array.isArray(c.dailyLogs) ? c.dailyLogs : []
+        dailyLogs: Array.isArray(c.dailyLogs) ? c.dailyLogs : [],
+        types: Array.isArray(c.types) ? c.types : [] // Added types property
       }));
     } catch (e) {
       console.error('Error loading challenges:', e);

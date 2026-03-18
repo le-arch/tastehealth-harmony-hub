@@ -114,7 +114,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
             className
           )}
           {...props}
-        >
+        > 
           {/* Animated gradient background */}
           <motion.div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"

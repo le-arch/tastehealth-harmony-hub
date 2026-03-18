@@ -1,6 +1,6 @@
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, MotionProps } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
@@ -153,6 +153,9 @@ const ChartContainer = React.forwardRef<
     )
   }
 
+  // Separate motion-specific props from regular div props
+  const { onAnimationStart, onAnimationEnd, onDrag, ...restProps } = props;
+
   return (
     <ChartContext.Provider value={{ config }}>
       <motion.div
@@ -165,7 +168,7 @@ const ChartContainer = React.forwardRef<
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
         className={baseClasses}
-        {...props}
+        {...restProps as Omit<typeof restProps, keyof MotionProps>}
       >
         <ChartStyle id={chartId} config={config} />
         

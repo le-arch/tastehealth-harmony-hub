@@ -221,7 +221,14 @@ const CookingVideosPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const categories = ['all', 'breakfast', 'lunch', 'dinner', 'snacks', 'drinks'];
-  const filtered = activeCategory === 'all' ? COOKING_VIDEOS : COOKING_VIDEOS.filter(v => v.category === activeCategory);
+
+  const categoryMap: Record<string, string> = {
+    drinks: 'drink',
+  };
+
+  const filtered = activeCategory === 'all'
+    ? COOKING_VIDEOS
+    : COOKING_VIDEOS.filter(v => v.category === (categoryMap[activeCategory] ?? activeCategory));
 
   return (
     <PageLayout activePage="cooking">
@@ -237,7 +244,7 @@ const CookingVideosPage: React.FC = () => {
         </motion.div>
         <Tabs value={activeCategory} onValueChange={setActiveCategory}>
           <ScrollableTabsList className="mb-6">
-            {categories.map(cat => <TabsTrigger key={cat} value={cat} className="capitalize">{cat === 'all' ? '🎬 All Videos' : `${cat === 'breakfast' ? '🌅' : cat === 'lunch' ? '☀️' : cat === 'dinner' ? '🌙' : cat === 'snacks' ? '🍿' : cat === 'drinks' ? '🥤'} ${cat}`}</TabsTrigger>)}
+            {categories.map(cat => <TabsTrigger key={cat} value={cat} className="capitalize">{cat === 'all' ? '🎬 All Videos' : `${cat === 'breakfast' ? '🌅' : cat === 'lunch' ? '☀️' : cat === 'dinner' ? '🌙' : cat === 'snacks' ? '🍿' : cat === 'drinks' ? '🥤' : ''} ${cat}`}</TabsTrigger>)}
           </ScrollableTabsList>
         </Tabs>
         <AnimatePresence>
