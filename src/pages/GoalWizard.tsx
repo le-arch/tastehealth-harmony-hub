@@ -828,10 +828,7 @@ const GoalWizard = () => {
               )}
               {currentStep === 4 && renderWellnessGoalsStep()}
               {currentStep === 5 && (
-                <ReviewGoalsStep 
-                  formData={formData}
-                  enhanced={true}
-                />
+                <ReviewGoalsStep formData={formData} />
               )}
             </motion.div>
           </AnimatePresence>

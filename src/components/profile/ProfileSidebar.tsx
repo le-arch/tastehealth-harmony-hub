@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   LayoutDashboard, Calendar, LineChart, LogOut, X,
-  Sun, Moon, Gamepad, Mountain, Gift, Bookmark,
+  Sun, Moon, Gamepad, Gift, Bookmark,
   Video, Stethoscope, BookOpen, ChevronRight
 } from "lucide-react";
 import Logo from "@/components/Logo";
