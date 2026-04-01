@@ -57,7 +57,7 @@ const MealPrepTimer: React.FC = () => {
   const t = translations[language as keyof typeof translations] || translations.en;
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    let interval: ReturnType<typeof setInterval> | null = null;
     
     if (isActive && (minutes > 0 || seconds > 0)) {
       interval = setInterval(() => {

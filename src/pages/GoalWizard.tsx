@@ -225,8 +225,22 @@ const GoalWizard = () => {
     trackMicros: false,
   });
 
-  // Load saved data on mount
+  // Load saved data on mount + pull from profile
   useEffect(() => {
+    // Load profile data for age, weight, height, gender
+    try {
+      const profile = JSON.parse(localStorage.getItem('th_profile') || 'null');
+      if (profile) {
+        const profileUpdates: Partial<FormData> = {};
+        if (profile.age) profileUpdates.age = parseInt(profile.age) || 30;
+        if (profile.weight) profileUpdates.weight = parseFloat(profile.weight) || 70;
+        if (profile.height) profileUpdates.height = parseFloat(profile.height) || 170;
+        if (profile.gender) profileUpdates.gender = profile.gender;
+        if (profile.activityLevel) profileUpdates.activityLevel = profile.activityLevel;
+        setFormData(prev => ({ ...prev, ...profileUpdates }));
+      }
+    } catch {}
+
     const savedWizardData = localStorage.getItem('th_goal_wizard_data');
     if (savedWizardData) {
       try {
