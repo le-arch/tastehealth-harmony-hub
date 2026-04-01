@@ -297,29 +297,24 @@ const GoalWizard = () => {
     if (!template) return;
     
     const updates: Partial<FormData> = {};
+    const goals = template.goals as Record<string, any>;
     
     // Apply calorie adjustment
-    if (template.goals.dailyCalories) {
+    if ('dailyCalories' in goals && typeof goals.dailyCalories === 'number') {
       const currentCalories = calculateCalories();
-      if (typeof template.goals.dailyCalories === 'number') {
-        if (template.goals.dailyCalories < 0) {
-          updates.dailyCalories = Math.round(currentCalories * (1 + template.goals.dailyCalories / 100));
-        } else if (template.goals.dailyCalories > 0) {
-          updates.dailyCalories = Math.round(currentCalories * (1 + template.goals.dailyCalories / 100));
-        }
-      }
+      updates.dailyCalories = Math.round(currentCalories * (1 + goals.dailyCalories / 100));
     }
     
-    // Apply other goals
-    if (template.goals.proteinPercentage) updates.proteinPercentage = template.goals.proteinPercentage;
-    if (template.goals.waterIntakeGoal) updates.waterIntakeGoal = template.goals.waterIntakeGoal;
-    if (template.goals.sleepHoursGoal) updates.sleepHoursGoal = template.goals.sleepHoursGoal;
-    if (template.goals.stepsGoal) updates.stepsGoal = template.goals.stepsGoal;
-    if (template.goals.workoutDaysGoal) updates.workoutDaysGoal = template.goals.workoutDaysGoal;
-    if (template.goals.meditationMinutesGoal) updates.meditationMinutesGoal = template.goals.meditationMinutesGoal;
-    if (template.goals.screenTimeLimit) updates.screenTimeLimit = template.goals.screenTimeLimit;
-    if (template.goals.includeRecoveryDays !== undefined) updates.includeRecoveryDays = template.goals.includeRecoveryDays;
-    if (template.goals.includeCheatMeals !== undefined) updates.includeCheatMeals = template.goals.includeCheatMeals;
+    // Apply other goals safely
+    if ('proteinPercentage' in goals) updates.proteinPercentage = goals.proteinPercentage;
+    if ('waterIntakeGoal' in goals) updates.waterIntakeGoal = goals.waterIntakeGoal;
+    if ('sleepHoursGoal' in goals) updates.sleepHoursGoal = goals.sleepHoursGoal;
+    if ('stepsGoal' in goals) updates.stepsGoal = goals.stepsGoal;
+    if ('workoutDaysGoal' in goals) updates.workoutDaysGoal = goals.workoutDaysGoal;
+    if ('meditationMinutesGoal' in goals) updates.meditationMinutesGoal = goals.meditationMinutesGoal;
+    if ('screenTimeLimit' in goals) updates.screenTimeLimit = goals.screenTimeLimit;
+    if ('includeRecoveryDays' in goals) updates.includeRecoveryDays = goals.includeRecoveryDays;
+    if ('includeCheatMeals' in goals) updates.includeCheatMeals = goals.includeCheatMeals;
     
     setFormData(prev => ({ ...prev, ...updates }));
     setSelectedTemplate(templateKey);
