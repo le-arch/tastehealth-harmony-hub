@@ -179,7 +179,7 @@ const COOKING_VIDEOS: CookingVideo[] = [
     title: 'Baobab Drink',
     description: 'Tangy and refreshing drink made from baobab fruit',
     thumbnail: '/meals/baobab.jpeg',
-    video: '/videos/baobab.mp4',
+    video: '/videos/baobab juice.mp4',
     duration: '1 min',
     category: 'drink',
     tags: ['vitamin-c', 'refreshing', 'natural']
@@ -189,7 +189,7 @@ const COOKING_VIDEOS: CookingVideo[] = [
     title: 'Zobo Drink',
     description: 'Hibiscus tea sweetened with natural flavors',
     thumbnail: '/meals/zobo.jpeg',
-    video: '/videos/zobo.mp4',
+    video: '/videos/zobo hibiscus.mp4',
     duration: '1 min',
     category: 'drink',
     tags: ['antioxidant', 'caffeine-free']
@@ -199,7 +199,7 @@ const COOKING_VIDEOS: CookingVideo[] = [
     title: 'Tiger Nut Drink',
     description: 'Creamy and sweet drink made from tiger nuts',
     thumbnail: '/meals/tiger nut drink.jpeg',
-    video: '/videos/tiger nut.mp4',
+    video: '/videos/tiger nut drink.mp4',
     duration: '1 min',
     category: 'drink',
     tags: ['dairy-free', 'fiber-rich']

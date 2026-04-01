@@ -23,7 +23,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   // BREAKFAST (1-50)
   {
     id: 'b1', name: 'Achu & Yellow Soup', description: 'Pounded cocoyam served with vibrant yellow soup made from palm oil, beef broth, and limestone solution.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/achu.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Achu: 1 kg Achu cocoyam (Taro)', 'water', 'Soup: 1 cup heated palm oil', '2 cups beef broth', '1 1/2 tbsp Achu spice mix', '1/3 cup limestone solution (kangwa mix)', 'salt', 'bouillon', 'Sides: Boiled garden eggs', 'Njama Njama (huckleberry leaves)'],
@@ -33,7 +33,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b2', name: 'Millet Pap (Breakfast Porridge)', description: 'Nutritious fermented millet porridge served hot with evaporated milk and sugar.',
-    image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&auto=format',
+    image: '/meals/Mielie Pap Porridge.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['500g Millet paste', 'water', 'evaporated milk (Peak milk)', 'granulated sugar'],
@@ -43,7 +43,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b3', name: 'Garri Soaked with Sugar', description: 'Quick cassava cereal with roasted groundnuts - a staple breakfast across Cameroon.',
-    image: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400&auto=format',
+    image: '/meals/drinking garri.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['1 cup Garri (cassava)', '1/2 cup roasted groundnuts', '1/2 cup granulated sugar'],
@@ -53,7 +53,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b4', name: 'Traditional Omelette', description: 'Fluffy Cameroonian-style omelette with tomatoes, onions, and spices.',
-    image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400&auto=format',
+    image: '/meals/omelete.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['6 eggs', '3 tomatoes', '1 onion', 'garlic', 'pebe (African nutmeg)', 'bouillon cube', 'salt'],
@@ -63,7 +63,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b5', name: 'Boiled Yam & Egg Sauce', description: 'Tender boiled yam served with rich tomato and egg sauce.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/Yam and egg.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Yam: 1 kg Yam (Puna)', 'water', 'Sauce: 6 eggs', '3 tomatoes', '1 onion', 'garlic', 'pebe', 'bouillon cube', 'salt'],
@@ -73,7 +73,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b6', name: 'Masa with Pepper Sauce', description: 'Northern-style fermented rice cakes served with spicy pepper sauce.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals.masa.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Masa: 1 kg Cornflour', 'Sauce: 1 bulb garlic', 'thumb-sized ginger', 'pebe', '2 crayfish seasoning cubes', '1 cup vegetable oil', 'salt'],
@@ -83,7 +83,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b7', name: 'Koki Corn (Breakfast Wrap)', description: 'Steamed fresh corn pudding wrapped in banana leaves - a nutritious morning meal.',
-    image: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400&auto=format',
+    image: 'kokicorn.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Corn: 1 kg fresh corn', 'palm oil', '2 cups spinach', 'thumb-sized ginger', 'crayfish', 'salt', 'Fufu: 1 kg Rice flour'],
@@ -93,7 +93,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b8', name: 'Puff Puff & Beans', description: 'Deep-fried sweet dough balls served with stewed brown beans.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: 'puff puff beans.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Puff Puff: 500g All-purpose flour', '150g sugar', '2 tsp active dry yeast', '1 tsp salt', '500ml lukewarm water', 'Vegetable oil', 'Beans: 1 kg brown beans', '1 large onion', '3 tomatoes', '1/4 cup palm oil', '2 crayfish cubes', 'salt'],
@@ -103,7 +103,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b9', name: 'White Corn Pap (Akamu)', description: 'Smooth fermented white corn porridge.',
-    image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&auto=format',
+    image: 'pap.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['500g White corn paste', 'water', 'evaporated milk', 'granulated sugar'],
@@ -173,7 +173,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b16', name: 'Garri & Milk', description: 'Soaked garri with evaporated milk.',
-    image: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400&auto=format',
+    image: '/meals/drinking garri.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['1 cup Garri', '1 cup evaporated milk', '1 cup sugar', '1/2 cup groundnuts'],
@@ -183,7 +183,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b17', name: 'Garri & Groundnuts', description: 'Dry garri mixed with roasted peanuts.',
-    image: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400&auto=format',
+    image: '/meals/drinking garri.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['1 cup Garri', '1/2 cup groundnuts', '1/2 cup sugar'],
@@ -3381,7 +3381,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   // DRINKS (351-400)
   {
     id: 'dr1', name: 'Soursop Juice', description: 'Creamy soursop drink.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/soursop.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 ripe soursop', 'water'],
@@ -3391,7 +3391,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr2', name: 'Soursop Smoothie', description: 'Creamy tropical blend.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/soursop smoothie.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 ripe soursop', 'water'],
@@ -3401,7 +3401,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr3', name: 'Sugar Cane Juice', description: 'Pressed raw sugarcane.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/sugarcane juice.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['sugar cane'],
@@ -3411,7 +3411,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr4', name: 'Sugarcane Juice & Ginger', description: 'Cane juice with ginger.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/sugarcane ginger.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 kg mango', 'pineapple skin', 'sugar', 'water'],
@@ -3421,7 +3421,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr5', name: 'Tamarind Cooler', description: 'Tangy tamarind drink.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/tamarind cooler.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 cup Tamarind', 'pineapple skin', '1 kg sugar', '2 yeast', 'ginger', 'water'],
@@ -3431,7 +3431,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr6', name: 'Tamarind Juice', description: 'Traditional tamarind drink.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/tamarind juice.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 kg Tamarind', 'pineapple skin', '1 kg sugar', 'water'],
@@ -3441,7 +3441,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr7', name: 'Watermelon Cooler', description: 'Hydrating melon juice.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/watermelon juice.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['lemon juice', 'water'],
@@ -3451,7 +3451,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr8', name: 'Watermelon Juice', description: 'Pureed fresh watermelon.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/watermelon juice.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 watermelon'],
@@ -3461,7 +3461,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr9', name: 'Watermelon Juice (Fresh)', description: 'Fresh watermelon juice.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/watermelon mint.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 watermelon'],
@@ -3471,7 +3471,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr10', name: 'Folere (Hibiscus)', description: 'Red hibiscus tea.',
-    image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=400&auto=format',
+    image: '/meals/hibiscus drink.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['2 cups hibiscus', 'ginger', 'water'],
@@ -3481,7 +3481,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr11', name: 'Folere (Iced Sweet)', description: 'Sweet hibiscus cooler.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/hibiscus pineapple.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['2 cups hibiscus', 'pineapple skin', '1 kg sugar', '2 tsp yeast', 'ginger', 'water'],
@@ -3491,7 +3491,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr12', name: 'Folere (No Sugar)', description: 'Tart hibiscus infusion.',
-    image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=400&auto=format',
+    image: '/meals/hibiscus drink.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['2 cups hibiscus', 'ginger', 'water'],
@@ -3501,7 +3501,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr13', name: 'Folere (Unsweetened Tea)', description: 'Hot hibiscus tea.',
-    image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=400&auto=format',
+    image: '/meals/hibiscus lemonade.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['2 cups hibiscus', 'ginger', 'water'],
@@ -3511,7 +3511,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr14', name: 'Folere Leaf Juice', description: 'Green hibiscus drink.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/hibiscus drink.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['4 bundles huckleberry', 'water', 'ginger', 'crayfish', '1/4 oil', 'salt'],
@@ -3521,7 +3521,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr15', name: 'Ginger & Honey Brew', description: 'Warm soothing tea.',
-    image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=400&auto=format',
+    image: '/meals/ginger honey.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['ginger', 'honey', 'water'],
@@ -3531,7 +3531,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr16', name: 'Ginger & Honey Tea', description: 'Soothing ginger brew.',
-    image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=400&auto=format',
+    image: '/meals/ginger tea.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['ginger', 'honey', 'tea'],
@@ -3541,7 +3541,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr17', name: 'Ginger Juice (Djino)', description: 'Fresh ginger drink.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/ginger drink.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['ginger', 'pineapple skin', '1 kg sugar', 'water'],
@@ -3551,7 +3551,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr18', name: 'Ginger Lemonade (Djino)', description: 'Zesty ginger cooler.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/ginger lemon.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['ginger', 'pineapple skin', '1 kg sugar', 'lemon', 'water'],
@@ -3561,7 +3561,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr19', name: 'Fresh Orange Juice', description: 'Squeezed highland oranges.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/orange juice.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 kg oranges'],
