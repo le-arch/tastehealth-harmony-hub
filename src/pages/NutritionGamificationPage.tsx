@@ -109,7 +109,7 @@ const NutritionGamificationPage = () => {
             <TabsTrigger value="mealPrep" className="flex items-center gap-2">
               <ChefHat className="h-4 w-4" /> Meal Prep
             </TabsTrigger>
-          </Tabs>
+          </TabsList>
 
           <TabsContent value="challenges" className="space-y-6">
             {/* Active Challenges */}
