@@ -160,20 +160,29 @@ export function MealPlanList() {
 
   const saveToDailyMeals = (name: string, calories: number, category: string, time: string, mealDate?: Date) => {
     try {
-      const stored = JSON.parse(localStorage.getItem('th_daily_meals') || '[]');
+      const dateKey = format(mealDate || new Date(), 'yyyy-MM-dd');
+      const stored = JSON.parse(localStorage.getItem(`th_daily_meals_${dateKey}`) || '[]');
       const dbMeal = MEAL_DATABASE.find(m => m.name === name);
+      
+      // Check for duplicate
+      const exists = stored.some((item: any) => item.mealName === name && item.scheduledTime === time);
+      if (exists) return;
+      
       stored.push({
+        id: crypto.randomUUID(),
         mealId: dbMeal?.id || name,
         mealName: name,
-        calories,
+        calories: dbMeal?.nutrition.calories || calories,
         protein: dbMeal?.nutrition.protein || 0,
         carbs: dbMeal?.nutrition.carbs || 0,
         fats: dbMeal?.nutrition.fats || 0,
         category,
-        timestamp: mealDate?.toISOString() || new Date().toISOString(),
+        timestamp: (mealDate || new Date()).toISOString(),
         scheduledTime: time,
+        logged: false,
+        mealPlanId: 'timetable',
       });
-      localStorage.setItem('th_daily_meals', JSON.stringify(stored));
+      localStorage.setItem(`th_daily_meals_${dateKey}`, JSON.stringify(stored));
     } catch {}
   };
 

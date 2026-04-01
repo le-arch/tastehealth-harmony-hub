@@ -32,7 +32,7 @@ const MealPrepFeedback = () => {
   const [timeLeft, setTimeLeft] = useState(0)
   const [showCelebration, setShowCelebration] = useState(false)
   const [celebrationMessage, setCelebrationMessage] = useState("")
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const confettiCanvasRef = useRef<HTMLCanvasElement>(null)
   const { language } = useLanguage()
