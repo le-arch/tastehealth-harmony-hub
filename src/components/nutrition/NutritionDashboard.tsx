@@ -1,11 +1,10 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
@@ -13,12 +12,12 @@ import { Activity, Target, TrendingUp, Calendar, Award, Flame, Droplet, Utensils
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useScreenSize } from "@/utils/mobile";
 import MealPrepTimer from "./MealPrepTimer";
-//import HydrationTracker from "./HydrationTracker";
 import NutritionProgressWheel from "./NutritionProgressWheel";
 import DailyMealSelector from "./DailyMealSelector";
-import { getLS, LS_KEYS, Challenge } from "@/utils/localStorage";
+import { getLS, LS_KEYS, Challenge, CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry } from "@/utils/localStorage";
 import { MEAL_DATABASE } from "@/data/mealDatabase";
 import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
 
 const NutritionDashboard = () => {
   const [dailyGoals, setDailyGoals] = useState({
@@ -26,52 +25,95 @@ const NutritionDashboard = () => {
     protein: { current: 0, target: 150 },
     carbs: { current: 0, target: 250 },
     fat: { current: 0, target: 65 },
-    water: { current: 6, target: 8 },
+    water: { current: 0, target: 8 },
   });
 
   const [mealNutrition, setMealNutrition] = useState({ protein: 0, carbs: 0, fats: 0 });
 
-  // Load daily meals and compute nutrition
+  // Load daily meals and compute nutrition from calorie log + daily meals
   const loadMealData = () => {
-    const stored = localStorage.getItem('th_daily_meals');
+    const today = format(new Date(), 'yyyy-MM-dd');
+    
+    // Load from date-specific daily meals
+    const stored = localStorage.getItem(`th_daily_meals_${today}`);
+    let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFats = 0;
+    
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFats = 0;
         parsed.forEach((item: any) => {
-          const meal = MEAL_DATABASE.find((m: any) => m.id === item.mealId);
-          if (meal) {
-            totalCalories += meal.nutrition.calories;
-            totalProtein += meal.nutrition.protein;
-            totalCarbs += meal.nutrition.carbs;
-            totalFats += meal.nutrition.fats;
-          }
+          totalCalories += item.calories || 0;
+          totalProtein += item.protein || 0;
+          totalCarbs += item.carbs || 0;
+          totalFats += item.fats || 0;
         });
-        setDailyGoals(prev => ({
-          ...prev,
-          calories: { ...prev.calories, current: totalCalories },
-          protein: { ...prev.protein, current: totalProtein },
-          carbs: { ...prev.carbs, current: totalCarbs },
-          fat: { ...prev.fat, current: totalFats },
-        }));
-        setMealNutrition({ protein: totalProtein, carbs: totalCarbs, fats: totalFats });
       } catch {}
     }
+
+    // Also check calorie log for today
+    const calorieLog = getLS<CalorieEntry[]>(LS_KEYS.CALORIE_LOG, []);
+    const todayEntries = calorieLog.filter(e => e.date.startsWith(today));
+    todayEntries.forEach(e => { totalCalories += e.calories; });
+
+    // Load water from hydration log
+    const hydrationLog = getLS<HydrationEntry[]>(LS_KEYS.HYDRATION_LOG, []);
+    const todayWater = hydrationLog.filter(e => e.date.startsWith(today)).reduce((sum, e) => sum + e.cups, 0);
+
+    // Load goals from nutrition settings
+    const nutritionGoal = getLS<any>('th_nutrition_goal', { dailyCalories: 2000, proteinPercentage: 30, carbsPercentage: 40, fatsPercentage: 30 });
+    const cal = nutritionGoal.dailyCalories || 2000;
+
+    setDailyGoals({
+      calories: { current: totalCalories, target: cal },
+      protein: { current: totalProtein, target: Math.round(cal * (nutritionGoal.proteinPercentage || 30) / 400) },
+      carbs: { current: totalCarbs, target: Math.round(cal * (nutritionGoal.carbsPercentage || 40) / 400) },
+      fat: { current: totalFats, target: Math.round(cal * (nutritionGoal.fatsPercentage || 30) / 900) },
+      water: { current: todayWater, target: 8 },
+    });
+    setMealNutrition({ protein: totalProtein, carbs: totalCarbs, fats: totalFats });
   };
 
   useEffect(() => {
     loadMealData();
-    // Listen for storage changes
     const handler = () => loadMealData();
     window.addEventListener('storage', handler);
-    // Also poll every 2 seconds for same-tab changes
-    const interval = setInterval(loadMealData, 2000);
+    const interval = setInterval(loadMealData, 3000);
     return () => { window.removeEventListener('storage', handler); clearInterval(interval); };
   }, []);
 
   const { language } = useLanguage();
   const { isMobile } = useScreenSize();
   const [activeTab, setActiveTab] = useState("dailyTools");
+
+  // Weekly summary data
+  const weeklySummary = useMemo(() => {
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - 7);
+    const inRange = (dateStr: string) => {
+      const d = new Date(dateStr);
+      return d >= weekStart && d <= now;
+    };
+    const calorieLog = getLS<CalorieEntry[]>(LS_KEYS.CALORIE_LOG, []);
+    const sleepLog = getLS<SleepEntry[]>(LS_KEYS.SLEEP_LOG, []);
+    const exerciseLog = getLS<ExerciseEntry[]>(LS_KEYS.EXERCISE_LOG, []);
+    const hydrationLog = getLS<HydrationEntry[]>(LS_KEYS.HYDRATION_LOG, []);
+
+    const weekCals = calorieLog.filter(e => inRange(e.date));
+    const weekSleep = sleepLog.filter(e => inRange(e.date));
+    const weekExercise = exerciseLog.filter(e => inRange(e.date));
+    const weekWater = hydrationLog.filter(e => inRange(e.date));
+
+    return {
+      avgCalories: weekCals.length ? Math.round(weekCals.reduce((s, e) => s + e.calories, 0) / 7) : 0,
+      avgSleep: weekSleep.length ? +(weekSleep.reduce((s, e) => s + e.hours, 0) / 7).toFixed(1) : 0,
+      totalExercise: weekExercise.reduce((s, e) => s + e.duration, 0),
+      totalWater: weekWater.reduce((s, e) => s + e.cups, 0),
+      avgProtein: Math.round(dailyGoals.protein.current),
+      avgCarbs: Math.round(dailyGoals.carbs.current),
+      avgFat: Math.round(dailyGoals.fat.current),
+    };
+  }, [dailyGoals]);
 
   // Achievements data
   const challenges = getLS<Challenge[]>(LS_KEYS.CHALLENGES, []);
@@ -91,16 +133,16 @@ const NutritionDashboard = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl sm:text-3xl font-bold">{t.title}</h1>
         <div className="flex items-center space-x-2">
-          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground text-green-500 fill-green-700" />
-          <span className="text-xs sm:text-sm text-muted-foreground text-green-500">{new Date().toLocaleDateString()}</span>
+          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <span className="text-xs sm:text-sm text-muted-foreground">{new Date().toLocaleDateString()}</span>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <ScrollableTabsList className="w-full">
-          <TabsTrigger value="dailyTools" className="flex items-center gap-2"><Wrench className="h-4 w-4 text-teal-600 fill-teal-300" />{!isMobile && t.dailyTools}</TabsTrigger>
-          <TabsTrigger value="progressSummary" className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500" />{!isMobile && t.progressSummary}</TabsTrigger>
-          <TabsTrigger value="achievements" className="flex items-center gap-2"><Trophy className="h-4 w-4 text-orange-500 fill-orange-300" />{!isMobile && t.achievements}</TabsTrigger>
+          <TabsTrigger value="dailyTools" className="flex items-center gap-2"><Wrench className="h-4 w-4 text-primary" />{!isMobile && t.dailyTools}</TabsTrigger>
+          <TabsTrigger value="progressSummary" className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" />{!isMobile && t.progressSummary}</TabsTrigger>
+          <TabsTrigger value="achievements" className="flex items-center gap-2"><Trophy className="h-4 w-4 text-primary" />{!isMobile && t.achievements}</TabsTrigger>
         </ScrollableTabsList>
 
         <TabsContent value="dailyTools" className="space-y-6">
@@ -110,24 +152,22 @@ const NutritionDashboard = () => {
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
               <Card>
-                <CardHeader><CardTitle className="flex items-center text-lg"><Gauge className="h-5 w-5 mr-2 text-green-500" />Progress Wheel</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="flex items-center text-lg"><Gauge className="h-5 w-5 mr-2 text-primary" />Progress Wheel</CardTitle></CardHeader>
                 <CardContent>
                   <NutritionProgressWheel protein={mealNutrition.protein} carbs={mealNutrition.carbs} fats={mealNutrition.fats} />
                 </CardContent>
               </Card>
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}>
-              <Card><CardHeader><CardTitle className="flex items-center text-lg"><Timer className="h-5 w-5 mr-2 text-orange-500" />Meal Prep Timer</CardTitle></CardHeader><CardContent><MealPrepTimer /></CardContent></Card>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}>
-              {/* <Card><CardHeader><CardTitle className="flex items-center text-lg"><Droplet className="h-5 w-5 mr-2 text-blue-500" />Hydration Tracker</CardTitle></CardHeader><CardContent><HydrationTracker /></CardContent></Card> */}
+              <MealPrepTimer />
             </motion.div>
           </div>
         </TabsContent>
 
         <TabsContent value="progressSummary" className="space-y-6">
+          {/* Today's Goals */}
           <Card>
-            <CardHeader><CardTitle className="flex items-center"><Target className="h-5 w-5 mr-2 text-blue-500" />{t.dailyGoals}</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center"><Target className="h-5 w-5 mr-2 text-primary" />{t.dailyGoals}</CardTitle></CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {[
@@ -148,46 +188,68 @@ const NutritionDashboard = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Weekly Summary */}
+          <Card>
+            <CardHeader><CardTitle className="flex items-center"><TrendingUp className="h-5 w-5 mr-2 text-primary" />Weekly Overview</CardTitle></CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="p-3 rounded-lg bg-gradient-to-br from-orange-500/10 to-amber-500/10 border">
+                  <p className="text-xs text-muted-foreground">Avg Daily Calories</p>
+                  <p className="text-xl font-bold">{weeklySummary.avgCalories} kcal</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border">
+                  <p className="text-xs text-muted-foreground">Avg Sleep</p>
+                  <p className="text-xl font-bold">{weeklySummary.avgSleep} hrs</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gradient-to-br from-green-500/10 to-emerald-500/10 border">
+                  <p className="text-xs text-muted-foreground">Total Exercise</p>
+                  <p className="text-xl font-bold">{weeklySummary.totalExercise} min</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border">
+                  <p className="text-xs text-muted-foreground">Total Water</p>
+                  <p className="text-xl font-bold">{weeklySummary.totalWater} cups</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="achievements" className="space-y-4">
-          {/* Active Challenges */}
-          <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2"><Award className="h-5 w-5 text-purple-500" />Active Challenges</CardTitle></CardHeader>
-            <CardContent className="space-y-3">
-              {activeChallenges.length === 0 ? (
-                <p className="text-muted-foreground text-sm text-center py-4">No active challenges</p>
-              ) : activeChallenges.map(c => (
-                <div key={c.id} className="p-3 border rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-sm">{c.name}</span>
-                    <Badge variant="secondary">{c.progress}/{c.target}</Badge>
-                  </div>
-                  <Progress value={Math.min((c.progress / c.target) * 100, 100)} className="h-2" />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Completed Challenges */}
-          {completedChallenges.length > 0 && (
+          {activeChallenges.length > 0 && (
             <Card>
-              <CardHeader><CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-green-500" />Completed Challenges</CardTitle></CardHeader>
-              <CardContent className="space-y-2">
-                {completedChallenges.map(c => (
-                  <div key={c.id} className="flex items-center gap-2 p-2 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                    <Trophy className="h-4 w-4 text-green-500" />
-                    <span className="text-sm font-medium">{c.name}</span>
-                    <Badge className="bg-green-600 ml-auto">Done</Badge>
+              <CardHeader><CardTitle className="flex items-center gap-2"><Award className="h-5 w-5 text-purple-500" />Active Challenges</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                {activeChallenges.map(c => (
+                  <div key={c.id} className="p-3 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-sm">{c.name}</span>
+                      <Badge variant="secondary">{c.progress}/{c.target}</Badge>
+                    </div>
+                    <Progress value={Math.min((c.progress / c.target) * 100, 100)} className="h-2" />
                   </div>
                 ))}
               </CardContent>
             </Card>
           )}
 
-          {/* Saved Goals */}
+          {completedChallenges.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" />Completed Challenges</CardTitle></CardHeader>
+              <CardContent className="space-y-2">
+                {completedChallenges.map(c => (
+                  <div key={c.id} className="flex items-center gap-2 p-2 bg-primary/5 rounded-lg">
+                    <Trophy className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">{c.name}</span>
+                    <Badge className="ml-auto">Done</Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2"><Target className="h-5 w-5 text-blue-500" />Saved Goals</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2"><Target className="h-5 w-5 text-primary" />Saved Goals</CardTitle></CardHeader>
             <CardContent className="space-y-2">
               {savedGoals.length === 0 ? (
                 <p className="text-muted-foreground text-sm text-center py-4">No goals saved yet</p>
@@ -200,12 +262,11 @@ const NutritionDashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Quiz Scores */}
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2"><Award className="h-5 w-5 text-yellow-500" />Quiz Scores</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2"><Award className="h-5 w-5 text-primary" />Quiz Scores</CardTitle></CardHeader>
             <CardContent className="space-y-2">
               {quizScores.length === 0 ? (
-                <p className="text-muted-foreground text-sm text-center py-4">No quiz scores yet. Take a quiz in the Nutrition Game!</p>
+                <p className="text-muted-foreground text-sm text-center py-4">No quiz scores yet</p>
               ) : quizScores.map((s: any, i: number) => (
                 <div key={i} className="flex items-center justify-between p-2 border rounded-lg">
                   <span className="text-sm">{new Date(s.date).toLocaleDateString()}</span>
