@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Trophy, Zap, Award, LayoutDashboard, Target, Gift, Compass, Brain } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import RewardSystem from "../RewardSystem";
-import NutritionProgressWheel from "../nutrition/NutritionProgressWheel";
+
 import MealMoodTracker from "../nutrition/MealMoodTracker";
 import NutritionChallenge from "../nutrition/NutritionChallenge";
 import UserLevel from "./UserLevel";
