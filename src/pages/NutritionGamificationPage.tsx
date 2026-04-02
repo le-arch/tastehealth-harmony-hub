@@ -263,12 +263,7 @@ const NutritionGamificationPage = () => {
           </TabsContent>
 
           <TabsContent value="mealPrep">
-            <Card>
-              <CardHeader><CardTitle className="flex items-center gap-2"><ChefHat className="h-5 w-5 text-orange-500" />Meal Prep Assistant</CardTitle></CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-center py-8">Use the Meal Prep Timer in the Nutrition Dashboard for guided prep sessions.</p>
-              </CardContent>
-            </Card>
+            <WeeklyMealPrepPlanner />
           </TabsContent>
         </Tabs>
       </div>
