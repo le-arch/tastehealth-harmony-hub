@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Trophy, Zap, Award, LayoutDashboard, Target, Gift, Compass, Brain } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import RewardSystem from "../RewardSystem";
-import NutritionProgressWheel from "../nutrition/NutritionProgressWheel";
+
 import MealMoodTracker from "../nutrition/MealMoodTracker";
 import NutritionChallenge from "../nutrition/NutritionChallenge";
 import UserLevel from "./UserLevel";
@@ -75,7 +75,10 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
           <TabsTrigger value="quests"><Compass className="h-4 w-4 text-teal-600 fill-blue-200" />{!isMobile && t.quests}</TabsTrigger>
           <TabsTrigger value="quiz"><Brain className="h-4 w-4 text-rose-600 fill-pink-300" />{!isMobile && 'Quiz'}</TabsTrigger>
         </ScrollableTabsList>
-        <TabsContent value="dashboard" className="space-y-4 mt-6"><NutritionProgressWheel /><MealMoodTracker /></TabsContent>
+        <TabsContent value="dashboard" className="space-y-4 mt-6">
+          <UserLevel level={userLevel} points={userPoints} pointsForNextLevel={getPointsForNextLevel(userLevel)} />
+          <MealMoodTracker />
+        </TabsContent>
         <TabsContent value="challenges" className="mt-6"><NutritionChallenge /></TabsContent>
         <TabsContent value="rewards" className="mt-6"><RewardSystem /></TabsContent>
         <TabsContent value="badges" className="mt-6"><NutritionBadges userId={userId} addPoints={addPoints} /></TabsContent>

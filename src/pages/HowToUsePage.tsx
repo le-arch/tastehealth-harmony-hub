@@ -41,6 +41,28 @@ const HowToUsePage = () => {
     localStorage.setItem('th_onboarding_steps', JSON.stringify(updated));
   };
 
+  // Auto-detect completed steps
+  React.useEffect(() => {
+    const auto: number[] = [...completedSteps];
+    const profile = localStorage.getItem('th_profile');
+    if (profile && JSON.parse(profile)?.age) { if (!auto.includes(1)) auto.push(1); }
+    const goals = localStorage.getItem('th_saved_goals');
+    if (goals && JSON.parse(goals)?.length > 0) { if (!auto.includes(2)) auto.push(2); }
+    const plans = localStorage.getItem('th_meal_plans');
+    if (plans && JSON.parse(plans)?.length > 0) { if (!auto.includes(4)) auto.push(4); }
+    const calories = localStorage.getItem('th_calorie_log');
+    if (calories && JSON.parse(calories)?.length > 0) { if (!auto.includes(5)) auto.push(5); }
+    const journal = localStorage.getItem('th_journal_entries');
+    if (journal && JSON.parse(journal)?.length > 0) { if (!auto.includes(6)) auto.push(6); }
+    const challenges = localStorage.getItem('th_challenges');
+    if (challenges && JSON.parse(challenges)?.length > 0) { if (!auto.includes(7)) auto.push(7); }
+    if (auto.length !== completedSteps.length) {
+      setCompletedSteps(auto);
+      localStorage.setItem('th_onboarding_steps', JSON.stringify(auto));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const progressPercent = Math.round((completedSteps.length / tutorialSteps.length) * 100);
   const nextStep = tutorialSteps.find(s => !completedSteps.includes(s.id));
 
