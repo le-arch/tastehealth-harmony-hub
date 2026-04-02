@@ -83,7 +83,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b7', name: 'Koki Corn (Breakfast Wrap)', description: 'Steamed fresh corn pudding wrapped in banana leaves - a nutritious morning meal.',
-    image: 'kokicorn.jpg',
+    image: '/meals/kokicorn.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Corn: 1 kg fresh corn', 'palm oil', '2 cups spinach', 'thumb-sized ginger', 'crayfish', 'salt', 'Fufu: 1 kg Rice flour'],
@@ -93,7 +93,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b8', name: 'Puff Puff & Beans', description: 'Deep-fried sweet dough balls served with stewed brown beans.',
-    image: 'puff puff beans.jpeg',
+    image: '/meals/puff puff beans.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Puff Puff: 500g All-purpose flour', '150g sugar', '2 tsp active dry yeast', '1 tsp salt', '500ml lukewarm water', 'Vegetable oil', 'Beans: 1 kg brown beans', '1 large onion', '3 tomatoes', '1/4 cup palm oil', '2 crayfish cubes', 'salt'],
@@ -103,7 +103,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b9', name: 'White Corn Pap (Akamu)', description: 'Smooth fermented white corn porridge.',
-    image: 'pap.jpeg',
+    image: '/meals/pap.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['500g White corn paste', 'water', 'evaporated milk', 'granulated sugar'],
@@ -113,7 +113,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b10', name: 'Fried Bread & Stew', description: 'Golden fried bread served with savory tomato and egg stew.',
-    image: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Bread: 1 kg All-purpose flour', 'water', 'Stew: 6 eggs', '3 tomatoes', '1 onion', 'garlic', 'pebe', 'bouillon cube', 'salt'],
@@ -123,7 +123,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b11', name: 'Sweet Corn Pap (Akamu)', description: 'Sweet corn porridge made from fermented fresh corn.',
-    image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['500g sweet corn paste', 'water', 'evaporated milk', 'granulated sugar'],
@@ -133,7 +133,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b12', name: 'Sorghum Pap', description: 'Dark earthy porridge from the North.',
-    image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['500g Sorghum paste', 'water', 'evaporated milk', 'sugar'],
@@ -143,7 +143,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b13', name: 'Rice Pap', description: 'Smooth rice porridge, perfect for breakfast.',
-    image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&auto=format',
+    image: '/meals/friedrice.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['500g Rice paste', 'water', 'evaporated milk', 'sugar'],
@@ -153,7 +153,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b14', name: 'Yellow Corn Pap', description: 'Nutrient-rich yellow corn porridge.',
-    image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['500g yellow corn paste', 'water', 'evaporated milk', 'sugar'],
@@ -163,7 +163,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b15', name: 'Millet Couscous', description: 'Steamed millet granules served as breakfast fufu.',
-    image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&auto=format',
+    image: '/meals/Finger Millet.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['1 kg Millet flour', 'water', 'Stew: 6 eggs', '3 tomatoes', '1 onion', 'garlic', 'pebe', 'bouillon', 'salt'],
@@ -193,7 +193,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b18', name: 'Manioc au Sucre', description: 'Boiled cassava served with sugar.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/milkshake.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['1 kg Cassava', 'sugar'],
@@ -203,7 +203,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b19', name: 'Tapioca Porridge', description: 'Cassava pearl cereal with milk.',
-    image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&auto=format',
+    image: '/meals/bananaporridge.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['1 cup Tapioca pearls', '3 cups water', '1 cup milk', '1 cup sugar', '1/2 cup groundnuts'],
@@ -213,7 +213,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b20', name: 'Highland Oats', description: 'Warming oatmeal with milk.',
-    image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['1 cup Oats', 'water', 'milk', 'sugar'],
@@ -223,7 +223,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b21', name: 'Custard & Biscuit', description: 'Vanilla custard with biscuits.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/biscuits.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Custard powder', 'milk', 'sugar', 'biscuits'],
@@ -233,7 +233,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b22', name: 'Egg Bread Tea', description: 'Egg-dipped fried bread with tea.',
-    image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400&auto=format',
+    image: '/meals/Traditional Pakistani Chai.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Bread', 'eggs', 'butter', 'tea', 'milk', 'sugar'],
@@ -243,7 +243,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b23', name: 'Boiled Irish & Butter', description: 'Soft boiled potatoes with butter.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/Irish Potato Roast.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Irish potatoes', 'butter', 'salt'],
@@ -253,7 +253,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b24', name: 'Boiled Cocoyam & Egg', description: 'Simple tuber breakfast with eggs.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Cocoyam', 'eggs', 'salt'],
@@ -263,7 +263,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b25', name: 'Fried Yam & Egg', description: 'Yam fries with scrambled eggs.',
-    image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Yam', 'eggs', 'tomatoes', 'onions', 'oil', 'salt'],
@@ -273,7 +273,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b26', name: 'Irish Potato & Omelette', description: 'Fried potatoes with omelette.',
-    image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400&auto=format',
+    image: '/meals/omelete.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Irish potatoes', 'eggs', 'tomatoes', 'onions', 'oil', 'salt'],
@@ -283,7 +283,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b27', name: 'Boiled Egg & Avocado', description: 'Simple protein-rich breakfast.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/boiled eggs.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Eggs', 'avocado', 'salt'],
@@ -293,7 +293,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b28', name: 'Boiled Egg & Tomato', description: 'Simple eggs with fresh tomatoes.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/boiled eggs.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Eggs', 'tomatoes', 'salt'],
@@ -303,7 +303,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b29', name: 'Bread & Butter', description: 'Simple buttered baguette.',
-    image: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400&auto=format',
+    image: '/meals/breadbutter.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Baguette', 'butter'],
@@ -313,7 +313,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b30', name: 'Tartina Bread', description: 'Baguette with chocolate spread.',
-    image: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400&auto=format',
+    image: '/meals/Tartine Basic Country Bread.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Baguette', 'Tartina spread', 'butter'],
@@ -323,7 +323,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b31', name: 'Avocado Toast', description: 'Mashed avocado on Kumba bread.',
-    image: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400&auto=format',
+    image: '/meals/avocado toast.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Kumba bread', 'avocado', 'lemon juice', 'onion', 'salt'],
@@ -333,7 +333,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b32', name: 'Mango & Yogurt', description: 'Fresh mango with yogurt.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/Mango yogurt bowl 🥭🍦.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Mango', 'plain yogurt', 'honey'],
@@ -343,7 +343,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b33', name: 'Papaya & Lime Bowl', description: 'Fresh papaya with lime.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/Papaya and Lime.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Papaya', 'lime juice'],
@@ -353,7 +353,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b34', name: 'Market Fruit Salad', description: 'Fresh fruit with condensed milk.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/Healthy Brunch Fruit Salad.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Mango', 'papaya', 'banana', 'condensed milk'],
@@ -363,7 +363,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b35', name: 'Soya Breakfast', description: 'Grilled beef skewers with bread.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/beef soya.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Beef strips', 'suya spice', 'peanuts', 'chili', 'baguette'],
@@ -373,7 +373,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b36', name: 'Fried Rice with Egg', description: 'Breakfast fried rice with egg.',
-    image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400&auto=format',
+    image: '/meals/friedrice.jpg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Rice', 'eggs', 'smoked fish', 'garlic', 'ginger', 'oil', 'salt'],
@@ -383,7 +383,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b37', name: 'Spicy Gizzards', description: 'Gizzards in tomato sauce with bread.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/fried gizzard.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Gizzards', 'tomato', 'pepper', 'onions', 'garlic', 'bread'],
@@ -393,7 +393,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b38', name: 'Masa & Honey', description: 'Rice cakes with wild honey.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/masa.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Rice flour', 'yeast', 'honey'],
@@ -403,7 +403,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b39', name: 'Masa & Spicy Oil', description: 'Savory rice cakes with chili oil.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/masa.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Rice flour', 'yeast', 'palm oil', 'chili', 'salt'],
@@ -413,7 +413,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b40', name: 'Massa', description: 'Northern fermented rice cakes.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Rice', 'sugar', 'yeast'],
@@ -423,7 +423,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b41', name: 'Plantain & Scrambled Egg', description: 'Boiled plantain with egg scramble.',
-    image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Plantains', 'eggs', 'onions', 'tomatoes', 'oil', 'salt'],
@@ -433,7 +433,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b42', name: 'Plantain & Gizzard', description: 'Fried plantains with gizzards.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/fried gizzard.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Plantains', 'gizzards', 'peppers', 'onions', 'oil'],
@@ -443,7 +443,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b43', name: 'Plantain & Plum', description: 'Boiled plantain with African pears.',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Plantains', 'African plums (Safou)', 'salt'],
@@ -453,7 +453,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b44', name: 'Plantain Porridge', description: 'Unripe plantains in oil sauce.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Plantains', 'palm oil', 'fish', 'onions', 'salt'],
@@ -463,7 +463,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b45', name: 'Porridge Macabo', description: 'Grated cocoyam porridge.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/bananaporridge.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Macabo', 'palm oil', 'ginger', 'salt'],
@@ -473,7 +473,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b46', name: 'Sweet Potato Porridge', description: 'Orange potatoes in tomato sauce.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/bananaporridge.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Sweet potatoes', 'tomato', 'fish', 'onions', 'oil'],
@@ -483,7 +483,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b47', name: 'Yam Porridge', description: 'Yam chunks in oil base.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/bananaporridge.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Yam', 'tomato', 'palm oil', 'onions', 'salt'],
@@ -493,7 +493,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b48', name: 'Pounded Yam & Egg', description: 'Heavy yam and egg scramble.',
-    image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Yam', 'eggs', 'tomatoes', 'onions', 'oil'],
@@ -503,7 +503,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b49', name: 'Yam & Scrambled Tofu', description: 'Vegan yam breakfast.',
-    image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Yam', 'tofu', 'turmeric', 'onion', 'oil', 'salt'],
@@ -513,7 +513,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b50', name: 'Tofu Scramble', description: 'Vegan soy curd with bread.',
-    image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400&auto=format',
+    image: '/meals/Tofu Scramble with Spinach and Tomato.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['Tofu', 'bread', 'turmeric', 'onion', 'oil', 'salt'],
@@ -525,7 +525,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   // LUNCH (51-150)
   {
     id: 'l1', name: 'Ndole', description: 'Cameroon\'s national dish - bitter leaves in peanut sauce.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/ndole.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['1 kg bitter leaves', '600g peanuts', '500g beef', '300g shrimp', '1/4 lb smoked fish', '2 onions', 'ginger', 'garlic', '1 cup palm oil', '2 crayfish cubes', 'salt', 'white pepper'],
@@ -535,7 +535,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l2', name: 'Ndole with Shrimp', description: 'Shrimp-based bitterleaf stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/ndole.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Bitterleaves', 'peanuts', 'shrimp', 'onions', 'garlic', 'palm oil', 'crayfish', 'salt'],
@@ -545,7 +545,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l3', name: 'Ndole with Crayfish', description: 'Bitterleaf stew with extra crayfish.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/ndole.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Bitterleaf', 'peanuts', 'crayfish', 'meat', 'onions', 'palm oil', 'salt'],
@@ -555,7 +555,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l4', name: 'Ndole & Plantain', description: 'Bitterleaf stew with plantain.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Bitterleaf', 'peanuts', 'plantains', 'beef', 'onions', 'palm oil', 'salt'],
@@ -565,7 +565,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l5', name: 'Ndole & Miondo', description: 'Bitterleaf stew with cassava sticks.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/ndole.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Bitterleaves', 'peanuts', 'beef', 'miondo', 'onions', 'palm oil', 'crayfish'],
@@ -575,7 +575,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l6', name: 'Ndole & Boiled Irish', description: 'Bitterleaf stew with potatoes.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/ndole.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Bitterleaf', 'peanuts', 'Irish potatoes', 'beef', 'onions', 'palm oil'],
@@ -585,7 +585,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l7', name: 'Eru & Waterfufu', description: 'Wild spinach with cassava fufu.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/eru.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['6 cups dried Eru', '3 bundles waterleaf', '2 lbs canda', '1 lb tripe', '2 cups crayfish', '3 cups palm oil', '1/2 cup canola oil', '1 crayfish cube', 'habanero', 'salt', '1 kg Waterfufu paste'],
@@ -595,7 +595,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l8', name: 'Koki Corn', description: 'Steamed corn cake in leaves.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/koki.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['1 kg fresh corn', '300g palm oil', '2 cups spinach', 'ginger', '2 crayfish cubes', 'salt', 'banana leaves'],
@@ -605,7 +605,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l9', name: 'Koki Corn & Greens', description: 'Corn pudding with spinach.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/koki.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Corn', 'spinach', 'palm oil', 'ginger', 'crayfish', 'salt'],
@@ -615,7 +615,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l10', name: 'Koki Beans', description: 'Steamed bean cake.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/koki.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Black-eyed peas', 'palm oil', 'chili', 'onion', 'salt', 'banana leaves'],
@@ -625,7 +625,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l11', name: 'Koki Beans & Yam', description: 'Bean cake with yam.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Beans', 'palm oil', 'yam', 'onion', 'chili', 'salt'],
@@ -635,7 +635,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l12', name: 'Koki & Plantain', description: 'Bean cake with plantain.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Beans', 'palm oil', 'plantains', 'onion', 'chili'],
@@ -645,7 +645,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l13', name: 'Mbongo Tchobi', description: 'Black spicy fish stew.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/mbongo.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['1 kg Tilapia', '2 cups Mbongo spice', '3 tomatoes', '2 onions', 'ginger', 'garlic', 'pebe', 'alligator pepper', 'oil', 'salt', 'bouillon'],
@@ -655,7 +655,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l14', name: 'Mbongo Tchobi Beef', description: 'Black beef stew.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/beef stew.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Beef', 'Mbongo spice', 'tomatoes', 'onions', 'garlic', 'palm oil'],
@@ -665,7 +665,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l15', name: 'Bongo\'o de Poisson', description: 'Black fish stew with plantain.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Fish', 'Mbongo spices', 'plantains', 'tomatoes', 'onions'],
@@ -675,7 +675,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l16', name: 'Poulet DG', description: 'Chicken & plantain one-pot.',
-    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['1 whole chicken', '6 ripe plantains', '3 tomatoes', '2 onions', '3 carrots', 'bell pepper', 'green beans', 'ginger', 'garlic', 'pebe', 'salt', 'bouillon', 'oil'],
@@ -685,7 +685,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l17', name: 'Kondre', description: 'Ceremonial plantain stew.',
-    image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400&auto=format',
+    image: '/meals/kondre.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['6 unripe plantains', '1 kg beef', '3 tomatoes', '2 onions', 'ginger', 'garlic', 'palm oil', 'crayfish', 'pebe', '2 cubes', 'salt'],
@@ -695,7 +695,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l18', name: 'Ekwang', description: 'Grated cocoyam wraps.',
-    image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['1 kg Malanga', '500g cocoyam leaves', 'ginger', 'garlic', '1 cup palm oil', '1 cup crayfish', 'smoked fish', 'cube', 'pebe', 'salt'],
@@ -705,7 +705,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l19', name: 'Poisson Braisé', description: 'Grilled mackerel.',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['2 large mackerel', 'garlic', 'ginger', 'pebe', 'alligator pepper', '2 onions', '2 cubes', '1 cup oil', 'salt'],
@@ -715,7 +715,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l20', name: 'Poisson Braisé Tilapia', description: 'Grilled tilapia.',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['2 large tilapia', 'ginger', 'garlic', 'pebe', 'alligator pepper', 'onions', 'cubes', 'oil', 'salt'],
@@ -725,7 +725,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l21', name: 'Ebeu', description: 'Fish & nightshade leaves.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['1 kg Tilapia', '6 bundles Zom leaves', '1 cup palm oil', '1 onion', 'salt'],
@@ -735,7 +735,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l22', name: 'Ebom', description: 'Wrapped fish.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Fresh Tilapia', 'tomatoes', 'onions', 'ginger', 'garlic', 'pebe', 'alligator pepper', 'hiomi bark', 'oil', 'banana leaves'],
@@ -745,7 +745,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l23', name: 'Katt-Katt', description: 'West Region corn mash.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Fresh corn', 'greens', 'palm oil', 'meat', 'crayfish', 'onions'],
@@ -755,7 +755,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l24', name: 'Katte Katte', description: 'Grassfields stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Beef', 'mackerel', 'garlic', 'huckleberry leaves', 'Candawan', 'pebe', 'palm oil'],
@@ -765,7 +765,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l25', name: 'Kedjenou', description: 'Slow-cooked chicken stew.',
-    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Chicken', 'tomato', 'onion', 'eggplant', 'garlic', 'ginger', 'spices'],
@@ -775,7 +775,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l26', name: 'Kion', description: 'Forest soup with fish.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Fish', 'spices', 'tubers', 'oil', 'smoked fish'],
@@ -785,7 +785,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l27', name: 'Lamsi', description: 'Grassfields soup.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Jute leaves', 'beef', 'mackerel', 'garlic', 'spinach', 'crayfish', 'ginger', 'smoked fish', 'pebe', 'palm oil'],
@@ -795,7 +795,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l28', name: 'Mbol', description: 'Eastern region leaf stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Mbol leaves', 'peanuts', 'meat', 'palm oil', 'crayfish'],
@@ -805,7 +805,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l29', name: 'Mbol with Beef', description: 'Forest leaves with beef.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/beef stew.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Mbol leaves', 'beef', 'peanut paste', 'onions', 'palm oil'],
@@ -815,7 +815,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l30', name: 'Nnam Owondo', description: 'Wrapped groundnut cake.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Egusi', 'garlic', 'spinach', 'smoked fish', 'crayfish', 'pebe', 'banana leaves'],
@@ -825,7 +825,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l31', name: 'Nten', description: 'Vegetarian mash.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Grated cocoyam', 'huckleberry leaves', 'garlic', 'ginger', 'pebe', 'salt', 'banana leaves'],
@@ -835,7 +835,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l32', name: 'Okok (Salty)', description: 'Savory gnetum leaves.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/okok.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Okok leaves', 'Egusi', 'palm oil', 'onion', 'ginger-garlic paste', 'crayfish', 'smoked fish', 'salt'],
@@ -845,7 +845,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l33', name: 'Okok (Sweet)', description: 'Sweet gnetum leaves.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/okok.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Okok leaves', 'Egusi', 'palm oil', 'sugar', 'onion', 'crayfish', 'smoked fish'],
@@ -855,7 +855,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l34', name: 'Okok with Cassava', description: 'Forest leaves with cassava.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Cassava Fries (Mandioca Frita) - Crumb-Snatched.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Okok leaves', 'peanuts', 'palm oil', 'cassava paste', 'crayfish'],
@@ -865,7 +865,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l35', name: 'Okra Soup', description: 'Slimy okra and meat stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Okra', 'palm oil', 'beef', 'canda', 'fish', 'crayfish', 'onions'],
@@ -875,7 +875,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l36', name: 'Okro Soup (Dry)', description: 'Dried okra stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/okro soup.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Dried okra', 'beef', 'canda', 'palm oil', 'crayfish', 'fish'],
@@ -885,7 +885,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l37', name: 'Okra & Pounded Yam', description: 'Slimy soup with yam.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Okra', 'beef', 'fish', 'yam', 'palm oil', 'crayfish'],
@@ -895,7 +895,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l38', name: 'Okra & Fufu Corn', description: 'Corn fufu with okra.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Corn flour', 'okra', 'beef', 'canda', 'palm oil', 'crayfish'],
@@ -905,7 +905,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l39', name: 'Egusi & Pounded Yam', description: 'Melon seed soup with yam.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Egusi', 'spinach', 'beef', 'yam', 'palm oil', 'crayfish', 'smoked fish'],
@@ -915,7 +915,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l40', name: 'Egusi & Boiled Yam', description: 'Melon soup with yam slices.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Egusi', 'spinach', 'yam', 'beef', 'palm oil', 'crayfish'],
@@ -925,7 +925,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l41', name: 'Egusi with Okra', description: 'Combined melon and okra soup.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Egusi Soup.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Egusi', 'okra', 'beef', 'fish', 'spinach', 'palm oil', 'crayfish'],
@@ -935,7 +935,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l42', name: 'Njama Njama & Yam', description: 'Huckleberry leaves with yam.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Huckleberry leaves', 'yam', 'onions', 'palm oil', 'crayfish'],
@@ -945,7 +945,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l43', name: 'Njangsa Fish Soup', description: 'Spicy nutty fish soup.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Fish', 'Njangsa', 'ginger', 'garlic', 'crayfish', 'pebe', 'palm oil'],
@@ -955,7 +955,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l44', name: 'Kundi', description: 'Dried greens stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Dried greens', 'peanuts', 'fish', 'beef', 'palm oil', 'crayfish'],
@@ -965,7 +965,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l45', name: 'Kwacoco & Banga', description: 'Cocoyam with palm soup.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/kwacoco bible.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Cocoyam', 'palm nut', 'smoked fish', 'crayfish', 'ginger'],
@@ -975,7 +975,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l46', name: 'Banga Soup & Starch', description: 'Palm fruit soup with cassava starch.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Palm nut', 'fish', 'meat', 'cassava starch', 'crayfish', 'spices'],
@@ -985,7 +985,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l47', name: 'Cornchaff', description: 'Corn and beans with meat.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Corn', 'beans', 'palm oil', 'beef', 'onions', 'crayfish'],
@@ -995,7 +995,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l48', name: 'Cornchaff (No Meat)', description: 'Vegan corn and beans.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Corn', 'beans', 'palm oil', 'onions', 'salt'],
@@ -1005,7 +1005,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l49', name: 'Corn & Beans (Light)', description: 'Stewed corn and beans.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/beans.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Corn', 'beans', 'onions', 'salt'],
@@ -1015,7 +1015,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l50', name: 'Sanga', description: 'Fresh corn and greens.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Le sanga recette camerounaise - Alice Pégie Cuisine.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Fresh corn', 'cassava leaves', 'palm pulp', 'onions', 'crayfish'],
@@ -1025,7 +1025,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l51', name: 'Sanga (Fresh Corn)', description: 'Maize and leaf pudding.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Fresh corn', 'cassava leaves', 'palm oil', 'crayfish'],
@@ -1035,7 +1035,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l52', name: 'Cassava Leaf Soup', description: 'Sautéed cassava leaves.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Cassava Fries (Mandioca Frita) - Crumb-Snatched.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Cassava leaves', 'peanuts', 'fish', 'palm oil', 'crayfish'],
@@ -1045,7 +1045,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l53', name: 'Zom', description: 'Nightshade leaves & nuts.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Zom leaves', 'peanuts', 'meat', 'palm oil', 'onions'],
@@ -1055,7 +1055,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l54', name: 'Zom with Meat', description: 'Nightshade leaves and beef.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Zom leaves', 'beef', 'palm oil', 'onions', 'crayfish'],
@@ -1065,7 +1065,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l55', name: 'Folere Stew (Bayam Sellam)', description: 'Hibiscus leaves with peanuts.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Folere leaves', 'peanuts', 'smoked fish', 'onions', 'palm oil'],
@@ -1075,7 +1075,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l56', name: 'Folere Lunch', description: 'Hibiscus leaf stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Folere leaves', 'peanuts', 'fish', 'onions', 'palm oil'],
@@ -1085,7 +1085,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l57', name: 'Mbakara', description: 'Coastal cocoyam mash.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/akarasauce.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Malanga', 'ginger', 'pebe', 'crayfish', 'palm oil', 'smoked fish'],
@@ -1095,7 +1095,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l58', name: 'Achu (Vegetarian)', description: 'Taro and yellow oil soup.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Taro', 'palm oil', 'canwa', 'mushroom', 'spices'],
@@ -1105,7 +1105,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l59', name: 'Akwadu', description: 'Baked plantain & coconut.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Plantains', 'coconut milk', 'honey'],
@@ -1115,7 +1115,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l60', name: 'Banana Fufu', description: 'Steamed green banana dough.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Green bananas', 'water'],
@@ -1125,7 +1125,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l61', name: 'Bayam Sellam Stew', description: 'Spiced spinach stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Spinach', 'smoked fish', 'tomato', 'onions', 'palm oil'],
@@ -1135,7 +1135,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l62', name: 'Beef Porridge Macabo', description: 'Grated macabo with beef.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/bananaporridge.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Macabo', 'beef', 'palm oil', 'onions', 'crayfish'],
@@ -1145,7 +1145,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l63', name: 'Bitosso', description: 'Meat and groundnut stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Meat', 'local leaves', 'peanuts', 'onions', 'palm oil'],
@@ -1155,7 +1155,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l64', name: 'Boiled Plantain & Stew', description: 'Starchy plantain lunch.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Plantain', 'tomato', 'meat stew', 'onions'],
@@ -1165,7 +1165,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l65', name: 'Bongo\'o de Viande', description: 'Black beef stew with plantain.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Beef', 'Mbongo spice', 'plantain', 'tomatoes', 'onions'],
@@ -1175,7 +1175,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l66', name: 'Cassava & Fried Fish', description: 'Coastal classic lunch.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Cassava', 'white fish', 'oil', 'onions', 'salt'],
@@ -1185,7 +1185,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l67', name: 'Cassava & Peanut Dip', description: 'Boiled tuber with nut sauce.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Cassava Fries (Mandioca Frita) - Crumb-Snatched.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Cassava', 'peanut butter', 'chili', 'garlic', 'salt'],
@@ -1195,7 +1195,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l68', name: 'Coconut Rice', description: 'Rice in coconut milk.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Coconut Fried Rice With Extra veggies - Chef Lolas Kitchen.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Rice', 'coconut milk', 'shrimp', 'ginger', 'salt'],
@@ -1205,7 +1205,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l69', name: 'Corn Fufu & Cabbage', description: 'Corn dough with veggie stir-fry.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Corn flour', 'cabbage', 'fish', 'carrots', 'onions', 'oil'],
@@ -1215,7 +1215,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l70', name: 'Corn Fufu & Okra (Small)', description: 'Lighter corn fufu version.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Corn flour', 'okra', 'smoked fish', 'crayfish', 'palm oil'],
@@ -1225,7 +1225,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l71', name: 'Couscous & Arachide', description: 'Cassava fufu & peanuts.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Cassava flour', 'peanuts', 'beef', 'tomatoes', 'onions'],
@@ -1235,7 +1235,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l72', name: 'Couscous & Njama', description: 'Corn fufu and greens.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Njama Njama and FuFu.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Corn flour', 'huckleberry leaves', 'chicken', 'tomatoes', 'onions'],
@@ -1245,7 +1245,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l73', name: 'Couscous de Manioc', description: 'Fermented cassava fufu.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Cassava flour', 'water'],
@@ -1255,7 +1255,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l74', name: 'Couscous de Mil & Lalo', description: 'Millet fufu with jute leaves.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Millet flour', 'jute leaves', 'dried fish', 'beef', 'onions', 'palm oil'],
@@ -1265,7 +1265,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l75', name: 'Cow Foot Soup', description: 'Gelatinous spicy hoof soup.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Cow foot', 'pepper soup spices', 'onions', 'garlic', 'ginger'],
@@ -1275,7 +1275,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l76', name: 'Cow Skin (Canda) Stew', description: 'Spicy stewed cow skin.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/beef stew.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Canda', 'tomato', 'onions', 'oil', 'crayfish', 'pepper'],
@@ -1285,7 +1285,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l77', name: 'Djouka', description: 'Fonio and peanuts.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Fonio', 'peanuts', 'dried fish', 'onions', 'spices'],
@@ -1295,7 +1295,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l78', name: 'Eba & Egusi', description: 'Garri and melon seed soup.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Egusi Soup.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Garri', 'egusi', 'spinach', 'meat', 'palm oil', 'crayfish'],
@@ -1305,7 +1305,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l79', name: 'Egusi Pudding', description: 'Steamed melon seed cake.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/Egusi Soup.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Egusi', 'eggs', 'smoked fish', 'spinach', 'crayfish', 'pebe'],
@@ -1315,7 +1315,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l80', name: 'Fried Rice & Chicken', description: 'Veggie rice with chicken.',
-    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&auto=format',
+    image: '/meals/friedrice.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Rice', 'carrots', 'peas', 'chicken', 'onions', 'soy sauce'],
@@ -1325,7 +1325,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l81', name: 'Fufu & Groundnut', description: 'Cassava fufu & peanut soup.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/groundnut.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Cassava fufu', 'peanuts', 'chicken', 'tomatoes', 'onions'],
@@ -1335,7 +1335,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l82', name: 'Fufu Banana & Okra', description: 'Plantain fufu and okra.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Plantains', 'okra', 'fish', 'palm oil', 'crayfish'],
@@ -1345,7 +1345,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l83', name: 'Fufu de Riz & Sauce', description: 'Rice fufu and tomato stew.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Rice flour', 'tomato', 'beef', 'onions', 'palm oil'],
@@ -1355,7 +1355,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l84', name: 'Fufu Riz & Lalo', description: 'Rice fufu & jute leaf.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Rice flour', 'jute leaves', 'fish', 'crayfish', 'palm oil'],
@@ -1365,7 +1365,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l85', name: 'Garri & Fried Fish', description: 'Cassava with crunchy fish.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Garri', 'fish', 'onions', 'tomatoes', 'oil', 'salt'],
@@ -1375,7 +1375,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l86', name: 'Grilled Fish & Dodo', description: 'Tilapia and fried plantain.',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Tilapia', 'plantain', 'garlic', 'ginger', 'oil', 'spices'],
@@ -1385,7 +1385,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l87', name: 'Jollof Rice', description: 'Spiced tomato rice.',
-    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&auto=format',
+    image: '/meals/jellof rice.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Rice', 'tomato', 'beef', 'garlic', 'ginger', 'onions', 'spices'],
@@ -1395,7 +1395,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l88', name: 'Mashed Beans (Njama)', description: 'Savory bean and leaf mash.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/beans.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Beans', 'greens', 'palm oil', 'onions', 'crayfish'],
@@ -1405,7 +1405,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l89', name: 'Mashed Corn & Beans', description: 'Savory grain mash.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/beans.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Corn', 'beans', 'palm oil', 'onions', 'crayfish'],
@@ -1415,7 +1415,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l90', name: 'Miondo & Fried Fish', description: 'Cassava sticks with fish.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Miondo', 'white fish', 'garlic', 'onions', 'oil'],
@@ -1425,7 +1425,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l91', name: 'Palm Nut Soup (Banga)', description: 'Rich palm fruit extract.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Palm nuts', 'smoked fish', 'meat', 'crayfish', 'spices'],
@@ -1435,7 +1435,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l92', name: 'Plantain & Fish Stew', description: 'Starchy fish lunch.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Plantain', 'tilapia', 'tomato', 'onions', 'palm oil'],
@@ -1445,7 +1445,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l93', name: 'Pounded Macabo', description: 'Smooth pounded cocoyam fufu.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Comment préparer le Macabo malaxé au ndolè_ how to cook cocoyam porridge and bitterleaves.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Macabo', 'water'],
@@ -1455,7 +1455,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l94', name: 'Pounded Yam & Egusi', description: 'Heavy celebration meal.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Yam', 'egusi', 'beef', 'spinach', 'palm oil', 'crayfish'],
@@ -1465,7 +1465,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l95', name: 'Rice & Beans (Coconut)', description: 'Coconut milk rice and beans.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/beans.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Rice', 'beans', 'coconut milk', 'onions', 'garlic'],
@@ -1475,7 +1475,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l96', name: 'Rice & Tomato Stew', description: 'Beef stew and white rice.',
-    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&auto=format',
+    image: '/meals/beef stew.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Rice', 'beef', 'tomato', 'onions', 'oil', 'spices'],
@@ -1485,7 +1485,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l97', name: 'Rice and Beans', description: 'Stir-fry rice and kidney beans.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/beans.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Rice', 'beans', 'onions', 'oil', 'crayfish'],
@@ -1495,7 +1495,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l98', name: 'Rice Fufu & Okra', description: 'Rice dough and slimy soup.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Rice flour', 'okra', 'fish', 'crayfish', 'palm oil'],
@@ -1505,7 +1505,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l99', name: 'Sauce Jaune & Taro', description: 'Yellow soup with taro.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Taro', 'palm oil', 'canwa', 'beef', 'spices'],
@@ -1515,7 +1515,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l100', name: 'Tapsi', description: 'Beef and vegetable stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Beef', 'spinach', 'peanuts', 'onions', 'palm oil'],
@@ -1525,7 +1525,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l101', name: 'Waterfufu & Okra', description: 'Cassava fufu with okra soup.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Waterfufu', 'okra', 'beef', 'crayfish', 'palm oil'],
@@ -1535,7 +1535,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l102', name: 'White Bean Porridge', description: 'Creamy white bean stew.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/bananaporridge.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['White beans', 'palm oil', 'onions', 'fish', 'crayfish'],
@@ -1545,7 +1545,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l103', name: 'White Beans & Rice', description: 'Savory bean stew and rice.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/beans.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['White beans', 'rice', 'tomato', 'onions', 'oil'],
@@ -1555,7 +1555,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l104', name: 'Yam & Beans (One Pot)', description: 'Yam and bean porridge.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Yam', 'brown beans', 'palm oil', 'onions', 'crayfish'],
@@ -1565,7 +1565,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l105', name: 'Yam Stew', description: 'Tomato meat yam cubes.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Yam', 'beef', 'tomato', 'onions', 'oil', 'spices'],
@@ -1575,7 +1575,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l106', name: 'Salade de Fruits de Mer', description: 'Seafood avocado salad.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/greensalad.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Shrimp', 'calamari', 'avocado', 'lime', 'onions'],
@@ -1585,7 +1585,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l107', name: 'Avocado & Egg Salad', description: 'Creamy avocado and eggs.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/greensalad.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Avocado', 'eggs', 'onions', 'tomato', 'lime'],
@@ -1595,7 +1595,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l108', name: 'Soya & Plantain', description: 'Beef skewers & plantain.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/beef soya.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Beef', 'suya spice', 'plantains', 'onions'],
@@ -1605,7 +1605,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l109', name: 'Spaghetti Omelette', description: 'Pasta and egg stir-fry.',
-    image: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=400&auto=format',
+    image: '/meals/omelete.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['Spaghetti', 'eggs', 'tomato', 'onions', 'oil', 'spices'],
@@ -1615,7 +1615,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'l110', name: 'Spicy Gizzards (West Style)', description: 'Gizzards in tomato sauce.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/fried gizzard.jpeg',
     category: 'lunch',
     recipe: {
       ingredients: ['Gizzards', 'chili', 'onions', 'garlic', 'pebe', 'oil', 'salt'],
@@ -1627,7 +1627,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   // DINNER (151-250)
   {
     id: 'd1', name: 'Corn Fufu & Njama Njama', description: 'Smooth corn fufu with sautéed huckleberry leaves.',
-    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Cornflour', 'garlic', 'ginger', '4 bundles huckleberry leaves', '1 crayfish cube', '1/4 cup palm oil', 'salt'],
@@ -1637,7 +1637,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd2', name: 'Fish Pepper Soup', description: 'Spicy broth with Tilapia.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['500g Tilapia', 'onion', 'ginger', 'garlic', 'pepper soup spice', '2 crayfish cubes', 'salt', 'white pepper', 'chili'],
@@ -1647,7 +1647,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd3', name: 'Rice Fufu & Okra Stew', description: 'Smooth rice fufu with okra.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 cups okra', '1 kg beef', 'spinach', 'crayfish', 'ginger', 'smoked fish', 'pebe', '1 cup palm oil', '1 kg Rice flour'],
@@ -1657,7 +1657,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd4', name: 'Pounded Yam & Egusi', description: 'Elastic pounded yam with melon soup.',
-    image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Yam', '2 cups egusi', 'garlic', 'spinach', 'crayfish', 'ginger', 'smoked fish', 'pebe', '1 cup palm oil'],
@@ -1667,7 +1667,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd5', name: 'Dried Fish Stew', description: 'Rich stew from dried fish.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg dried fish', '4 tomatoes', '2 onions', 'ginger', 'garlic', '1 cup palm oil', '2 crayfish cubes', 'salt', 'white pepper'],
@@ -1677,7 +1677,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd6', name: 'Plantain Hot Pot', description: 'Hearty plantain one-pot.',
-    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 plantains', 'ginger', '4 bundles spinach', 'crayfish cube', 'garlic', 'smoked fish', 'Candawan spice', 'palm oil', 'salt'],
@@ -1687,7 +1687,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd7', name: 'Chicken Suya', description: 'Spicy grilled chicken skewers.',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&auto=format',
+    image: '/meals/chicken.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg chicken breast', 'ginger', '1 cup peanuts', 'pebe', 'chili', 'salt', 'white pepper'],
@@ -1697,7 +1697,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd8', name: 'Eba & Egusi Stew', description: 'Cassava fufu with melon soup.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Egusi Soup.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['2 cups Garri', '4 cups water', '2 cups egusi', '1 kg beef', '4 bundles spinach', 'crayfish', 'ginger', 'garlic', 'smoked fish', '1 cup palm oil'],
@@ -1707,7 +1707,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd9', name: 'Macabo & Peanut Dip', description: 'Boiled cocoyam with spicy peanut sauce.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Comment préparer le Macabo malaxé au ndolè_ how to cook cocoyam porridge and bitterleaves.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Macabo', '2 cups peanuts', 'onion', 'garlic', 'pebe', 'chili', '1 cup oil', '2 crayfish cubes', 'salt'],
@@ -1717,7 +1717,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd10', name: 'Beef Pepper Soup', description: 'Spicy broth with tripe.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/beef stew.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg beef tripe', '1 tin mackerel', 'garlic', 'ginger', '2 crayfish cubes', 'salt', 'white pepper'],
@@ -1727,7 +1727,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd11', name: 'Eru & Waterfufu', description: 'Southwest greens with fufu.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/eru.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 cups Eru', '3 bundles waterleaf', '2 lbs canda', '1 lb tripe', '2 cups crayfish', '3 cups palm oil', '1/2 cup canola oil', 'cube', 'habanero', 'salt', '1 kg Waterfufu'],
@@ -1737,7 +1737,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd12', name: 'Poisson Braisé (Mackerel)', description: 'Grilled mackerel dinner.',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['2 large mackerel', 'garlic', 'ginger', 'pebe', 'alligator pepper', '2 onions', '2 cubes', 'oil', 'salt'],
@@ -1747,7 +1747,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd13', name: 'Poisson Braisé (Tilapia)', description: 'Grilled tilapia dinner.',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['2 large tilapia', 'ginger', 'garlic', 'pebe', 'alligator pepper', '2 onions', '2 cubes', 'oil', 'salt'],
@@ -1757,7 +1757,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd14', name: 'Poisson en Papillote', description: 'Steamed fish in leaves.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['2 large mackerel', 'garlic', 'ginger', 'pebe', 'alligator pepper', 'bouillon', 'oil', 'salt', 'banana leaves'],
@@ -1767,7 +1767,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd15', name: 'Pork Braisé', description: 'Spiced roasted pork.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Crispy Deep-Fried Ribs Recipe.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg pork', 'ginger', 'garlic', 'pebe', 'alligator pepper', '2 onions', '2 cubes', 'oil', 'salt'],
@@ -1777,7 +1777,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd16', name: 'Porridge Macabo', description: 'Grated cocoyam porridge.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/bananaporridge.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg grated Macabo', '1 palm nut concentrate', '1 tin mackerel', 'ginger', '2 crayfish cubes', 'salt'],
@@ -1787,7 +1787,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd17', name: 'Potato Porridge', description: 'Irish potatoes in stew.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/bananaporridge.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg potatoes', '6 eggs', '3 tomatoes', '1 onion', 'garlic', 'pebe', 'cube', 'salt'],
@@ -1797,7 +1797,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd18', name: 'Poulet DG', description: 'Chicken & plantain one-pot.',
-    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 whole chicken', '6 ripe plantains', '3 tomatoes', '2 onions', 'ginger', 'garlic', 'pebe', '2 cubes', 'salt'],
@@ -1807,7 +1807,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd19', name: 'Rice & Beans (Coconut)', description: 'Coconut rice and beans.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/beans.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Rice', '500g beans', 'garlic', 'ginger', 'cube', '1 coconut', 'oil', 'salt', 'white pepper'],
@@ -1817,7 +1817,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd20', name: 'Rice & Tomato Stew', description: 'Beef stew and rice.',
-    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&auto=format',
+    image: '/meals/beef stew.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Rice', '500g meat', 'smoked fish', 'garlic', 'ginger', 'cube', 'oil', 'salt', 'white pepper', '1 kg chicken'],
@@ -1827,7 +1827,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd21', name: 'Rice Fufu & Okra', description: 'Rice dough with okra.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Rice flour', '6 cups dried okra', 'Candawan', 'crayfish', 'ginger', 'garlic', 'smoked fish', 'pebe', '1 cup palm oil', 'salt'],
@@ -1837,7 +1837,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd22', name: 'Fufu Banana & Okra', description: 'Green banana fufu with okra.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg green bananas', '6 cups okra', 'smoked fish', 'Candawan', 'crayfish', 'ginger', 'garlic', 'palm oil', 'salt'],
@@ -1847,7 +1847,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd23', name: 'Fufu Riz & Sauce Jaune', description: 'Rice fufu with yellow soup.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Rice flour', '1 cup heated palm oil', '2 beef broth', '1 1/2 achu spices', 'Kangwa mix', 'salt'],
@@ -1857,7 +1857,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd24', name: 'Kati Kati', description: 'West Region mash.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 fresh okra', 'smoked fish', 'Candawan', 'crayfish', 'ginger', 'garlic', 'palm oil', 'salt', 'fried plantains'],
@@ -1867,7 +1867,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd25', name: 'Kion', description: 'Forest soup.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['Fish', 'smoked fish', 'crayfish', 'ginger', 'salt', 'white pepper'],
@@ -1877,7 +1877,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd26', name: 'Koki Corn (Evening)', description: 'Evening corn pudding.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/koki.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg fresh corn', 'palm oil', '2 cups spinach', 'ginger', 'crayfish', 'salt', '1 kg Rice flour'],
@@ -1887,7 +1887,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd27', name: 'Koki Corn (Standard Wrap)', description: 'Standard corn wrap.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/koki.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg corn', '300g palm oil', '2 spinach', 'ginger', '2 cubes', 'salt'],
@@ -1897,7 +1897,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd28', name: 'Kondre', description: 'Ceremonial plantain stew.',
-    image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400&auto=format',
+    image: '/meals/kondre.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 unripe plantains', '1 kg beef', '3 tomatoes', '2 onions', 'ginger', 'garlic', 'palm oil', 'crayfish', 'pebe', '2 cubes', 'salt'],
@@ -1907,7 +1907,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd29', name: 'Kundi', description: 'Dried greens stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 cups dried Njama Njama', '1 kg beef', '1 tin mackerel', 'garlic', 'spinach', 'crayfish', 'ginger', 'smoked fish', 'peanuts', 'pebe', 'chili', '1 cup palm oil'],
@@ -1917,7 +1917,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd30', name: 'Kwacoco & Banga', description: 'Cocoyam with palm soup.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/kwacoco bible.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg grated Malanga', '1 kg palm nut concentrate', '1 tin mackerel', 'ginger', '2 cubes', 'salt'],
@@ -1927,7 +1927,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd31', name: 'Macabo & Peanut Dip', description: 'Cocoyam with peanut sauce.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Comment préparer le Macabo malaxé au ndolè_ how to cook cocoyam porridge and bitterleaves.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Macabo', 'garlic', 'ginger', 'pebe', '2 cubes', '1 cup oil', 'salt'],
@@ -1937,7 +1937,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd32', name: 'Masa (Evening)', description: 'Evening rice cakes.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/masa.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Cornflour', '1 tin mackerel', 'onion', 'chili', 'salt'],
@@ -1947,7 +1947,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd33', name: 'Mbol', description: 'Grassfields stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 fresh okra', 'smoked fish', 'Candawan', 'crayfish', 'ginger', 'garlic', 'palm oil', 'salt', 'fried plantains'],
@@ -1957,7 +1957,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd34', name: 'Mbongo Tchobi', description: 'Black spicy stew.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/mbongo.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['Tilapia', 'smoked fish', 'crayfish', 'ginger', 'salt'],
@@ -1967,7 +1967,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd35', name: 'Mbongo Tchobi Fish', description: 'Black fish stew.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['Tilapia', 'ginger', 'pebe', 'alligator pepper', 'oil', 'salt', 'banana leaves'],
@@ -1977,7 +1977,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd36', name: 'Miondo & Avocado', description: 'Cassava sticks with avocado.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 Miondo', 'avocado', 'salt'],
@@ -1987,7 +1987,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd37', name: 'Ndole (Light Dinner)', description: 'Light bitterleaf stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/ndole.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg bitter leaves', '1 kg beef', '600g peanuts', '2 onions', 'garlic', 'pebe', '1 cup oil', 'salt'],
@@ -1997,7 +1997,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd38', name: 'Ndole (Small Portion)', description: 'Small bitterleaf stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/ndole.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg bitter leaves', '1 kg beef', '600g peanuts', '2 onions', 'ginger', 'garlic', '1 cup oil', 'salt'],
@@ -2007,7 +2007,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd39', name: 'Ndolé with Crayfish', description: 'Bitterleaf with crayfish.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg bitter leaves', '1 kg beef', '600g peanuts', '2 onions', 'ginger', 'garlic', '1 cup crayfish', 'smoked fish', '1 cup oil'],
@@ -2017,7 +2017,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd40', name: 'Ndolé with Shrimp', description: 'Shrimp bitterleaf stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg bitter leaves', '600g peanuts', '500g beef', '300g shrimp', '1/4 lb smoked fish', '2 onions', 'ginger', 'garlic', '1 cup oil'],
@@ -2027,7 +2027,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd41', name: 'Njangsa Fish Soup', description: 'Spicy nutty fish soup.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['Fish', 'smoked fish', 'garlic', 'ginger', 'crayfish', 'pebe', 'palm oil'],
@@ -2037,7 +2037,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd42', name: 'Njama Njama & Yam', description: 'Huckleberry with yam.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Yam', '4 bundles huckleberry', 'crayfish', '1/4 cup palm oil', 'salt'],
@@ -2047,7 +2047,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd43', name: 'Okok (Salty)', description: 'Savory gnetum leaves.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/okok.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Okok leaves', '600g Egusi', '2 cups palm oil', 'onion', 'ginger-garlic paste', 'cube', 'smoked fish', 'salt'],
@@ -2057,7 +2057,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd44', name: 'Okok (Sweet)', description: 'Sweet gnetum leaves.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/okok.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Okok leaves', '600g Egusi', '2 sugar', 'onion', 'ginger-garlic paste', 'cube', 'smoked fish', 'salt'],
@@ -2067,7 +2067,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd45', name: 'Okok with Cassava', description: 'Gnetum with cassava.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Cassava Fries (Mandioca Frita) - Crumb-Snatched.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['Okok leaves', 'Egusi', 'onion', 'ginger-garlic paste', 'cube', 'smoked fish', 'salt', 'Cassava paste'],
@@ -2077,7 +2077,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd46', name: 'Okra & Fufu Corn', description: 'Corn fufu with okra.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 fresh okra', '1 kg beef', 'spinach', 'smoked fish', 'crayfish', 'ginger', 'garlic', '1 cup oil', '1 kg Cornflour'],
@@ -2087,7 +2087,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd47', name: 'Okra & Pounded Yam', description: 'Slimy soup with yam.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Yam', '6 fresh okra', '1 kg beef', 'spinach', 'crayfish', 'ginger', 'garlic', 'smoked fish', '1 cup oil'],
@@ -2097,7 +2097,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd48', name: 'Okra (Standard Dinner)', description: 'Standard okra dinner.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 okra', '1 kg beef', 'spinach', 'smoked fish', 'crayfish', 'ginger', 'peanuts', 'pebe', 'chili', '1 cup oil'],
@@ -2107,7 +2107,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd49', name: 'Okra Soup', description: 'Slimy okra stew.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 cups dried okra', '1 kg canda', 'tripe', '1 tin mackerel', 'garlic', 'huckleberry', 'Candawan', 'crayfish', 'ginger', 'smoked fish', 'pebe', '1 cup oil'],
@@ -2117,7 +2117,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd50', name: 'Palm Nut Soup', description: 'Banga soup dinner.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 palm nut concentrate', 'assorted fish', 'ginger', 'smoked fish', 'crayfish', 'pebe', 'salt', 'Fufu banana'],
@@ -2127,7 +2127,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd51', name: 'Pepper Soup Beef', description: 'Spicy beef soup.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/beef stew.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg beef tripe', '1 tin mackerel', 'garlic', 'ginger', '2 cubes', 'salt', 'white pepper'],
@@ -2137,7 +2137,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd52', name: 'Pepper Soup Chicken', description: 'Spicy chicken soup.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/chicken.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg chicken', '1 tin mackerel', 'garlic', 'ginger', '2 cubes', 'salt', 'white pepper'],
@@ -2147,7 +2147,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd53', name: 'Pepper Soup Cow Tail', description: 'Gelatinous tail soup.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg cow tail', '1 tin mackerel', 'garlic', 'ginger', '2 cubes', 'salt', 'white pepper'],
@@ -2157,7 +2157,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd54', name: 'Pepper Soup Fish', description: 'Spicy fish broth.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg fish', '1 tin mackerel', 'garlic', 'ginger', '2 cubes', 'salt', 'white pepper'],
@@ -2167,7 +2167,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd55', name: 'Pepper Soup Goat', description: 'Medicinal goat soup.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Goat meat pepper soup.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg goat meat', '1 tin mackerel', 'garlic', 'ginger', '2 cubes', 'salt', 'white pepper'],
@@ -2177,7 +2177,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd56', name: 'Pepper Soup Goat (Heavy)', description: 'Thick goat broth.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Goat meat pepper soup.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg goat meat', '1 tin mackerel', 'garlic', 'ginger', '2 cubes', 'salt', 'white pepper'],
@@ -2187,7 +2187,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd57', name: 'Pepper Soup Goat (Small)', description: 'Lighter goat broth.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Goat meat pepper soup.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['500g goat meat', '1 tin mackerel', 'garlic', 'ginger', '2 cubes', 'salt', 'white pepper'],
@@ -2197,7 +2197,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd58', name: 'Pepper Soup Snail', description: 'Spicy snail broth.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg snails', '1 tin mackerel', 'garlic', 'ginger', '2 cubes', 'salt', 'white pepper'],
@@ -2207,7 +2207,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd59', name: 'Pepper Soup Tripe', description: 'Tripe in spicy broth.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg tripe', '1 tin mackerel', 'garlic', 'ginger', '2 cubes', 'salt', 'white pepper'],
@@ -2217,7 +2217,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd60', name: 'Plantain & Fish Stew', description: 'Plantain with fish.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 plantains', '1 tin mackerel', 'ginger', '2 cubes', 'salt', 'white pepper'],
@@ -2227,7 +2227,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd61', name: 'Plantain & Hot Pot', description: 'Plantain hot pot.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 plantains', 'ginger', 'spinach', 'crayfish', 'garlic', 'smoked fish', 'Candawan spice', 'palm oil', 'salt'],
@@ -2237,7 +2237,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd62', name: 'Sautéed Cabbage & Fish', description: 'Cabbage with fish.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg fish', '1 cabbage', 'chili', 'onions', 'garlic', 'pebe', 'oil', 'salt'],
@@ -2247,7 +2247,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd63', name: 'Sautéed Spinach & Fish', description: 'Spinach with fish.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Tilapia', '4 bundles spinach', 'crayfish', 'ginger', 'smoked fish', 'salt'],
@@ -2257,7 +2257,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd64', name: 'Smoked Fish & Cassava', description: 'Smoked fish with cassava.',
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg smoked fish', '1 tin mackerel', 'garlic', 'spinach', 'crayfish', 'ginger', 'pebe', '1 cup oil', 'salt'],
@@ -2267,7 +2267,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd65', name: 'Soya & Plantain', description: 'Beef skewers with plantain.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/beef soya.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Beef suya', 'fried plantains'],
@@ -2277,7 +2277,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd66', name: 'Soya de Poulet', description: 'Large chicken skewer.',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&auto=format',
+    image: '/meals/beef soya.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg chicken', 'ginger', 'peanuts', 'pebe', 'chili', 'salt', 'potatoes'],
@@ -2287,7 +2287,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd67', name: 'Spicy Snail Skewer', description: 'Peppered forest snails.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/friedsnails.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['Snails', 'lime', 'salt', 'spices'],
@@ -2297,7 +2297,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd68', name: 'Spicy Tripe', description: 'Serviette style tripe.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg tripe', 'Candawan', 'crayfish', 'ginger', 'garlic', 'palm oil', 'salt'],
@@ -2307,7 +2307,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd69', name: 'Sweet Potato Porridge', description: 'Sweet potato dinner.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/bananaporridge.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['Sweet potatoes', '1 kg beef', '1 tin mackerel', 'garlic', 'spinach', 'crayfish', 'ginger', 'smoked fish', 'pebe', '1 cup oil'],
@@ -2317,7 +2317,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd70', name: 'Vegan Pepper Soup', description: 'Tofu pepper soup.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['500g tofu', '1 tin mackerel', 'garlic', 'ginger', '2 cubes', 'salt'],
@@ -2327,7 +2327,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd71', name: 'Vegetable Soup (North)', description: 'Northern vegetable soup.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['Achu cocoyam', 'palm nut concentrate', 'ginger', 'smoked fish', 'crayfish', 'pebe', 'salt'],
@@ -2337,7 +2337,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd72', name: 'Waterfufu & Okra Stew', description: 'Cassava fufu with okra.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/how to make fufu.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 okra', '1 kg beef', 'spinach', 'crayfish', 'ginger', 'smoked fish', 'pebe', '1 cup oil', '1 Waterfufu paste'],
@@ -2347,7 +2347,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd73', name: 'Yam & Egg Stew', description: 'Yam with egg stew.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Yam', '6 eggs', '3 tomatoes', '1 onion', 'garlic', 'pebe', '2 cubes', 'salt'],
@@ -2357,7 +2357,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd74', name: 'Yam Porridge', description: 'Yam dinner porridge.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/bananaporridge.jpeg',
     category: 'dinner',
     recipe: {
       ingredients: ['1 kg Yam', '1 kg beef', '1 tin mackerel', 'garlic', 'spinach', 'crayfish', 'ginger', 'smoked fish', 'pebe', '1 cup oil'],
@@ -2367,7 +2367,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'd75', name: 'Zom (Nightshade Soup)', description: 'Nightshade leaves soup.',
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&auto=format',
+    image: '/meals/Chicken-Peppersoup.jpg',
     category: 'dinner',
     recipe: {
       ingredients: ['6 bundles Zom', 'ginger', 'crayfish', '1/4 palm oil', 'salt'],
@@ -2379,7 +2379,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   // SNACKS (251-350)
   {
     id: 's1', name: 'Plantain Chips & Dip', description: 'Crispy plantain chips with local biscuit dip.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 yellow plantains', 'vegetable oil', '1 packet local biscuits'],
@@ -2389,7 +2389,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's2', name: 'Puff Puff', description: 'Deep-fried sweet dough balls.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/puff puff beans.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg flour', '150g sugar', '2 tsp yeast', '1 tsp salt', '500ml water', 'oil'],
@@ -2399,7 +2399,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's3', name: 'Puff Puff & Beans', description: 'Puff puff with beans.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/beans.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg flour', '1 kg beans', 'onion', 'chili', 'pebe', '1/4 palm oil', 'salt'],
@@ -2409,7 +2409,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's4', name: 'Puffed Rice', description: 'Local style puffed rice.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/friedrice.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 cup Rice', 'sugar', 'oil'],
@@ -2419,7 +2419,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's5', name: 'Roasted African Plum', description: 'Roasted Safou pears.',
-    image: 'https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 Safou', 'salt'],
@@ -2429,7 +2429,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's6', name: 'Roasted Cocoyam', description: 'Grilled cocoyam with spicy nut mash.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg Malanga', 'salt', 'standard spicy nut mash'],
@@ -2439,7 +2439,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's7', name: 'Roasted Corn', description: 'Charcoal-grilled maize.',
-    image: 'https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 corn', 'ginger', 'pebe', 'sugar'],
@@ -2449,7 +2449,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's8', name: 'Roasted Corn (Large)', description: 'Large roasted corn.',
-    image: 'https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 corn', '1/4 palm oil', 'salt'],
@@ -2459,7 +2459,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's9', name: 'Roasted Corn & Groundnut', description: 'Grilled corn with peanuts.',
-    image: 'https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=400&auto=format',
+    image: '/meals/groundnut.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 corn', '1 cup peanuts', 'pebe', 'salt', 'white pepper'],
@@ -2469,7 +2469,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's10', name: 'Roasted Corn & Plums', description: 'Corn with African plums.',
-    image: 'https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 corn', '6 Safou', 'salt'],
@@ -2479,7 +2479,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's11', name: 'Roasted Groundnuts', description: 'Dry roasted peanuts.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/groundnut.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg peanuts', 'pebe', 'sugar'],
@@ -2489,7 +2489,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's12', name: 'Roasted Groundnuts (Salty)', description: 'Salted roasted peanuts.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/groundnut.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg peanuts', '1/4 palm oil', 'salt'],
@@ -2499,7 +2499,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's13', name: 'Roasted Irish Potato', description: 'Charcoal-baked potatoes.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Potato Porridge Recipe (Potato Pottage).jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg potatoes', 'salt', '1 tin mackerel', 'onion', 'chili'],
@@ -2509,7 +2509,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's14', name: 'Roasted Pig Ear', description: 'Grilled pork ear snack.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['pig ears', '1 tin mackerel', 'onion', 'chili', 'salt'],
@@ -2519,7 +2519,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's15', name: 'Roasted Pig Skin', description: 'Grilled cracklings.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['cow skin', '1 tin mackerel', 'onion', 'chili', 'salt'],
@@ -2529,7 +2529,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's16', name: 'Roasted Plantain (Salt)', description: 'Simple grilled plantain.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 plantains', 'ginger', 'huckleberry', 'crayfish', '1/4 palm oil', 'salt'],
@@ -2539,7 +2539,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's17', name: 'Roasted Plantain & Beans', description: 'Grilled plantain with beans.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 plantains', '1 kg beans', 'onion', 'chili', 'pebe', '1/4 oil', 'salt'],
@@ -2549,7 +2549,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's18', name: 'Roasted Plantain & Plum', description: 'Plantain with Safou.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 plantains', '6 Safou', '1/4 oil', 'salt'],
@@ -2559,7 +2559,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's19', name: 'Roasted Sweet Potato', description: 'Coalt-baked sweet potato.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Sweet Potato Fries Recipe.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg sweet potatoes', 'salt', '1 tin mackerel', 'onion', 'chili'],
@@ -2569,7 +2569,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's20', name: 'Roasted Turkey Tail', description: 'Grilled turkey tail.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg turkey tail', 'ginger', 'garlic', 'pebe', 'alligator pepper', '2 onions', '2 cubes', 'oil', 'salt'],
@@ -2579,7 +2579,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's21', name: 'Sardine Baguette', description: 'Spiced sardine sandwich.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/breadsardine.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['baguette', '1 tin sardines', 'chili'],
@@ -2589,7 +2589,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's22', name: 'Sardine Sandwich', description: 'Breakfast sardine sandwich.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/The BEST-EVER Sardine Salad Sandwich _ CRAZY Good 10 Minute Recipe.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 packet biscuits', 'biscuits'],
@@ -2599,7 +2599,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's23', name: 'Soya (Single skewer)', description: 'Single beef skewer.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/beef soya.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg beef', 'ginger', 'peanuts', 'pebe', 'chili', 'salt', '1 cup peanuts'],
@@ -2609,7 +2609,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's24', name: 'Soya & Cucumber Salad', description: 'Suya with fresh cucumber.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/beef soya.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg Beef suya', 'cucumber', 'pebe', 'sugar'],
@@ -2619,7 +2619,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's25', name: 'Soya & Onion Salad', description: 'Beef skewers with onions.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/beef soya.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg Beef suya', 'onions', 'pebe', 'sugar'],
@@ -2629,7 +2629,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's26', name: 'Spicy Snail Skewer', description: 'Peppered forest snails.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/friedsnails.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['snails', 'lime', 'salt', 'chili', 'onions'],
@@ -2639,7 +2639,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's27', name: 'Sugar Cane (Peeled)', description: 'Chewable cane stalks.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['sugar cane'],
@@ -2649,7 +2649,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's28', name: 'Sugarcane Cubes', description: 'Raw sugarcane pieces.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Cana de açucar.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['sugar cane'],
@@ -2659,7 +2659,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's29', name: 'Sweet Potato Fries', description: 'Deep-fried sweet potato.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Sweet Potato Fries Recipe.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg sweet potatoes', 'oil', 'salt', 'fried mackerel'],
@@ -2669,7 +2669,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's30', name: 'Tea & Biscuits', description: 'Hot tea with biscuits.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Traditional Pakistani Chai.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['tea bag', 'water', 'condensed milk', 'sugar', 'biscuits'],
@@ -2679,7 +2679,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's31', name: 'Watermelon Cubes', description: 'Fresh watermelon chunks.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/citrus water.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 watermelon'],
@@ -2689,7 +2689,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's32', name: 'Yam & Sardines', description: 'Yam with sardine sauce.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg Malanga', '1 tin sardines', 'salt'],
@@ -2699,7 +2699,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's33', name: 'Yam Fries (Koloko)', description: 'Deep fried yam chunks.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg Yam', 'oil', 'salt', 'fried mackerel'],
@@ -2709,7 +2709,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's34', name: 'Accra Banana', description: 'Banana and cassava fritters.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/bananas.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 bananas', '2 cups cassava flour', 'salt', 'oil'],
@@ -2719,7 +2719,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's35', name: 'Accra Beans', description: 'Savory bean fritters.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/beans.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg black-eyed peas', 'onion', 'parsley', 'chili', 'salt', 'oil'],
@@ -2729,7 +2729,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's36', name: 'Achu (Vegetarian)', description: 'Taro with yellow soup.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Taro', 'palm oil', 'canwa', 'mushroom'],
@@ -2739,7 +2739,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's37', name: 'Akara', description: 'Deep-fried bean cakes.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/akarasauce.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Peeled beans', 'onions', 'chili'],
@@ -2749,7 +2749,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's38', name: 'Akara (Grassfields)', description: 'Bean cake with pap.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/akarasauce.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg beans', 'onion', 'parsley', 'chili', 'salt', 'oil'],
@@ -2759,7 +2759,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's39', name: 'Banana Cake', description: 'Dense steamed banana bread.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/bananas.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 bananas', '2 cups flour', '1 cup sugar', '1/2 cup margarine', '2 eggs', '1 tsp baking soda', 'nutmeg'],
@@ -2769,7 +2769,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's40', name: 'Boiled Groundnuts', description: 'Fresh boiled peanuts.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/groundnut.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Peanuts', 'water', 'salt'],
@@ -2779,7 +2779,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's41', name: 'Caramel Peanuts', description: 'Sugar coated nuts.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Peanut Sugarcake.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Peanuts', 'sugar', 'vanilla'],
@@ -2789,7 +2789,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's42', name: 'Cassava Patties', description: 'Deep-fried mashed cassava.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Cassava Fries (Mandioca Frita) - Crumb-Snatched.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg flour', 'butter', 'yeast', 'baking powder', 'sugar', 'salt', 'water', 'chili'],
@@ -2799,7 +2799,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's43', name: 'Chicken Soya Wrap', description: 'Suya wrapped in dough.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/beef soya.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg flour', '1 kg chicken', 'chili', 'onions', 'pebe', '1 cup peanuts'],
@@ -2809,7 +2809,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's44', name: 'Chicken Suya (Skewer)', description: 'Spiced chicken stick.',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&auto=format',
+    image: '/meals/chicken.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg chicken', 'ginger', '1 cup peanuts', 'pebe', 'chili', 'salt'],
@@ -2819,7 +2819,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's45', name: 'Chin Chin', description: 'Crunchy pastry bites.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Chin-Chin.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['5 cups flour', '1/2 cup sugar', '1 tsp baking powder', '1 tsp salt', '1/2 cup margarine', '2 eggs', '1 cup milk', 'nutmeg', 'oil'],
@@ -2829,7 +2829,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's46', name: 'Chin Chin (Salty)', description: 'Savory crunchy pastry.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Chin-Chin.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['Flour', 'salt', 'garlic'],
@@ -2839,7 +2839,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's47', name: 'Coconut Candy', description: 'Fried shredded coconut.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/coconut.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['Coconut', 'sugar'],
@@ -2849,7 +2849,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's48', name: 'Corn & Coconut', description: 'Boiled corn and coconut.',
-    image: 'https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=400&auto=format',
+    image: '/meals/Coal roasted Corn.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Corn', 'coconut'],
@@ -2859,7 +2859,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's49', name: 'Dandawan', description: 'Fermented locust bean cakes.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Locust beans', 'salt'],
@@ -2869,7 +2869,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's50', name: 'Dodo', description: 'Fried ripe plantain.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 plantains', 'oil', 'salt'],
@@ -2879,7 +2879,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's51', name: 'Donut (Gateau)', description: 'Heavy fried dough ball.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Traditional Pakistani Chai.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['500g flour', '150g sugar', '1 tbsp butter', '1 tsp baking powder', '1 tsp salt', '2 eggs', '1 cup milk', 'oil', 'nutmeg'],
@@ -2889,7 +2889,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's52', name: 'Egusi Pudding (Snack)', description: 'Small melon seed cake.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/Egusi Soup.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 cup Egusi', 'smoked fish', 'crayfish', 'ginger', 'garlic', 'pebe', 'salt', 'banana leaves'],
@@ -2899,7 +2899,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's53', name: 'Fish Roll', description: 'Fried fish pastry.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/fishstew.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['3 cups flour', '3 tbsp butter', '1 tsp yeast', '1 tsp baking powder', '1 tsp sugar', '1/2 tsp salt', '1 1/4 cups water', '1 tin mackerel', 'onion', 'chili'],
@@ -2909,7 +2909,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's54', name: 'French Fries & Mayo', description: 'Potato chips with mayo.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg potatoes', 'oil', 'salt', 'fried mackerel'],
@@ -2919,7 +2919,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's55', name: 'Fresh Pineapple Slices', description: 'Simple tropical fruit.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/How to Cut a Pineapple _ Spears, Slices, or Rings!.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 pineapple'],
@@ -2929,7 +2929,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's56', name: 'Fried Breadfruit', description: 'Fried slices of breadfruit.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/bread.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 breadfruit', 'oil', 'salt'],
@@ -2939,7 +2939,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's57', name: 'Fried Cassava (Koloko)', description: 'Crunchy cassava fries.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Cassava Fries (Mandioca Frita) - Crumb-Snatched.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg cassava', 'oil', 'salt', 'fried mackerel'],
@@ -2949,7 +2949,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's58', name: 'Fried Cassava & Onion', description: 'Savory cassava fries.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Cassava Fries (Mandioca Frita) - Crumb-Snatched.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg cassava', 'garlic', 'chili', 'oil', 'salt'],
@@ -2959,7 +2959,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's59', name: 'Fried Cassava & Pepper', description: 'Cassava chips with chili.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Cassava Fries (Mandioca Frita) - Crumb-Snatched.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg cassava', 'oil', 'chili sauce', 'salt'],
@@ -2969,7 +2969,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's60', name: 'Fried Gizzards (Snack)', description: 'Spicy peppered gizzards.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/fried gizzard.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg gizzards', 'chili', 'onions', 'garlic', 'pebe', 'oil', 'salt'],
@@ -2979,7 +2979,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's61', name: 'Fried Gizzards & Dodo', description: 'Gizzards with plantain.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/fried gizzard.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg gizzards', '6 plantains', 'chili', 'onions', 'garlic', 'oil', 'salt'],
@@ -2989,7 +2989,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's62', name: 'Fried Gizzards (West)', description: 'West style gizzards.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/fried gizzard.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg gizzards', 'chili', 'onions', 'garlic', 'pebe', 'oil', 'salt'],
@@ -2999,7 +2999,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's63', name: 'Fried Macabo Chips', description: 'Thin cocoyam crisps.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Comment préparer le Macabo malaxé au ndolè_ how to cook cocoyam porridge and bitterleaves.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Macabo', 'oil', 'salt'],
@@ -3009,7 +3009,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's64', name: 'Fried Plantain & Beans', description: 'Dodo and beans.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Plantain', 'brown beans', 'oil'],
@@ -3019,7 +3019,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's65', name: 'Fried Potato & Sausage', description: 'Street energy snack.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Potato Porridge Recipe (Potato Pottage).jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Potatoes', 'sausage', 'oil'],
@@ -3029,7 +3029,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's66', name: 'Fried Ribs (Local)', description: 'Deep-fried spiced ribs.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Pork ribs', 'garlic', 'ginger', 'pebe', 'chili', 'salt'],
@@ -3039,7 +3039,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's67', name: 'Fried Snails', description: 'Giant African snails.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/friedsnails.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg snails', 'chili', 'onions', 'garlic', 'oil', 'salt'],
@@ -3049,7 +3049,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's68', name: 'Fried Yam & Pepper', description: 'Yam with hot dip.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Fried Yam Fries.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg Yam', 'oil', 'chili sauce', 'salt'],
@@ -3059,7 +3059,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's69', name: 'Fruit Skewers', description: 'Mixed tropical fruit stick.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Pineapple', 'mango', 'papaya'],
@@ -3069,7 +3069,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's70', name: 'Garri (Dry with Sugar)', description: 'Dry cassava with sugar.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 cup Garri', '1/2 cup groundnuts', '1/2 cup sugar'],
@@ -3079,7 +3079,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's71', name: 'Garri & Coconut', description: 'Garri with coconut flakes.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/coconut.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 cup Garri', '1 coconut', '1/2 cup sugar'],
@@ -3089,7 +3089,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's72', name: 'Grated Cassava Cake', description: 'Baked cassava squares.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Cassava Fries (Mandioca Frita) - Crumb-Snatched.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg Malanga', '1 cup sugar', 'smoked fish', 'crayfish', 'pebe', 'oil', 'salt', 'banana leaves'],
@@ -3099,7 +3099,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's73', name: 'Grilled Gizzards', description: 'Skewered chicken gizzards.',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&auto=format',
+    image: '/meals/fried gizzard.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg gizzards', 'chili', 'onions', 'garlic', 'pebe', 'oil', 'salt'],
@@ -3109,7 +3109,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's74', name: 'Grilled Pig Ear', description: 'Grilled pork ear snack.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Pig ears', '1 tin mackerel', 'onion', 'chili', 'salt'],
@@ -3119,7 +3119,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's75', name: 'Hard-Boiled Egg & Pepper', description: 'Street egg with salt mix.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/boiled eggs.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 eggs', 'chili', 'salt'],
@@ -3129,7 +3129,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's76', name: 'Irish Potato Fry', description: 'Fried potato snack.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Potato Porridge Recipe (Potato Pottage).jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg potatoes', 'oil', 'salt'],
@@ -3139,7 +3139,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's77', name: 'Kanda (Peanut Cake)', description: 'Peanut brittle.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Peanut Sugarcake.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg peanuts', '1 cup sugar', 'water'],
@@ -3149,7 +3149,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's78', name: 'Kashat', description: 'Roasted melon seed snack.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 cup Egusi', 'smoked fish', 'crayfish', 'salt', 'banana leaves'],
@@ -3159,7 +3159,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's79', name: 'Kilichi', description: 'Spiced dried beef.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg beef', 'pebe', 'chili', 'salt'],
@@ -3169,7 +3169,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's80', name: 'Koki Beans (Snack)', description: 'Small bean pudding.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/koki.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg beans', 'onion', 'ginger', 'pebe', 'chili', 'salt'],
@@ -3179,7 +3179,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's81', name: 'Koki Corn (Small)', description: 'Small corn snack.',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&auto=format',
+    image: '/meals/koki.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg corn', '2 cups spinach', 'ginger', 'cube', 'salt'],
@@ -3189,7 +3189,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's82', name: 'Meat Pie', description: 'Beef filled pastry.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Nigerian Meat Pies.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['5 cups flour', '1 sugar', '1 tbsp butter', '1 tsp yeast', '1 tsp baking powder', '1/2 salt', '2 eggs', 'nutmeg', 'oil', '1 tin mackerel', 'onion', 'chili'],
@@ -3199,7 +3199,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's83', name: 'Miondo & Avocado', description: 'Cassava strips with avocado.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 Miondo', 'avocado'],
@@ -3209,7 +3209,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's84', name: 'Miondo & Pepper Sauce', description: 'Cassava with spicy dip.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 Miondo', 'garlic', 'ginger', 'pebe', '2 cubes', '1 cup oil', 'salt'],
@@ -3219,7 +3219,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's85', name: 'Mixed Berry', description: 'Wild forest berries.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['wild berries'],
@@ -3229,7 +3229,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's86', name: 'Onion & Pepper Dip', description: 'Spicy condiment.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['2 onions', 'chili', 'salt', '1/4 palm oil'],
@@ -3239,7 +3239,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's87', name: 'Papaya & Ginger Salad', description: 'Zesty fruit bowl.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Papaya and Lime.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['papaya', 'ginger', 'lime'],
@@ -3249,7 +3249,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's88', name: 'Papaya & Lime', description: 'Fresh papaya with lime.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Papaya and Lime.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['papaya', 'lime'],
@@ -3259,7 +3259,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's89', name: 'Pawpaw Seeds (Dried)', description: 'Dried papaya seeds.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['papaya seeds'],
@@ -3269,7 +3269,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's90', name: 'Peanut Burger', description: 'Flour coated peanuts.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Peanut Sugarcake.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 kg peanuts', 'ginger', 'pebe', 'sugar'],
@@ -3279,7 +3279,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's91', name: 'Peppered Snail Skewer', description: 'Spiced grilled snails.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/friedsnails.jpg',
     category: 'snacks',
     recipe: {
       ingredients: ['snails', 'lime', 'salt', 'chili', 'onions'],
@@ -3289,7 +3289,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's92', name: 'Piment de Table', description: 'Hot pepper sauce.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Habaneros', 'ginger', 'njangsa', 'garlic'],
@@ -3299,7 +3299,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's93', name: 'Pineapple Wedges', description: 'Fresh pineapple slices.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/How to Cut a Pineapple _ Spears, Slices, or Rings!.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['1 pineapple'],
@@ -3309,7 +3309,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's94', name: 'Piyin', description: 'Scotch egg style.',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['5 cups flour', '150g sugar', 'butter', 'yeast', 'baking powder', 'salt', 'eggs', 'nutmeg', 'oil', '1 tin mackerel', 'onion', 'chili'],
@@ -3319,7 +3319,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's95', name: 'Plantain Chips (Salty)', description: 'Green plantain crisps.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 green plantains', 'oil', 'salt'],
@@ -3329,7 +3329,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's96', name: 'Plantain Chips (Sweet)', description: 'Ripe plantain crisps.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 yellow plantains', 'oil'],
@@ -3339,7 +3339,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's97', name: 'Plantain & Plum', description: 'Plantain with Safou.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 plantains', '6 Safou', '1/4 oil', 'salt'],
@@ -3349,7 +3349,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's98', name: 'Plantain & Plum (Safou)', description: 'Plantain with African pears.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Roasted Plantain.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['6 Safou', 'water'],
@@ -3359,7 +3359,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's99', name: 'Roasted Macabo (Salty)', description: 'Grilled salty cocoyam.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Comment préparer le Macabo malaxé au ndolè_ how to cook cocoyam porridge and bitterleaves.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Macabo', 'salt'],
@@ -3369,7 +3369,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 's100', name: 'Roasted Macabo & Sauce', description: 'Grilled cocoyam slices.',
-    image: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=400&auto=format',
+    image: '/meals/Comment préparer le Macabo malaxé au ndolè_ how to cook cocoyam porridge and bitterleaves.jpeg',
     category: 'snacks',
     recipe: {
       ingredients: ['Macabo', 'pepper sauce'],
@@ -3571,7 +3571,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr20', name: 'Guava & Pineapple Mix', description: 'Tropical fruit nectar.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/juice.jpg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 pineapple', '1 mango', 'water'],
@@ -3581,7 +3581,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr21', name: 'Guava Juice', description: 'Aromatic guava drink.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/juice.jpg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 kg guava', 'pineapple skin', 'sugar', 'water'],
@@ -3591,7 +3591,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr22', name: 'Guava Nectar (Fresh)', description: 'High-fiber fruit drink.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/guava.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 kg guava', 'water'],
@@ -3601,7 +3601,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr23', name: 'Hibiscus & Pineapple', description: 'Fruity folere blend.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/hibiscus drink.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['hibiscus', 'pineapple juice'],
@@ -3611,7 +3611,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr24', name: 'Hibiscus Leaf Juice', description: 'Green hibiscus drink.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/juice.jpg',
     category: 'drinks',
     recipe: {
       ingredients: ['hibiscus leaves', 'lime', 'sugar'],
@@ -3621,7 +3621,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr25', name: 'Hibiscus Lemonade', description: 'Floral citrus cooler.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/hibiscus drink.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['hibiscus', 'lemon', 'honey'],
@@ -3631,7 +3631,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr26', name: 'Hot Chocolate (Local)', description: 'Raw cocoa drink.',
-    image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 cup cocoa', 'water', 'milk', 'sugar'],
@@ -3641,7 +3641,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr27', name: 'Hot Ginger Tea', description: 'Spicy warming brew.',
-    image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=400&auto=format',
+    image: '/meals/Traditional Pakistani Chai.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['ginger', 'honey'],
@@ -3651,7 +3651,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr28', name: 'Iced Coffee (Local)', description: 'Bamenda coffee over ice.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/coffee.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 cup coffee', 'water', 'milk', 'sugar', 'ice'],
@@ -3661,7 +3661,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr29', name: 'Iced Lemon Tea', description: 'Cold citrus tea brew.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/Traditional Pakistani Chai.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['ginger', 'pineapple skin', 'sugar', 'tea', 'lemon', 'ice', 'water'],
@@ -3671,7 +3671,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr30', name: 'Iced Mint Tea', description: 'Refreshing mint drink.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/Traditional Pakistani Chai.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['4 bundles mint', 'water', 'ginger', 'crayfish', 'oil'],
@@ -3681,7 +3681,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr31', name: 'Lemon & Honey Brew', description: 'Soothing citrus tea.',
-    image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=400&auto=format',
+    image: '/meals/Food.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['lemon', 'honey', 'ginger', 'water'],
@@ -3691,7 +3691,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr32', name: 'Lemon Ginger Tea', description: 'Flu-fighting herbal tea.',
-    image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=400&auto=format',
+    image: '/meals/Traditional Pakistani Chai.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['ginger', 'lemon', 'honey'],
@@ -3701,7 +3701,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr33', name: 'Lemonade (Citronnelle)', description: 'Lemongrass infusion.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/lemonade.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['lemon', 'lemongrass', 'sugar'],
@@ -3711,7 +3711,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr34', name: 'Lemonade (Local Style)', description: 'Sweet citrus drink.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/lemonade.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['lemons', 'water', 'sugar'],
@@ -3721,7 +3721,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr35', name: 'Local Cocoa Tea', description: 'Raw roasted cocoa tea.',
-    image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=400&auto=format',
+    image: '/meals/Traditional Pakistani Chai.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['cocoa husks', 'milk', 'honey'],
@@ -3731,7 +3731,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr36', name: 'Local Coffee (Black)', description: 'Strong black coffee.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/coffee.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 cup coffee', 'water', 'sugar'],
@@ -3741,7 +3741,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr37', name: 'Local Coffee with Milk', description: 'Coffee with milk.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/coffee.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 cup coffee', 'water', 'milk', 'sugar'],
@@ -3751,7 +3751,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr38', name: 'Mango & Banana Smoothie', description: 'Thick tropical blend.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/Mango yogurt bowl 🥭🍦.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 pineapple', '1 mango', 'water'],
@@ -3761,7 +3761,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr39', name: 'Mango & Pineapple', description: 'Pure fruit nectar.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/Mango yogurt bowl 🥭🍦.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 pineapple', '1 mango', 'water'],
@@ -3771,7 +3771,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr40', name: 'Mango & Yogurt Smoothie', description: 'Protein fruit blend.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/Mango yogurt bowl 🥭🍦.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['mango', 'yogurt', 'honey'],
@@ -3781,7 +3781,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr41', name: 'Mango Nectar', description: 'Thick mango puree.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/Mango yogurt bowl 🥭🍦.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 kg mango', 'honey'],
@@ -3791,7 +3791,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr42', name: 'Millet Drink (Kunnu)', description: 'Grain drink from North.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/Finger Millet.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 cup millet', 'pineapple skin', '1 kg sugar', '2 yeast', 'ginger', 'water'],
@@ -3801,7 +3801,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr43', name: 'Mint & Lime Water', description: 'Refreshing herbal water.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/citrus water.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['mint', 'lime', 'water'],
@@ -3811,7 +3811,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr44', name: 'Minty Pineapple Juice', description: 'Fresh pineapple and mint.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/juice.jpg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 pineapple', 'mint'],
@@ -3821,7 +3821,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr45', name: 'Orange & Ginger Mix', description: 'Citrus with spicy kick.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/ginger drink.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['oranges', 'ginger', 'sugar'],
@@ -3831,7 +3831,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr46', name: 'Palm Wine (Matango)', description: 'Natural fermented sap.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/palm wine.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['palm sap'],
@@ -3841,7 +3841,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr47', name: 'Palm Wine (Natural)', description: 'Fresh palm sap.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/palm wine.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['palm wine'],
@@ -3851,7 +3851,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr48', name: 'Papaya & Lime Juice', description: 'Cold pressed papaya.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/Papaya and Lime.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['papaya', 'lime'],
@@ -3861,7 +3861,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr49', name: 'Papaya Smoothie', description: 'Papaya and lime blend.',
-    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&auto=format',
+    image: '/meals/Papaya and Lime.jpeg',
     category: 'drinks',
     recipe: {
       ingredients: ['papaya', 'lime', 'honey'],
@@ -3871,7 +3871,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'dr50', name: 'Passion Fruit Juice', description: 'Aromatic tart juice.',
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&auto=format',
+    image: '/meals/juice.jpg',
     category: 'drinks',
     recipe: {
       ingredients: ['1 kg passion fruit', 'pineapple skin', '1 kg sugar', 'water'],
