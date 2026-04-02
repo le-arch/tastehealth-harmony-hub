@@ -255,8 +255,8 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
               }}
               month={viewDate}
               onMonthChange={(month) => setViewDate(month)}
-              animated
-              highlightToday
+
+
               className="rounded-md border-0"
             />
             <div className="mt-4 flex justify-between gap-4">

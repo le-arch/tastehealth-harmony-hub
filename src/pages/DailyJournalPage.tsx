@@ -141,8 +141,8 @@ const AnimatedDatePicker = ({ value, onChange, label = "Date" }: { value: string
                   month={month}
                   onMonthChange={setMonth}
                   initialFocus
-                  animated={true}
-                  highlightToday={true}
+
+
                   className="rounded-md border-0"
                   components={{
                     IconLeft: ({ ...props }) => (
