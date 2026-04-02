@@ -140,34 +140,36 @@ const MealSearch = ({ onSelectMeal }: MealSearchProps) => {
       {filtered.length === 0 ? (
         <div className="text-center py-12"><p className="text-muted-foreground">No meals found matching your search.</p></div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.slice(0, visibleCount).map(meal => (
-            <Card key={meal.id} className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden group" onClick={() => setSelectedMeal(meal)}>
-              <div className="relative">
-                <img src={meal.image} alt={meal.name} loading="lazy" className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
-                <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full" onClick={(e) => { e.stopPropagation(); toggleFavorite(meal); }}>
-                  <Heart className={`h-4 w-4 ${isFavorited(meal.id) ? 'fill-red-500 text-red-500' : ''}`} />
-                </Button>
-                <Badge className="absolute bottom-2 left-2 capitalize">{meal.category}</Badge>
-              </div>
-              <CardContent className="p-3">
-                <h3 className="font-semibold text-sm mb-1">{meal.name}</h3>
-                <p className="text-xs text-muted-foreground mb-2 line-clamp-1">{meal.description}</p>
-                <div className="flex gap-2 flex-wrap">
-                  <Badge variant="secondary" className="text-xs">{meal.nutrition.calories} kcal</Badge>
-                  <Badge variant="outline" className="text-xs">{meal.nutrition.protein}g protein</Badge>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.slice(0, visibleCount).map(meal => (
+              <Card key={meal.id} className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden group" onClick={() => setSelectedMeal(meal)}>
+                <div className="relative">
+                  <img src={meal.image} alt={meal.name} loading="lazy" className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full" onClick={(e) => { e.stopPropagation(); toggleFavorite(meal); }}>
+                    <Heart className={`h-4 w-4 ${isFavorited(meal.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                  </Button>
+                  <Badge className="absolute bottom-2 left-2 capitalize">{meal.category}</Badge>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        {visibleCount < filtered.length && (
-          <div className="text-center pt-4">
-            <Button variant="outline" onClick={() => setVisibleCount(c => c + 24)}>
-              Load More ({filtered.length - visibleCount} remaining)
-            </Button>
+                <CardContent className="p-3">
+                  <h3 className="font-semibold text-sm mb-1">{meal.name}</h3>
+                  <p className="text-xs text-muted-foreground mb-2 line-clamp-1">{meal.description}</p>
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge variant="secondary" className="text-xs">{meal.nutrition.calories} kcal</Badge>
+                    <Badge variant="outline" className="text-xs">{meal.nutrition.protein}g protein</Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        )}
+          {visibleCount < filtered.length && (
+            <div className="text-center pt-4">
+              <Button variant="outline" onClick={() => setVisibleCount(c => c + 24)}>
+                Load More ({filtered.length - visibleCount} remaining)
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
