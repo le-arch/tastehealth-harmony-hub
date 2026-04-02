@@ -21,11 +21,14 @@ const MealSearch = ({ onSelectMeal }: MealSearchProps) => {
   const [selectedMeal, setSelectedMeal] = useState<MealDBItem | null>(null);
   const [favorites, setFavorites] = useState<FavoriteMeal[]>(getLS(LS_KEYS.FAVORITES, []));
 
-  const filtered = MEAL_DATABASE.filter(m => {
-    const matchSearch = m.name.toLowerCase().includes(searchTerm.toLowerCase()) || m.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const [visibleCount, setVisibleCount] = useState(24);
+
+  const filtered = useMemo(() => MEAL_DATABASE.filter(m => {
+    const term = searchTerm.toLowerCase();
+    const matchSearch = !term || m.name.toLowerCase().includes(term) || m.description.toLowerCase().includes(term);
     const matchCat = selectedCategory === "all" || m.category === selectedCategory;
     return matchSearch && matchCat;
-  });
+  }), [searchTerm, selectedCategory]);
 
   const isFavorited = (id: string) => favorites.some(f => f.id === id);
 
