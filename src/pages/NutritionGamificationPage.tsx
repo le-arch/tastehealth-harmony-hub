@@ -15,6 +15,7 @@ import {
   Trophy, Smile, ChefHat, Leaf, Plus, Check, Clock, Star, Search,
   Mountain, Flame, Target, Zap, Award
 } from "lucide-react";
+import WeeklyMealPrepPlanner from "@/components/nutrition/WeeklyMealPrepPlanner";
 
 const NutritionGamificationPage = () => {
   const [activeTab, setActiveTab] = useState("challenges");

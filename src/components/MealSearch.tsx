@@ -141,10 +141,10 @@ const MealSearch = ({ onSelectMeal }: MealSearchProps) => {
         <div className="text-center py-12"><p className="text-muted-foreground">No meals found matching your search.</p></div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(meal => (
+          {filtered.slice(0, visibleCount).map(meal => (
             <Card key={meal.id} className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden group" onClick={() => setSelectedMeal(meal)}>
               <div className="relative">
-                <img src={meal.image} alt={meal.name} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
+                <img src={meal.image} alt={meal.name} loading="lazy" className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
                 <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full" onClick={(e) => { e.stopPropagation(); toggleFavorite(meal); }}>
                   <Heart className={`h-4 w-4 ${isFavorited(meal.id) ? 'fill-red-500 text-red-500' : ''}`} />
                 </Button>
@@ -161,6 +161,13 @@ const MealSearch = ({ onSelectMeal }: MealSearchProps) => {
             </Card>
           ))}
         </div>
+        {visibleCount < filtered.length && (
+          <div className="text-center pt-4">
+            <Button variant="outline" onClick={() => setVisibleCount(c => c + 24)}>
+              Load More ({filtered.length - visibleCount} remaining)
+            </Button>
+          </div>
+        )}
       )}
     </div>
   );

@@ -80,7 +80,7 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
     { path: "/journal", icon: <Bookmark className="h-5 w-5" />, label: t.journal, color: "from-red-500 to-pink-500", iconBg: "bg-gradient-to-br from-red-100 to-pink-100 dark:from-red-950 dark:to-pink-950" },
     { path: "/games", icon: <Gamepad className="h-5 w-5" />, label: t.games, color: "from-purple-500 to-violet-500", iconBg: "bg-gradient-to-br from-purple-100 to-violet-100 dark:from-purple-950 dark:to-violet-950" },
     
-    { path: "/benefits", icon: <Gift className="h-5 w-5" />, label: t.level, color: "from-yellow-500 to-amber-500", iconBg: "bg-gradient-to-br from-yellow-100 to-amber-100 dark:from-yellow-950 dark:to-amber-950" },
+    
     { path: "/cooking-videos", icon: <Video className="h-5 w-5" />, label: t.cookingVideos, color: "from-orange-500 to-red-500", iconBg: "bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-950 dark:to-red-950" },
     { path: "/health-tips", icon: <Stethoscope className="h-5 w-5" />, label: t.healthTips, color: "from-teal-500 to-cyan-500", iconBg: "bg-gradient-to-br from-teal-100 to-cyan-100 dark:from-teal-950 dark:to-cyan-950" },
     { path: "/how-to-use", icon: <BookOpen className="h-5 w-5" />, label: t.howToUse, color: "from-indigo-500 to-purple-500", iconBg: "bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950" },
