@@ -75,7 +75,7 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
         selectDate: 'Select Date'
       };
 
-  const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'drinks'] as const;
+  const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'drinks', 'fruits'] as const;
   
   const mealsByCategory = categories.reduce((acc, category) => {
     acc[category] = MEAL_DATABASE.filter(meal => meal.category === category);

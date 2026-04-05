@@ -7,7 +7,7 @@ import { getLS, LS_KEYS, ProfileData } from '@/utils/localStorage';
 import { MEAL_DATABASE, MealDBItem } from '@/data/mealDatabase';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const SLOTS = ['breakfast', 'lunch', 'dinner', 'snacks'] as const;
+const SLOTS = ['breakfast', 'lunch', 'dinner', 'snacks', 'fruits'] as const;
 
 const WeeklyMealPrepPlanner: React.FC = () => {
   const [seed, setSeed] = useState(0);

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -8,14 +7,14 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
-import { Activity, Target, TrendingUp, Calendar, Award, Flame, Droplet, Utensils, Timer, Gauge, Trophy, Wrench } from "lucide-react";
+import { Activity, Target, TrendingUp, Calendar, Award, Flame, Droplet, Utensils, Timer, Gauge, Trophy, ChefHat } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useScreenSize } from "@/utils/mobile";
 import MealPrepTimer from "./MealPrepTimer";
 import NutritionProgressWheel from "./NutritionProgressWheel";
-import DailyMealSelector from "./DailyMealSelector";
+import WeeklyMealPrepPlanner from "./WeeklyMealPrepPlanner";
+import MealPrepFeedback from "./MealPrepFeedback";
 import { getLS, LS_KEYS, Challenge, CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry } from "@/utils/localStorage";
-import { MEAL_DATABASE } from "@/data/mealDatabase";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 
@@ -30,11 +29,8 @@ const NutritionDashboard = () => {
 
   const [mealNutrition, setMealNutrition] = useState({ protein: 0, carbs: 0, fats: 0 });
 
-  // Load daily meals and compute nutrition from calorie log + daily meals
   const loadMealData = () => {
     const today = format(new Date(), 'yyyy-MM-dd');
-    
-    // Load from date-specific daily meals
     const stored = localStorage.getItem(`th_daily_meals_${today}`);
     let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFats = 0;
     
@@ -50,16 +46,13 @@ const NutritionDashboard = () => {
       } catch {}
     }
 
-    // Also check calorie log for today
     const calorieLog = getLS<CalorieEntry[]>(LS_KEYS.CALORIE_LOG, []);
     const todayEntries = calorieLog.filter(e => e.date.startsWith(today));
     todayEntries.forEach(e => { totalCalories += e.calories; });
 
-    // Load water from hydration log
     const hydrationLog = getLS<HydrationEntry[]>(LS_KEYS.HYDRATION_LOG, []);
     const todayWater = hydrationLog.filter(e => e.date.startsWith(today)).reduce((sum, e) => sum + e.cups, 0);
 
-    // Load goals from nutrition settings
     const nutritionGoal = getLS<any>('th_nutrition_goal', { dailyCalories: 2000, proteinPercentage: 30, carbsPercentage: 40, fatsPercentage: 30 });
     const cal = nutritionGoal.dailyCalories || 2000;
 
@@ -85,7 +78,6 @@ const NutritionDashboard = () => {
   const { isMobile } = useScreenSize();
   const [activeTab, setActiveTab] = useState("dailyTools");
 
-  // Weekly summary data
   const weeklySummary = useMemo(() => {
     const now = new Date();
     const weekStart = new Date(now);
@@ -115,7 +107,6 @@ const NutritionDashboard = () => {
     };
   }, [dailyGoals]);
 
-  // Achievements data
   const challenges = getLS<Challenge[]>(LS_KEYS.CHALLENGES, []);
   const activeChallenges = challenges.filter(c => !c.completed);
   const completedChallenges = challenges.filter(c => c.completed);
@@ -123,8 +114,8 @@ const NutritionDashboard = () => {
   const quizScores = getLS<any[]>('th_quiz_scores', []);
 
   const t = language === 'fr'
-    ? { title: "Tableau de Bord Nutritionnel", dailyTools: "Outils Quotidiens", progressSummary: "Résumé des Progrès", achievements: "Réalisations", dailyGoals: "Objectifs du Jour", calories: "Calories", protein: "Protéines", carbs: "Glucides", fat: "Lipides", water: "Eau", kcal: "kcal", grams: "g", glasses: "verres" }
-    : { title: "Nutrition Dashboard", dailyTools: "Daily Tools", progressSummary: "Progress Summary", achievements: "Achievements", dailyGoals: "Today's Goals", calories: "Calories", protein: "Protein", carbs: "Carbs", fat: "Fat", water: "Water", kcal: "kcal", grams: "g", glasses: "glasses" };
+    ? { title: "Tableau de Bord Nutritionnel", dailyTools: "Outils", mealPrep: "Préparation", progressSummary: "Progrès", achievements: "Réalisations", dailyGoals: "Objectifs du Jour", calories: "Calories", protein: "Protéines", carbs: "Glucides", fat: "Lipides", water: "Eau", kcal: "kcal", grams: "g", glasses: "verres" }
+    : { title: "Nutrition Dashboard", dailyTools: "Daily Tools", mealPrep: "Meal Prep", progressSummary: "Progress", achievements: "Achievements", dailyGoals: "Today's Goals", calories: "Calories", protein: "Protein", carbs: "Carbs", fat: "Fat", water: "Water", kcal: "kcal", grams: "g", glasses: "glasses" };
 
   const calculateProgress = (current: number, target: number) => Math.min((current / target) * 100, 100);
 
@@ -140,7 +131,8 @@ const NutritionDashboard = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <ScrollableTabsList className="w-full">
-          <TabsTrigger value="dailyTools" className="flex items-center gap-2"><Wrench className="h-4 w-4 text-primary" />{!isMobile && t.dailyTools}</TabsTrigger>
+          <TabsTrigger value="dailyTools" className="flex items-center gap-2"><Gauge className="h-4 w-4 text-primary" />{!isMobile && t.dailyTools}</TabsTrigger>
+          <TabsTrigger value="mealPrep" className="flex items-center gap-2"><ChefHat className="h-4 w-4 text-orange-500" />{!isMobile && t.mealPrep}</TabsTrigger>
           <TabsTrigger value="progressSummary" className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" />{!isMobile && t.progressSummary}</TabsTrigger>
           <TabsTrigger value="achievements" className="flex items-center gap-2"><Trophy className="h-4 w-4 text-primary" />{!isMobile && t.achievements}</TabsTrigger>
         </ScrollableTabsList>
@@ -148,9 +140,6 @@ const NutritionDashboard = () => {
         <TabsContent value="dailyTools" className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-              <DailyMealSelector />
-            </motion.div>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
               <Card>
                 <CardHeader><CardTitle className="flex items-center text-lg"><Gauge className="h-5 w-5 mr-2 text-primary" />Progress Wheel</CardTitle></CardHeader>
                 <CardContent>
@@ -158,14 +147,18 @@ const NutritionDashboard = () => {
                 </CardContent>
               </Card>
             </motion.div>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
               <MealPrepTimer />
             </motion.div>
           </div>
         </TabsContent>
 
+        <TabsContent value="mealPrep" className="space-y-6">
+          <WeeklyMealPrepPlanner />
+          <MealPrepFeedback />
+        </TabsContent>
+
         <TabsContent value="progressSummary" className="space-y-6">
-          {/* Today's Goals */}
           <Card>
             <CardHeader><CardTitle className="flex items-center"><Target className="h-5 w-5 mr-2 text-primary" />{t.dailyGoals}</CardTitle></CardHeader>
             <CardContent>
@@ -189,7 +182,6 @@ const NutritionDashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Weekly Summary */}
           <Card>
             <CardHeader><CardTitle className="flex items-center"><TrendingUp className="h-5 w-5 mr-2 text-primary" />Weekly Overview</CardTitle></CardHeader>
             <CardContent>

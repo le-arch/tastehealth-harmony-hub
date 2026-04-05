@@ -3,7 +3,7 @@ export interface MealDBItem {
   name: string;
   description: string;
   image: string;
-  category: 'breakfast' | 'lunch' | 'dinner' | 'snacks' | 'drinks';
+  category: 'breakfast' | 'lunch' | 'dinner' | 'snacks' | 'drinks' | 'fruits';
   recipe: {
     ingredients: string[];
     method: string[];
@@ -3878,8 +3878,160 @@ export const MEAL_DATABASE: MealDBItem[] = [
       method: ['Boil fruit and pineapple.', 'Strain.', 'Add yeast, sugar.', 'Ferment 24 hours.', 'Chill.']
     },
     nutrition: { calories: 110, protein: 1, carbs: 28, fats: 0, fiber: 4, sugar: 24, sodium: 5 }
+  },
+
+  // FRUITS (fr1-fr30)
+  {
+    id: 'fr1', name: 'Fresh Papaya Bowl', description: 'Ripe papaya sliced into a bowl with lime juice and a sprinkle of chili flakes.',
+    image: '/meals/papaya.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['1 ripe papaya', '1 lime', 'pinch of chili flakes', 'honey (optional)'],
+      method: ['Cut papaya in half and remove seeds.', 'Scoop flesh into cubes or use a melon baller.', 'Arrange in a bowl.', 'Squeeze lime juice over the top.', 'Sprinkle with chili flakes and drizzle honey if desired.']
+    },
+    nutrition: { calories: 120, protein: 2, carbs: 30, fats: 0, fiber: 5, sugar: 18, sodium: 10 }
+  },
+  {
+    id: 'fr2', name: 'Banana & Peanut Butter Bites', description: 'Banana slices topped with peanut butter for a quick energy boost.',
+    image: '/meals/banana peanut butter.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['2 ripe bananas', '3 tbsp peanut butter', 'dark chocolate chips (optional)', 'chia seeds'],
+      method: ['Peel and slice bananas into 1cm rounds.', 'Spread a small dollop of peanut butter on each slice.', 'Top with chocolate chips or chia seeds.', 'Serve immediately or freeze for 30 minutes for a frozen treat.']
+    },
+    nutrition: { calories: 280, protein: 8, carbs: 38, fats: 14, fiber: 5, sugar: 20, sodium: 75 }
+  },
+  {
+    id: 'fr3', name: 'Watermelon & Mint Salad', description: 'Refreshing watermelon cubes with fresh mint and a squeeze of lime.',
+    image: '/meals/watermelon mint.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['3 cups watermelon cubes', '10 fresh mint leaves', '1 lime', 'pinch of salt'],
+      method: ['Cut watermelon into bite-sized cubes.', 'Chiffonade the mint leaves.', 'Toss watermelon with mint in a bowl.', 'Squeeze lime juice over the top and add a pinch of salt.', 'Chill for 10 minutes before serving.']
+    },
+    nutrition: { calories: 90, protein: 2, carbs: 22, fats: 0, fiber: 1, sugar: 18, sodium: 5 }
+  },
+  {
+    id: 'fr4', name: 'Mango Slices with Chili-Lime', description: 'Sweet mango with a tangy chili-lime seasoning — a popular street snack.',
+    image: '/meals/mango chili.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['2 ripe mangoes', '1 lime', '1 tsp chili powder', 'pinch of salt'],
+      method: ['Peel mangoes and slice into long strips.', 'Arrange on a plate.', 'Squeeze lime juice generously over the slices.', 'Sprinkle with chili powder and salt.', 'Serve immediately.']
+    },
+    nutrition: { calories: 150, protein: 2, carbs: 38, fats: 1, fiber: 4, sugar: 32, sodium: 100 }
+  },
+  {
+    id: 'fr5', name: 'Mixed Berry Bowl', description: 'A vibrant bowl of fresh strawberries, blueberries, and raspberries.',
+    image: '/meals/mixed berries.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['1 cup strawberries', '1/2 cup blueberries', '1/2 cup raspberries', '1 tbsp honey', 'fresh mint'],
+      method: ['Wash all berries thoroughly.', 'Hull and halve the strawberries.', 'Combine all berries in a bowl.', 'Drizzle with honey.', 'Garnish with fresh mint leaves.']
+    },
+    nutrition: { calories: 110, protein: 2, carbs: 28, fats: 1, fiber: 8, sugar: 18, sodium: 2 }
+  },
+  {
+    id: 'fr6', name: 'Pineapple Rings', description: 'Juicy fresh pineapple cut into rings — naturally sweet and tropical.',
+    image: '/meals/pineapple rings.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['1 whole pineapple'],
+      method: ['Cut off the top and bottom of the pineapple.', 'Stand upright and slice off the skin in strips.', 'Remove any remaining eyes.', 'Slice into 1cm thick rings.', 'Use a small round cutter to remove the core from each ring.', 'Serve chilled.']
+    },
+    nutrition: { calories: 82, protein: 1, carbs: 22, fats: 0, fiber: 2, sugar: 16, sodium: 2 }
+  },
+  {
+    id: 'fr7', name: 'Orange & Grapefruit Citrus Bowl', description: 'Segmented citrus fruits drizzled with honey for a vitamin C boost.',
+    image: '/meals/citrus bowl.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['2 oranges', '1 grapefruit', '1 tbsp honey', 'fresh mint'],
+      method: ['Peel oranges and grapefruit, removing pith.', 'Segment the fruits using a sharp knife.', 'Arrange segments in a bowl.', 'Drizzle with honey.', 'Garnish with mint leaves.']
+    },
+    nutrition: { calories: 140, protein: 3, carbs: 35, fats: 0, fiber: 6, sugar: 28, sodium: 2 }
+  },
+  {
+    id: 'fr8', name: 'Avocado & Lime Halves', description: 'Simple ripe avocado halves seasoned with lime, salt, and pepper.',
+    image: '/meals/avocado halves.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['2 ripe avocados', '1 lime', 'sea salt', 'black pepper', 'chili flakes (optional)'],
+      method: ['Cut avocados in half and remove the pit.', 'Squeeze lime juice into each cavity.', 'Season with sea salt and freshly ground black pepper.', 'Add chili flakes if desired.', 'Eat with a spoon directly from the skin.']
+    },
+    nutrition: { calories: 240, protein: 3, carbs: 12, fats: 22, fiber: 10, sugar: 1, sodium: 150 }
+  },
+  {
+    id: 'fr9', name: 'Guava with Salt', description: 'Fresh guava slices with a light sprinkle of salt — a tropical favorite.',
+    image: '/meals/guava.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['3 ripe guavas', 'pinch of salt'],
+      method: ['Wash guavas thoroughly.', 'Cut into quarters or slices.', 'Sprinkle lightly with salt.', 'Serve fresh.']
+    },
+    nutrition: { calories: 112, protein: 4, carbs: 24, fats: 2, fiber: 9, sugar: 15, sodium: 50 }
+  },
+  {
+    id: 'fr10', name: 'Fresh Coconut Chunks', description: 'Tender young coconut flesh — hydrating and rich in healthy fats.',
+    image: '/meals/coconut chunks.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['1 young coconut'],
+      method: ['Crack open the coconut carefully.', 'Pour out and reserve the coconut water.', 'Scoop out the tender flesh with a spoon.', 'Cut into bite-sized chunks.', 'Serve fresh with the coconut water on the side.']
+    },
+    nutrition: { calories: 283, protein: 3, carbs: 12, fats: 27, fiber: 7, sugar: 5, sodium: 16 }
+  },
+  {
+    id: 'fr11', name: 'Apple Slices with Cinnamon', description: 'Crisp apple slices dusted with cinnamon — simple and satisfying.',
+    image: '/meals/apple cinnamon.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['2 apples', '1 tsp ground cinnamon', '1 tsp honey (optional)'],
+      method: ['Wash and core the apples.', 'Slice into thin wedges.', 'Dust with ground cinnamon.', 'Drizzle with honey if desired.', 'Serve immediately to prevent browning.']
+    },
+    nutrition: { calories: 130, protein: 1, carbs: 34, fats: 0, fiber: 5, sugar: 25, sodium: 2 }
+  },
+  {
+    id: 'fr12', name: 'Passion Fruit Halves', description: 'Tangy passion fruit scooped straight from the shell.',
+    image: '/meals/passion fruit.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['4 passion fruits'],
+      method: ['Wash passion fruits.', 'Cut each in half with a sharp knife.', 'Scoop out the pulp and seeds with a spoon.', 'Eat directly or spoon over yogurt.']
+    },
+    nutrition: { calories: 70, protein: 2, carbs: 17, fats: 1, fiber: 7, sugar: 8, sodium: 22 }
+  },
+  {
+    id: 'fr13', name: 'Grapes & Cheese Plate', description: 'Fresh grapes paired with cheese cubes for a balanced fruit snack.',
+    image: '/meals/grapes cheese.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['2 cups mixed grapes', '100g cheddar or gouda cheese', 'walnuts (optional)'],
+      method: ['Wash and dry grapes.', 'Cut cheese into bite-sized cubes.', 'Arrange grapes and cheese on a plate.', 'Add walnuts for extra crunch if desired.']
+    },
+    nutrition: { calories: 320, protein: 12, carbs: 30, fats: 18, fiber: 2, sugar: 24, sodium: 280 }
+  },
+  {
+    id: 'fr14', name: 'Soursop (Corossol) Bowl', description: 'Creamy soursop flesh — a tropical superfruit with a unique tangy flavor.',
+    image: '/meals/soursop.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['1 ripe soursop', 'honey (optional)'],
+      method: ['Peel the soursop and remove seeds.', 'Break the flesh into pieces in a bowl.', 'Drizzle with honey if desired.', 'Serve chilled.']
+    },
+    nutrition: { calories: 150, protein: 2, carbs: 38, fats: 1, fiber: 7, sugar: 30, sodium: 14 }
+  },
+  {
+    id: 'fr15', name: 'Tropical Fruit Salad', description: 'A colorful mix of mango, pineapple, papaya, and banana in citrus dressing.',
+    image: '/meals/tropical fruit salad.jpeg',
+    category: 'fruits',
+    recipe: {
+      ingredients: ['1 mango', '1 cup pineapple chunks', '1 cup papaya cubes', '1 banana', '2 tbsp orange juice', '1 tbsp honey', 'shredded coconut'],
+      method: ['Peel and dice the mango and papaya.', 'Slice the banana into rounds.', 'Combine all fruits in a large bowl.', 'Mix orange juice with honey to make the dressing.', 'Pour dressing over fruits and toss gently.', 'Top with shredded coconut.', 'Chill for 15 minutes before serving.']
+    },
+    nutrition: { calories: 200, protein: 3, carbs: 50, fats: 2, fiber: 6, sugar: 38, sodium: 8 }
   }
 ];
 
-export const MEAL_CATEGORIES = ['breakfast', 'lunch', 'dinner', 'snacks', 'drinks'] as const;
+export const MEAL_CATEGORIES = ['breakfast', 'lunch', 'dinner', 'snacks', 'drinks', 'fruits'] as const;
 export type MealCategory = typeof MEAL_CATEGORIES[number];
