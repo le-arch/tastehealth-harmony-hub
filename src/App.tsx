@@ -34,7 +34,7 @@ import HealthTipsPage from "./pages/HealthTipsPage";
 const queryClient = new QueryClient();
 
 function App() {
-  useResponsive();
+  useResponsive( );
   return (
     <QueryClientProvider client={queryClient}>
       <NotificationProvider>

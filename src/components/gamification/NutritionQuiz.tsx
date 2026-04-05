@@ -278,7 +278,7 @@ const NutritionQuiz: React.FC = () => {
         <Confetti active={showConfetti} />
         <Card>
           <CardContent className="p-8 text-center space-y-4">
-            <Trophy className={`h-16 w-16 mx-auto ${pct >= 70 ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+            <Trophy className={`h-16 w-16 mx-auto ${pct >= 70 ? 'text-yellow-500 fill-yellow-300' : 'text-muted-foreground'}`} />
             <h2 className="text-2xl font-bold">Quiz Complete!</h2>
             <p className="text-sm text-muted-foreground">{selectedSet}</p>
             <p className="text-4xl font-bold text-primary">{score}/{totalQ}</p>
