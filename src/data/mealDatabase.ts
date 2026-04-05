@@ -3,7 +3,7 @@ export interface MealDBItem {
   name: string;
   description: string;
   image: string;
-  category: 'breakfast' | 'lunch' | 'dinner' | 'snacks' | 'drinks';
+  category: 'breakfast' | 'lunch' | 'dinner' | 'snacks' | 'drinks' | 'fruits';
   recipe: {
     ingredients: string[];
     method: string[];
@@ -3881,5 +3881,5 @@ export const MEAL_DATABASE: MealDBItem[] = [
   }
 ];
 
-export const MEAL_CATEGORIES = ['breakfast', 'lunch', 'dinner', 'snacks', 'drinks'] as const;
+export const MEAL_CATEGORIES = ['breakfast', 'lunch', 'dinner', 'snacks', 'drinks', 'fruits'] as const;
 export type MealCategory = typeof MEAL_CATEGORIES[number];
