@@ -5,18 +5,18 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Zap, Award, LayoutDashboard, Target, Gift, Compass, Brain } from "lucide-react";
+import { Trophy, Zap, Award, LayoutDashboard, Target, Gift, Compass, Brain, Smile } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import RewardSystem from "../RewardSystem";
 
-import MealMoodTracker from "../nutrition/MealMoodTracker";
 import NutritionChallenge from "../nutrition/NutritionChallenge";
-import UserLevel from "./UserLevel";
+import LevelBenefits from "./LevelBenefits";
 import DailyStreak from "./DailyStreak";
 import NutritionBadges from "./NutritionBadges";
 import NutritionLeaderboard from "./NutritionLeaderboard";
 import NutritionQuest from "./NutritionQuest";
 import NutritionQuiz from "./NutritionQuiz";
+import MealMoodTracker from "../MealMoodTracker";
 import { useScreenSize } from "@/utils/mobile";
 import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
 
@@ -53,8 +53,7 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
       <div className="flex items-center justify-between">
         <h2 className="text-xl sm:text-2xl font-bold flex items-center"><Trophy className="h-6 w-6 mr-2 text-amber-500 fill-amber-500" />{t.title}</h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <UserLevel level={userLevel} points={userPoints} pointsForNextLevel={getPointsForNextLevel(userLevel)} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <DailyStreak streak={streak} updateStreak={updateStreak} />
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center"><Zap className="h-4 w-4 mr-2 text-purple-500 fill-purple-500" />{t.yourPoints}</CardTitle></CardHeader>
@@ -74,10 +73,10 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
           <TabsTrigger value="leaderboard"><Trophy className="h-4 w-4 text-orange-500 fill-yellow-500" />{!isMobile && t.leaderboard}</TabsTrigger>
           <TabsTrigger value="quests"><Compass className="h-4 w-4 text-teal-600 fill-blue-200" />{!isMobile && t.quests}</TabsTrigger>
           <TabsTrigger value="quiz"><Brain className="h-4 w-4 text-rose-600 fill-pink-300" />{!isMobile && 'Quiz'}</TabsTrigger>
+          <TabsTrigger value="mood"><Smile className="h-4 w-4 text-amber-500" />{!isMobile && 'Mood'}</TabsTrigger>
         </ScrollableTabsList>
         <TabsContent value="dashboard" className="space-y-4 mt-6">
-          <UserLevel level={userLevel} points={userPoints} pointsForNextLevel={getPointsForNextLevel(userLevel)} />
-          <MealMoodTracker />
+          <LevelBenefits userId="local" />
         </TabsContent>
         <TabsContent value="challenges" className="mt-6"><NutritionChallenge /></TabsContent>
         <TabsContent value="rewards" className="mt-6"><RewardSystem /></TabsContent>
@@ -85,6 +84,7 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
         <TabsContent value="leaderboard" className="mt-6"><NutritionLeaderboard userId={userId} /></TabsContent>
         <TabsContent value="quests" className="mt-6"><NutritionQuest userId={userId} addPoints={addPoints} /></TabsContent>
         <TabsContent value="quiz" className="mt-6"><NutritionQuiz /></TabsContent>
+        <TabsContent value="mood" className="mt-6"><MealMoodTracker /></TabsContent>
       </Tabs>
     </div>
   );

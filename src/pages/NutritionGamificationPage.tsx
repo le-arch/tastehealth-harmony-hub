@@ -2,39 +2,28 @@
 
 import { useState, useEffect } from "react";
 import PageLayout from "@/components/PageLayout";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { getLS, setLS, LS_KEYS, Challenge, MoodEntry } from "@/utils/localStorage";
-import { MEAL_DATABASE } from "@/data/mealDatabase";
+import { getLS, setLS, LS_KEYS, Challenge } from "@/utils/localStorage";
 import {
-  Trophy, Smile, ChefHat, Leaf, Plus, Check, Clock, Star, Search,
-  Mountain, Flame, Target, Zap, Award
+  Trophy, ChefHat, Plus, Check, Clock, Star,
+  Mountain, Flame, Target, Zap, Award, Crown
 } from "lucide-react";
 import WeeklyMealPrepPlanner from "@/components/nutrition/WeeklyMealPrepPlanner";
+import MealPrepFeedback from "@/components/nutrition/MealPrepFeedback";
+import LevelBenefits from "@/components/gamification/LevelBenefits";
 
 const NutritionGamificationPage = () => {
   const [activeTab, setActiveTab] = useState("challenges");
   const [challenges, setChallenges] = useState<Challenge[]>(getLS(LS_KEYS.CHALLENGES, []));
-  const [moodLog, setMoodLog] = useState<MoodEntry[]>(getLS(LS_KEYS.MOOD_LOG, []));
-  const [selectedMood, setSelectedMood] = useState<string>("");
-  const [moodNotes, setMoodNotes] = useState("");
-  const [moodMealName, setMoodMealName] = useState("");
 
   const activeChallenges = challenges.filter(c => !c.completed);
   const completedChallenges = challenges.filter(c => c.completed);
-
-  const moods = [
-    { emoji: "😋", label: "Delicious", value: "delicious" },
-    { emoji: "😊", label: "Satisfied", value: "satisfied" },
-    { emoji: "😐", label: "Neutral", value: "neutral" },
-    { emoji: "😞", label: "Disappointed", value: "disappointed" },
-    { emoji: "😖", label: "Uncomfortable", value: "uncomfortable" },
-  ];
 
   const advanceChallenge = (id: string) => {
     const today = new Date().toDateString();
@@ -50,7 +39,6 @@ const NutritionGamificationPage = () => {
       const completed = newProgress >= c.target;
       if (completed) {
         toast.success(`🎉 Challenge "${c.name}" completed!`);
-        // Award points
         const pts = getLS<number>(LS_KEYS.POINTS, 0);
         setLS(LS_KEYS.POINTS, pts + 50);
         const history = getLS<any[]>(LS_KEYS.POINTS_HISTORY, []);
@@ -61,24 +49,6 @@ const NutritionGamificationPage = () => {
     });
     setChallenges(updated);
     setLS(LS_KEYS.CHALLENGES, updated);
-  };
-
-  const saveMood = () => {
-    if (!selectedMood) { toast.error("Please select a mood"); return; }
-    const entry: MoodEntry = {
-      id: crypto.randomUUID(),
-      date: new Date().toISOString(),
-      mood: selectedMood,
-      notes: moodNotes,
-      mealName: moodMealName,
-    };
-    const updated = [entry, ...moodLog];
-    setMoodLog(updated);
-    setLS(LS_KEYS.MOOD_LOG, updated);
-    setSelectedMood("");
-    setMoodNotes("");
-    setMoodMealName("");
-    toast.success("Mood saved!");
   };
 
   const getDifficultyColor = (diff: number) => {
@@ -94,9 +64,9 @@ const NutritionGamificationPage = () => {
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
             <Mountain className="h-7 w-7 text-primary" />
-            Nutrition Challenges
+            Nutrition Gamification
           </h1>
-          <p className="text-muted-foreground mt-1">Track challenges, mood, and meal prep progress</p>
+          <p className="text-muted-foreground mt-1">Track challenges, level up, and plan your meals</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -104,8 +74,8 @@ const NutritionGamificationPage = () => {
             <TabsTrigger value="challenges" className="flex items-center gap-2">
               <Trophy className="h-4 w-4" /> Challenges
             </TabsTrigger>
-            <TabsTrigger value="mood" className="flex items-center gap-2">
-              <Smile className="h-4 w-4" /> Mood
+            <TabsTrigger value="levels" className="flex items-center gap-2">
+              <Crown className="h-4 w-4" /> Levels
             </TabsTrigger>
             <TabsTrigger value="mealPrep" className="flex items-center gap-2">
               <ChefHat className="h-4 w-4" /> Meal Prep
@@ -113,7 +83,6 @@ const NutritionGamificationPage = () => {
           </TabsList>
 
           <TabsContent value="challenges" className="space-y-6">
-            {/* Active Challenges */}
             <div>
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Flame className="h-5 w-5 text-orange-500" />
@@ -161,7 +130,6 @@ const NutritionGamificationPage = () => {
               )}
             </div>
 
-            {/* Completed Challenges */}
             {completedChallenges.length > 0 && (
               <div>
                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -185,86 +153,13 @@ const NutritionGamificationPage = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="mood" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>How did you feel after your last meal?</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Select a meal</label>
-                  <select
-                    value={moodMealName}
-                    onChange={e => setMoodMealName(e.target.value)}
-                    className="w-full p-2 border rounded-md bg-background text-foreground"
-                  >
-                    <option value="">Select a meal</option>
-                    {MEAL_DATABASE.map(m => (
-                      <option key={m.id} value={m.name}>{m.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-3">Select your mood</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {moods.map(mood => (
-                      <button
-                        key={mood.value}
-                        onClick={() => setSelectedMood(mood.value)}
-                        className={`flex flex-col items-center p-3 border rounded-lg transition-all ${
-                          selectedMood === mood.value 
-                            ? 'border-primary bg-primary/10 ring-2 ring-primary' 
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                      >
-                        <span className="text-2xl mb-1">{mood.emoji}</span>
-                        <span className="text-xs">{mood.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Notes (optional)</label>
-                  <textarea
-                    value={moodNotes}
-                    onChange={e => setMoodNotes(e.target.value)}
-                    className="w-full p-2 border rounded-md bg-background text-foreground h-20"
-                    placeholder="How did the meal make you feel?"
-                  />
-                </div>
-                <Button onClick={saveMood} className="w-full">Save Mood</Button>
-              </CardContent>
-            </Card>
-
-            {/* Mood History */}
-            <Card>
-              <CardHeader><CardTitle>Recent Mood History</CardTitle></CardHeader>
-              <CardContent>
-                {moodLog.length === 0 ? (
-                  <p className="text-center py-6 text-muted-foreground">No mood entries yet.</p>
-                ) : (
-                  <div className="space-y-2">
-                    {moodLog.slice(0, 10).map(entry => {
-                      const emoji = moods.find(m => m.value === entry.mood)?.emoji || "😐";
-                      return (
-                        <div key={entry.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                          <span className="text-xl">{emoji}</span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium">{entry.mealName || "General"}</p>
-                            {entry.notes && <p className="text-xs text-muted-foreground truncate">{entry.notes}</p>}
-                          </div>
-                          <span className="text-xs text-muted-foreground">{new Date(entry.date).toLocaleDateString()}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          <TabsContent value="levels" className="space-y-6">
+            <LevelBenefits userId="local" />
           </TabsContent>
 
-          <TabsContent value="mealPrep">
+          <TabsContent value="mealPrep" className="space-y-6">
             <WeeklyMealPrepPlanner />
+            <MealPrepFeedback />
           </TabsContent>
         </Tabs>
       </div>
