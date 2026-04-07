@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Confetti from '@/components/Confetti';
-import { motion, useAnimation, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
