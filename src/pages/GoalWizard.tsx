@@ -800,7 +800,7 @@ const GoalWizard = () => {
       </div>
       
       {/* Step Content */}
-      <Card className="animate-fade-in border-primary/20">
+      <Card className="animate-fade-in border-primary/20 backdrop-blur-none">
         <CardContent className="pt-6">
           <AnimatePresence mode="wait">
             <motion.div

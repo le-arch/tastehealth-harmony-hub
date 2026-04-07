@@ -418,21 +418,6 @@ const ProgressPage = () => {
               <Footprints className={`h-4 w-4 ${showJogger ? 'text-primary' : ''}`} />
               {showJogger ? 'Hide' : 'Show'} Progress
             </Button>
-            
-            <Button 
-              variant="default" 
-              className="flex items-center bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 relative overflow-hidden group" 
-              onClick={() => setActiveTab("trackers")} 
-              size={isSmallScreen ? "icon" : "default"}
-            >
-              <motion.div
-                className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20"
-                animate={{ x: ['-100%', '100%'] }}
-                transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
-              />
-              {activeTab === "trackers" ? <Edit className="h-4 w-4" /> : <PlusCircle className="h-4 w-4" />}
-              {!isSmallScreen && <span className="ml-1">{activeTab === "trackers" ? t.editProgress : t.addProgress}</span>}
-            </Button>
           </div>
         </motion.div>
 
