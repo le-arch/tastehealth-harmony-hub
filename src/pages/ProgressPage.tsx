@@ -562,17 +562,7 @@ const ProgressPage = () => {
           </TabsContent>
 
           <TabsContent value="wizard" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Pencil className="h-5 w-5 text-amber-500" />
-                  {t.wizard}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <GoalWizard />
-              </CardContent>
-            </Card>
+            <GoalWizard />
           </TabsContent>
 
           <TabsContent value="goals" className="space-y-4 mt-4">
