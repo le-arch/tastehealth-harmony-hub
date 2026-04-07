@@ -462,7 +462,7 @@ const ProgressPage = () => {
                     onKeyDown={e => e.key === 'Enter' && saveGoal()} 
                   />
                   <Button onClick={saveGoal} size="sm" className="bg-gradient-to-r from-primary to-primary/80">
-                    <PlusCircle className="h-4 w-4 mr-1" />
+                    <Target className="h-4 w-4 mr-1" />
                     Add
                   </Button>
                 </div>
