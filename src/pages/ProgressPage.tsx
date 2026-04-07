@@ -37,24 +37,6 @@ import {
   Cloud,
   Leaf,
   Star
-} from 'lucide-react';
-  Droplet, 
-  Moon, 
-  Flame, 
-  Scale, 
-  Dumbbell, 
-  Target,
-  Heart,
-  Footprints,
-  Activity,
-  Zap,
-  Award,
-  Sparkles,
-  Sun,
-  Cloud,
-  Leaf,
-  Star
-} from 'lucide-react';
 import { useScreenSize } from '@/utils/mobile';
 import { getLS, setLS, LS_KEYS, CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry, BMIEntry } from '@/utils/localStorage';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
