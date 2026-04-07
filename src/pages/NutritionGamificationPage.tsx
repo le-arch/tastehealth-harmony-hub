@@ -17,6 +17,7 @@ import {
 import WeeklyMealPrepPlanner from "@/components/nutrition/WeeklyMealPrepPlanner";
 import MealPrepFeedback from "@/components/nutrition/MealPrepFeedback";
 import LevelBenefits from "@/components/gamification/LevelBenefits";
+import ChallengeCreator from "@/components/ChallengeCreator";
 
 const NutritionGamificationPage = () => {
   const [activeTab, setActiveTab] = useState("challenges");
@@ -83,6 +84,13 @@ const NutritionGamificationPage = () => {
           </TabsList>
 
           <TabsContent value="challenges" className="space-y-6">
+            <ChallengeCreator onCreate={(challenge) => {
+              setChallenges(prev => {
+                const updated = [challenge, ...prev];
+                setLS(LS_KEYS.CHALLENGES, updated);
+                return updated;
+              });
+            }} />
             <div>
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Flame className="h-5 w-5 text-orange-500" />
