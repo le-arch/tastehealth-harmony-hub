@@ -367,64 +367,7 @@ const ProgressPage = () => {
             exit={{ opacity: 0, y: -20 }}
             className="mb-6"
           >
-            <Card className="border-primary/20 overflow-hidden bg-gradient-to-br from-white to-pink-50 dark:from-gray-900 dark:to-purple-950/30">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <motion.div
-                      animate={{ rotate: [0, 360] }}
-                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    >
-                      <Activity className="h-5 w-5 text-primary" />
-                    </motion.div>
-                    <h3 className="font-semibold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-                      {t.weeklyProgress}
-                    </h3>
-                  </div>
-                  <Badge variant="outline" className="flex items-center gap-1 border-pink-200 dark:border-pink-800">
-                    <motion.div
-                      animate={{ rotate: [0, 10, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <Zap className="h-3 w-3 text-yellow-500" />
-                    </motion.div>
-                    <span className="bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent font-bold">
-                      {getMotivationalMessage()}
-                    </span>
-                  </Badge>
-                </div>
-                
-                <RealisticRunner progress={joggerProgress} isActive={joggerProgress > 0} />
-                
-                {/* Enhanced progress stats */}
-                <div className="mt-4 grid grid-cols-4 gap-2">
-                  {[
-                    { label: 'Overall', value: `${Math.round(joggerProgress * 100)}%`, icon: Award, color: 'from-pink-500 to-purple-500' },
-                    { label: 'Calories', value: weeklyData[weeklyData.length-1]?.calories || 0, icon: Flame, color: 'from-orange-500 to-red-500' },
-                    { label: 'Exercise', value: `${weeklyData[weeklyData.length-1]?.exercise || 0}min`, icon: Dumbbell, color: 'from-green-500 to-emerald-500' },
-                    { label: 'Water', value: `${weeklyData[weeklyData.length-1]?.water || 0}cups`, icon: Droplet, color: 'from-blue-500 to-cyan-500' },
-                  ].map((stat, index) => (
-                    <motion.div
-                      key={index}
-                      className="relative overflow-hidden rounded-lg p-2 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-sm"
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-5`} />
-                      <div className="relative flex items-center gap-1">
-                        <stat.icon className={`h-3 w-3 bg-gradient-to-r ${stat.color} bg-clip-text`} />
-                        <span className="text-xs text-muted-foreground">{stat.label}</span>
-                      </div>
-                      <div className={`text-sm font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mt-1`}>
-                        {stat.value}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <ProgressDashboardAnimation progress={joggerProgress} isActive={joggerProgress > 0} />
           </motion.div>
         )}
 
