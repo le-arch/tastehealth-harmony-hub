@@ -7,6 +7,7 @@ import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Zap, Award, LayoutDashboard, Target, Gift, Compass, Brain, Smile } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { toast } from "sonner";
 import RewardSystem from "../RewardSystem";
 
 import NutritionChallenge from "../nutrition/NutritionChallenge";
