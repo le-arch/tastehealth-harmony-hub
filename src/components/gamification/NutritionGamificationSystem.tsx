@@ -7,6 +7,7 @@ import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Zap, Award, LayoutDashboard, Target, Gift, Compass, Brain, Smile } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { toast } from "sonner";
 import RewardSystem from "../RewardSystem";
 
 import NutritionChallenge from "../nutrition/NutritionChallenge";
@@ -16,6 +17,7 @@ import NutritionBadges from "./NutritionBadges";
 import NutritionLeaderboard from "./NutritionLeaderboard";
 import NutritionQuest from "./NutritionQuest";
 import NutritionQuiz from "./NutritionQuiz";
+import ChallengeCreator from "../ChallengeCreator";
 // import MealMoodTracker from "../MealMoodTracker";
 import { useScreenSize } from "@/utils/mobile";
 import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
@@ -78,7 +80,12 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
         <TabsContent value="dashboard" className="space-y-4 mt-6">
           <LevelBenefits userId="local" />
         </TabsContent>
-        <TabsContent value="challenges" className="mt-6"><NutritionChallenge /></TabsContent>
+        <TabsContent value="challenges" className="mt-6 space-y-6">
+          <ChallengeCreator onCreate={(challenge) => {
+            toast.success(`Challenge "${challenge.name}" created!`);
+          }} />
+          <NutritionChallenge />
+        </TabsContent>
         <TabsContent value="rewards" className="mt-6"><RewardSystem /></TabsContent>
         <TabsContent value="badges" className="mt-6"><NutritionBadges userId={userId} addPoints={addPoints} /></TabsContent>
         <TabsContent value="leaderboard" className="mt-6"><NutritionLeaderboard userId={userId} /></TabsContent>

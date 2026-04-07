@@ -55,14 +55,35 @@ const ProgressDashboardAnimation = ({ progress = 0, isActive = false }) => {
       animate={{ opacity: 1, y: 0 }}
     >
       <div className="flex flex-col sm:flex-row items-center gap-6">
-        {/* Circular Progress Ring */}
+        {/* Video + Circular Progress Ring */}
         <div className="relative flex-shrink-0">
-          <svg width="180" height="180" viewBox="0 0 180 180" className="transform -rotate-90">
-            <circle cx="90" cy="90" r="80" fill="none" stroke="hsl(var(--muted))" strokeWidth="8" />
+          {/* Video background behind the ring */}
+          <div className="absolute inset-0 rounded-full overflow-hidden" style={{ width: 180, height: 180 }}>
+            <video
+              src="/animation/progress.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover opacity-20 rounded-full"
+            />
+          </div>
+          <svg width="180" height="180" viewBox="0 0 180 180" className="transform -rotate-90 relative z-10">
+            <defs>
+              <linearGradient id="rainbowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ef4444" />
+                <stop offset="20%" stopColor="#f97316" />
+                <stop offset="40%" stopColor="#eab308" />
+                <stop offset="60%" stopColor="#22c55e" />
+                <stop offset="80%" stopColor="#3b82f6" />
+                <stop offset="100%" stopColor="#a855f7" />
+              </linearGradient>
+            </defs>
+            <circle cx="90" cy="90" r="80" fill="none" stroke="hsl(var(--muted))" strokeWidth="8" opacity="0.3" />
             <motion.circle
               cx="90" cy="90" r="80" fill="none"
-              stroke="hsl(var(--primary))"
-              strokeWidth="8"
+              stroke="url(#rainbowGradient)"
+              strokeWidth="10"
               strokeLinecap="round"
               strokeDasharray={circumference}
               initial={{ strokeDashoffset: circumference }}
@@ -70,9 +91,9 @@ const ProgressDashboardAnimation = ({ progress = 0, isActive = false }) => {
               transition={{ duration: 1.5, ease: "easeOut" }}
             />
           </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
             <motion.span
-              className="text-3xl font-bold text-primary"
+              className="text-3xl font-bold bg-gradient-to-r from-red-500 via-yellow-500 to-purple-500 bg-clip-text text-transparent"
               key={Math.round(progress * 100)}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -118,7 +139,7 @@ const ProgressDashboardAnimation = ({ progress = 0, isActive = false }) => {
         </div>
       </div>
 
-      {/* Bottom progress bar */}
+      {/* Bottom progress bar - rainbow */}
       <div className="mt-4 space-y-1">
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>🏁 Start</span>
@@ -129,7 +150,8 @@ const ProgressDashboardAnimation = ({ progress = 0, isActive = false }) => {
         </div>
         <div className="h-2 rounded-full bg-muted overflow-hidden">
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-primary to-primary/70"
+            className="h-full rounded-full"
+            style={{ background: 'linear-gradient(90deg, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #a855f7)' }}
             initial={{ width: 0 }}
             animate={{ width: `${progress * 100}%` }}
             transition={{ duration: 1, ease: "easeOut" }}
