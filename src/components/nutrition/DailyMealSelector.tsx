@@ -7,7 +7,7 @@ import { MEAL_DATABASE, MealDBItem } from '@/data/mealDatabase';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { getLS, setLS, LS_KEYS, CalorieEntry, MealPlanItem } from '@/utils/localStorage';
-import { Plus, Trash2, Activity, Clock, CheckCircle2, Calendar as CalendarIcon } from 'lucide-react';
+import { Trash2, Activity, Clock, CheckCircle2, Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format, isToday } from 'date-fns';
@@ -31,7 +31,6 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
   selectedDate = new Date() 
 }) => {
   const [selectedMeals, setSelectedMeals] = useState<DailyMealEntry[]>([]);
-  const [expandedCategory, setExpandedCategory] = useState<string | null>('breakfast');
   const [viewDate, setViewDate] = useState<Date>(selectedDate);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const { language } = useLanguage();
@@ -40,7 +39,6 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
   const t = language === 'fr'
     ? { 
         title: 'Repas d\'Aujourd\'hui', 
-        selectMeals: 'Sélectionner et Enregistrer', 
         totalCalories: 'Calories Totales', 
         breakfast: 'Petit déjeuner', 
         lunch: 'Déjeuner', 
@@ -53,12 +51,10 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
         logMeal: 'Enregistrer',
         logged: 'Enregistré',
         scheduled: 'Prévu',
-        addToToday: 'Ajouter aux repas du jour',
         selectDate: 'Choisir une date'
       }
     : { 
         title: 'Today\'s Meals', 
-        selectMeals: 'Select & Log Meals', 
         totalCalories: 'Total Calories', 
         breakfast: 'Breakfast', 
         lunch: 'Lunch', 
@@ -71,16 +67,10 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
         logMeal: 'Log',
         logged: 'Logged',
         scheduled: 'Scheduled',
-        addToToday: 'Add to Today\'s Meals',
         selectDate: 'Select Date'
       };
 
-  const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'drinks', 'fruits'] as const;
-  
-  const mealsByCategory = categories.reduce((acc, category) => {
-    acc[category] = MEAL_DATABASE.filter(meal => meal.category === category);
-    return acc;
-  }, {} as Record<string, MealDBItem[]>);
+  const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'drinks'] as const;
 
   // Load meals from localStorage on mount and when date changes
   useEffect(() => {
@@ -172,24 +162,6 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
     fats: acc.fats + entry.meal.nutrition.fats,
   }), { calories: 0, protein: 0, carbs: 0, fats: 0 });
 
-  const addMeal = (meal: MealDBItem, scheduledTime?: string) => {
-    const newEntry: DailyMealEntry = { 
-      id: `${meal.id}-${Date.now()}`, 
-      meal, 
-      timestamp: viewDate,
-      scheduledTime,
-      logged: false 
-    };
-    const updated = [...selectedMeals, newEntry];
-    setSelectedMeals(updated);
-    
-    addNotification({ 
-      title: 'Meal Added', 
-      message: `${meal.name} (${meal.nutrition.calories} kcal) added to ${format(viewDate, 'MMM d')}'s meals`, 
-      type: 'meal' 
-    });
-  };
-
   const logMeal = (entry: DailyMealEntry) => {
     // Mark as logged in the daily meals
     const updated = selectedMeals.map(e => 
@@ -255,8 +227,6 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
               }}
               month={viewDate}
               onMonthChange={(month) => setViewDate(month)}
-
-
               className="rounded-md border-0"
             />
             <div className="mt-4 flex justify-between gap-4">
@@ -308,7 +278,7 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
               <p className="text-muted-foreground">{t.empty}</p>
               {mealPlanMeals.length > 0 && (
                 <p className="text-xs text-muted-foreground mt-2">
-                  {t.fromMealPlan} • Click + to add
+                  {t.fromMealPlan} meals will appear here
                 </p>
               )}
             </div>
@@ -426,84 +396,19 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
                   <span className="text-muted-foreground">Pending: {pendingMeals.length} meals</span>
                 </div>
               </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
 
-      {/* Meal Selection Card */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg">{t.selectMeals}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {categories.map((category) => (
-            <div key={category}>
-              <button 
-                onClick={() => setExpandedCategory(expandedCategory === category ? null : category)}
-                className="w-full flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-              >
-                <span className="font-medium capitalize">{t[category as keyof typeof t] || category}</span>
-                <span className="text-xs text-muted-foreground">{mealsByCategory[category].length}</span>
-              </button>
-              <AnimatePresence>
-                {expandedCategory === category && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }} 
-                    animate={{ opacity: 1, height: 'auto' }} 
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-2 space-y-2 max-h-64 overflow-y-auto"
-                  >
-                    {mealsByCategory[category].map((meal) => {
-                      const isAlreadySelected = selectedMeals.some(
-                        e => e.meal.id === meal.id && !e.logged
-                      );
-                      
-                      return (
-                        <div 
-                          key={meal.id} 
-                          className={`flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors ${
-                            isAlreadySelected ? 'opacity-50' : ''
-                          }`}
-                        >
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate">{meal.name}</p>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                              <span>{meal.nutrition.calories} kcal</span>
-                              <span>•</span>
-                              <span>P: {meal.nutrition.protein}g</span>
-                              <span>•</span>
-                              <span>C: {meal.nutrition.carbs}g</span>
-                            </div>
-                          </div>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => addMeal(meal)}
-                            disabled={isAlreadySelected}
-                            className="ml-2"
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Add
-                          </Button>
-                        </div>
-                      );
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-          
-          {selectedMeals.length > 0 && (
-            <Button 
-              variant="outline" 
-              className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" 
-              onClick={clearAll}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {t.removeAll}
-            </Button>
+              {/* Clear All Button */}
+              {selectedMeals.length > 0 && (
+                <Button 
+                  variant="outline" 
+                  className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" 
+                  onClick={clearAll}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t.removeAll}
+                </Button>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

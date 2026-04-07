@@ -16,7 +16,7 @@ import NutritionBadges from "./NutritionBadges";
 import NutritionLeaderboard from "./NutritionLeaderboard";
 import NutritionQuest from "./NutritionQuest";
 import NutritionQuiz from "./NutritionQuiz";
-import MealMoodTracker from "../MealMoodTracker";
+// import MealMoodTracker from "../MealMoodTracker";
 import { useScreenSize } from "@/utils/mobile";
 import { getLS, setLS, LS_KEYS, PointsTransaction } from "@/utils/localStorage";
 
@@ -73,7 +73,7 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
           <TabsTrigger value="leaderboard"><Trophy className="h-4 w-4 text-orange-500 fill-yellow-500" />{!isMobile && t.leaderboard}</TabsTrigger>
           <TabsTrigger value="quests"><Compass className="h-4 w-4 text-teal-600 fill-blue-200" />{!isMobile && t.quests}</TabsTrigger>
           <TabsTrigger value="quiz"><Brain className="h-4 w-4 text-rose-600 fill-pink-300" />{!isMobile && 'Quiz'}</TabsTrigger>
-          <TabsTrigger value="mood"><Smile className="h-4 w-4 text-amber-500" />{!isMobile && 'Mood'}</TabsTrigger>
+          {/*<TabsTrigger value="mood"><Smile className="h-4 w-4 text-amber-500" />{!isMobile && 'Mood'}</TabsTrigger>*/}
         </ScrollableTabsList>
         <TabsContent value="dashboard" className="space-y-4 mt-6">
           <LevelBenefits userId="local" />
@@ -84,7 +84,7 @@ const NutritionGamificationSystem = ({ userId, standalone = true }: NutritionGam
         <TabsContent value="leaderboard" className="mt-6"><NutritionLeaderboard userId={userId} /></TabsContent>
         <TabsContent value="quests" className="mt-6"><NutritionQuest userId={userId} addPoints={addPoints} /></TabsContent>
         <TabsContent value="quiz" className="mt-6"><NutritionQuiz /></TabsContent>
-        <TabsContent value="mood" className="mt-6"><MealMoodTracker /></TabsContent>
+        {/*<TabsContent value="mood" className="mt-6"><MealMoodTracker /></TabsContent>*/}
       </Tabs>
     </div>
   );

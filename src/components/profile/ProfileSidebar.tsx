@@ -75,8 +75,8 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
 
   const navItems = [
     { path: "/dashboard", icon: <LayoutDashboard className="h-5 w-5" />, label: t.dashboard, color: "from-cyan-500 to-blue-500", iconBg: "bg-gradient-to-br from-cyan-100 to-blue-100 dark:from-cyan-950 dark:to-blue-950" },
-    { path: "/meal-planning", icon: <Calendar className="h-5 w-5" />, label: t.mealPlanning, color: "from-blue-500 to-indigo-500", iconBg: "bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-950 dark:to-indigo-950" },
     { path: "/progress", icon: <LineChart className="h-5 w-5" />, label: t.progress, color: "from-green-500 to-emerald-500", iconBg: "bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-950 dark:to-emerald-950" },
+    { path: "/meal-planning", icon: <Calendar className="h-5 w-5" />, label: t.mealPlanning, color: "from-blue-500 to-indigo-500", iconBg: "bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-950 dark:to-indigo-950" },
     { path: "/journal", icon: <Bookmark className="h-5 w-5" />, label: t.journal, color: "from-red-500 to-pink-500", iconBg: "bg-gradient-to-br from-red-100 to-pink-100 dark:from-red-950 dark:to-pink-950" },
     { path: "/games", icon: <Gamepad className="h-5 w-5" />, label: t.games, color: "from-purple-500 to-violet-500", iconBg: "bg-gradient-to-br from-purple-100 to-violet-100 dark:from-purple-950 dark:to-violet-950" },
     { path: "/cooking-videos", icon: <Video className="h-5 w-5" />, label: t.cookingVideos, color: "from-orange-500 to-red-500", iconBg: "bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-950 dark:to-red-950" },

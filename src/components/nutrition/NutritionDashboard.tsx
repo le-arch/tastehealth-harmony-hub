@@ -7,12 +7,13 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
-import { Activity, Target, TrendingUp, Calendar, Award, Flame, Droplet, Utensils, Timer, Gauge, Trophy, ChefHat } from "lucide-react";
+import { Activity, Target, TrendingUp, Calendar, Award, Flame, Droplet, Utensils, Timer, Wrench, Gauge, Trophy, ChefHat } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useScreenSize } from "@/utils/mobile";
 import MealPrepTimer from "./MealPrepTimer";
 import NutritionProgressWheel from "./NutritionProgressWheel";
 import WeeklyMealPrepPlanner from "./WeeklyMealPrepPlanner";
+import DailyMealSelector from "./DailyMealSelector"
 import MealPrepFeedback from "./MealPrepFeedback";
 import { getLS, LS_KEYS, Challenge, CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry } from "@/utils/localStorage";
 import { Badge } from "@/components/ui/badge";
@@ -29,8 +30,10 @@ const NutritionDashboard = () => {
 
   const [mealNutrition, setMealNutrition] = useState({ protein: 0, carbs: 0, fats: 0 });
 
+// load daily meals and compute nutrition from calorie log + daily meals
   const loadMealData = () => {
     const today = format(new Date(), 'yyyy-MM-dd');
+    // load from date-specific daily meals
     const stored = localStorage.getItem(`th_daily_meals_${today}`);
     let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFats = 0;
     
@@ -45,14 +48,16 @@ const NutritionDashboard = () => {
         });
       } catch {}
     }
-
+// also check calorie log for today
     const calorieLog = getLS<CalorieEntry[]>(LS_KEYS.CALORIE_LOG, []);
     const todayEntries = calorieLog.filter(e => e.date.startsWith(today));
     todayEntries.forEach(e => { totalCalories += e.calories; });
 
+// load water from hydration
     const hydrationLog = getLS<HydrationEntry[]>(LS_KEYS.HYDRATION_LOG, []);
     const todayWater = hydrationLog.filter(e => e.date.startsWith(today)).reduce((sum, e) => sum + e.cups, 0);
 
+// load goals from nutrition setting
     const nutritionGoal = getLS<any>('th_nutrition_goal', { dailyCalories: 2000, proteinPercentage: 30, carbsPercentage: 40, fatsPercentage: 30 });
     const cal = nutritionGoal.dailyCalories || 2000;
 
@@ -78,6 +83,7 @@ const NutritionDashboard = () => {
   const { isMobile } = useScreenSize();
   const [activeTab, setActiveTab] = useState("dailyTools");
 
+// weekly summary data
   const weeklySummary = useMemo(() => {
     const now = new Date();
     const weekStart = new Date(now);
@@ -107,6 +113,7 @@ const NutritionDashboard = () => {
     };
   }, [dailyGoals]);
 
+// achievements data
   const challenges = getLS<Challenge[]>(LS_KEYS.CHALLENGES, []);
   const activeChallenges = challenges.filter(c => !c.completed);
   const completedChallenges = challenges.filter(c => c.completed);
@@ -139,6 +146,9 @@ const NutritionDashboard = () => {
 
         <TabsContent value="dailyTools" className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
+              <DailyMealSelector />
+            </motion.div>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
               <Card>
                 <CardHeader><CardTitle className="flex items-center text-lg"><Gauge className="h-5 w-5 mr-2 text-primary" />Progress Wheel</CardTitle></CardHeader>
