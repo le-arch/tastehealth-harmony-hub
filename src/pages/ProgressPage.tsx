@@ -45,161 +45,99 @@ import { getLS, setLS, LS_KEYS, CalorieEntry, SleepEntry, ExerciseEntry, Hydrati
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { toast } from 'sonner';
 
-// Video-based Progress Runner Component
-const RealisticRunner = ({ progress = 0, isActive = false }) => {
-  const videoRef = React.useRef<HTMLVideoElement>(null);
-  const progressValue = useMotionValue(0);
-  const springProgress = useSpring(progressValue, { stiffness: 100, damping: 30 });
-  const xPosition = useTransform(springProgress, [0, 1], [0, 220]);
-  const scale = useTransform(springProgress, [0, 0.5, 1], [1, 1.05, 1]);
-
-  useEffect(() => {
-    progressValue.set(progress);
-  }, [progress, progressValue]);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      if (isActive) {
-        videoRef.current.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
-      }
-    }
-  }, [isActive]);
+// Animated Progress Dashboard Component
+const ProgressDashboardAnimation = ({ progress = 0, isActive = false }) => {
+  const circumference = 2 * Math.PI * 80;
+  const strokeDashoffset = circumference - (progress * circumference);
 
   return (
-    <motion.div 
-      className="relative w-full h-64 overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/30 dark:via-purple-950/30 dark:to-pink-950/30"
-      style={{ scale }}
+    <motion.div
+      className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-br from-primary/5 via-background to-accent/10 border border-border/50 p-6"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
     >
-      {/* Animated background */}
-      <motion.div
-        className="absolute inset-0"
-        animate={{
-          background: [
-            "radial-gradient(circle at 20% 50%, rgba(236, 72, 153, 0.1) 0%, transparent 50%)",
-            "radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)",
-            "radial-gradient(circle at 20% 50%, rgba(236, 72, 153, 0.1) 0%, transparent 50%)"
-          ]
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-      />
+      <div className="flex flex-col sm:flex-row items-center gap-6">
+        {/* Circular Progress Ring */}
+        <div className="relative flex-shrink-0">
+          <svg width="180" height="180" viewBox="0 0 180 180" className="transform -rotate-90">
+            <circle cx="90" cy="90" r="80" fill="none" stroke="hsl(var(--muted))" strokeWidth="8" />
+            <motion.circle
+              cx="90" cy="90" r="80" fill="none"
+              stroke="hsl(var(--primary))"
+              strokeWidth="8"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              initial={{ strokeDashoffset: circumference }}
+              animate={{ strokeDashoffset }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <motion.span
+              className="text-3xl font-bold text-primary"
+              key={Math.round(progress * 100)}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+            >
+              {Math.round(progress * 100)}%
+            </motion.span>
+            <span className="text-xs text-muted-foreground">Daily Progress</span>
+            {progress >= 0.8 && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", delay: 0.5 }}
+              >
+                <Award className="h-5 w-5 text-yellow-500 mt-1" />
+              </motion.div>
+            )}
+          </div>
+        </div>
 
-      {/* Floating particles */}
-      {Array.from({ length: 8 }, (_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full"
-          initial={{ x: `${20 + i * 10}%`, y: '60%', opacity: 0 }}
-          animate={{
-            y: ['60%', '20%'],
-            opacity: [0, 0.8, 0],
-            scale: [0, 1, 0]
-          }}
-          transition={{
-            duration: 2 + Math.random() * 2,
-            delay: i * 0.3,
-            repeat: Infinity,
-            ease: "easeOut"
-          }}
-        />
-      ))}
-
-      {/* Decorative icons */}
-      <motion.div className="absolute top-4 left-4 flex gap-1" animate={{ rotate: [0, 10, 0] }} transition={{ duration: 4, repeat: Infinity }}>
-        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-        <Sparkles className="h-4 w-4 text-purple-400" />
-      </motion.div>
-      <motion.div className="absolute top-4 right-4" animate={{ y: [0, -5, 0] }} transition={{ duration: 3, repeat: Infinity }}>
-        <Sun className="h-6 w-6 text-yellow-400" />
-      </motion.div>
-
-      {/* Running track glow */}
-      <div className="absolute bottom-8 left-0 w-full h-1">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-30 blur-sm" />
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent" style={{ width: `${progress * 100}%` }} />
+        {/* Stats Grid */}
+        <div className="flex-1 grid grid-cols-2 gap-3 w-full">
+          {[
+            { label: 'Calories', icon: Flame, value: `Tracked`, color: 'text-orange-500', bg: 'bg-orange-500/10' },
+            { label: 'Exercise', icon: Dumbbell, value: `Active`, color: 'text-green-500', bg: 'bg-green-500/10' },
+            { label: 'Hydration', icon: Droplet, value: `On track`, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+            { label: 'Sleep', icon: Moon, value: `Rested`, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              className={`rounded-xl ${stat.bg} p-3 flex items-center gap-3`}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 + i * 0.1 }}
+            >
+              <stat.icon className={`h-5 w-5 ${stat.color}`} />
+              <div>
+                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                <p className="text-sm font-semibold">{stat.value}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
-      {/* Video Runner */}
-      <motion.div
-        className="absolute bottom-4"
-        style={{ 
-          left: xPosition,
-          x: '-50%',
-          filter: 'drop-shadow(0 10px 8px rgba(0, 0, 0, 0.1))'
-        }}
-      >
-        <video
-          ref={videoRef}
-          src="/videos/progress.mp4"
-          loop
-          muted
-          playsInline
-          className="w-20 h-28 object-contain"
-          style={{ mixBlendMode: 'multiply' }}
-        />
-      </motion.div>
-
-      {/* Heart rate monitor */}
-      <motion.div 
-        className="absolute top-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-pink-200 dark:border-pink-800"
-        animate={{ y: [0, -2, 0], boxShadow: ['0 4px 12px rgba(236,72,153,0.2)', '0 6px 16px rgba(236,72,153,0.3)', '0 4px 12px rgba(236,72,153,0.2)'] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1, repeat: Infinity }}>
-          <Heart className="h-5 w-5 text-red-500 fill-red-500" />
-        </motion.div>
-        <span className="text-sm font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-          {Math.round(progress * 100)}%
-        </span>
-        <Activity className="h-4 w-4 text-purple-400" />
-      </motion.div>
-
-      {/* Bottom stats */}
-      <div className="absolute bottom-0 left-0 right-0 flex justify-between px-4 py-2 bg-gradient-to-t from-black/5 to-transparent">
-        <motion.div className="text-xs font-medium text-pink-600 dark:text-pink-400" animate={{ y: [0, -2, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-          🏁 Start
-        </motion.div>
-        <motion.div
-          className="flex items-center gap-1 text-xs font-medium bg-white/60 dark:bg-gray-800/60 px-2 py-1 rounded-full backdrop-blur-sm"
-          animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <Footprints className="h-3 w-3 text-purple-500" />
-          <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-bold">
-            {Math.round(progress * 5000)} steps
+      {/* Bottom progress bar */}
+      <div className="mt-4 space-y-1">
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>🏁 Start</span>
+          <span className="font-medium text-primary">
+            {progress >= 0.8 ? "Great job! 🎉" : progress >= 0.5 ? "Almost there!" : "Keep going!"}
           </span>
-        </motion.div>
-        <motion.div className="text-xs font-medium text-purple-600 dark:text-purple-400" animate={{ y: [0, -2, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}>
-          Goal 🏆
-        </motion.div>
+          <span>Goal 🏆</span>
+        </div>
+        <div className="h-2 rounded-full bg-muted overflow-hidden">
+          <motion.div
+            className="h-full rounded-full bg-gradient-to-r from-primary to-primary/70"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress * 100}%` }}
+            transition={{ duration: 1, ease: "easeOut" }}
+          />
+        </div>
       </div>
-
-      {/* Achievement ring */}
-      <svg className="absolute top-2 right-2 w-16 h-16">
-        <defs>
-          <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#EC4899" />
-            <stop offset="100%" stopColor="#8B5CF6" />
-          </linearGradient>
-        </defs>
-        <circle cx="32" cy="32" r="24" fill="none" stroke="url(#ringGradient)" strokeWidth="3" strokeDasharray={`${progress * 151} 151`} strokeLinecap="round" transform="rotate(-90 32 32)" opacity="0.8" />
-        <motion.circle cx="32" cy="32" r="18" fill="white" className="dark:fill-gray-800" animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} />
-        <text x="32" y="36" textAnchor="middle" className="text-xs font-bold fill-current">{Math.round(progress * 100)}%</text>
-      </svg>
-
-      {/* Floating emojis when active */}
-      {isActive && ['💪', '⚡', '🌟', '✨'].map((emoji, i) => (
-        <motion.div
-          key={i}
-          className="absolute text-2xl"
-          initial={{ x: 20 + i * 30, y: 100, opacity: 0 }}
-          animate={{ x: 20 + i * 30, y: [100, 50, 100], opacity: [0, 1, 0], rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 3, delay: i * 0.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          {emoji}
-        </motion.div>
-      ))}
     </motion.div>
   );
 };
