@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import PageLayout from '@/components/PageLayout';
 import NutritionDashboard from '@/components/nutrition/NutritionDashboard';
-import BMICalculator from '@/components/health/BMICalculator';
+import MealPrepTimer from '@/components/nutrition/MealPrepTimer';
 import ProgressTracker from '@/components/health/ProgressTracker';
 import WeeklySummary from '@/components/WeeklySummary';
 import MealMoodTracker from '@/components/MealMoodTracker';
@@ -39,7 +39,7 @@ const DashboardPage = () => {
           <TabsContent value="dashboard" className="space-y-6">
             <ProgressTracker />
             <MealRecommendations />
-            <BMICalculator />
+            <MealPrepTimer />
           </TabsContent>
           <TabsContent value="nutrition"><NutritionDashboard /></TabsContent>
           <TabsContent value="summary"><WeeklySummary /></TabsContent>

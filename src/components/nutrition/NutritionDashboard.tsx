@@ -10,7 +10,6 @@ import { ScrollableTabsList } from "@/components/ui/scrollable-tabs";
 import { Activity, Target, TrendingUp, Calendar, Award, Flame, Droplet, Utensils, Timer, Wrench, Gauge, Trophy, ChefHat } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useScreenSize } from "@/utils/mobile";
-import MealPrepTimer from "./MealPrepTimer";
 import NutritionProgressWheel from "./NutritionProgressWheel";
 import WeeklyMealPrepPlanner from "./WeeklyMealPrepPlanner";
 import DailyMealSelector from "./DailyMealSelector"
@@ -157,9 +156,7 @@ const NutritionDashboard = () => {
                 </CardContent>
               </Card>
             </motion.div>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
-              <MealPrepTimer />
-            </motion.div>
+  
           </div>
         </TabsContent>
 
