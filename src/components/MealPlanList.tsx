@@ -66,7 +66,7 @@ const getWeekDates = (referenceDate: Date = new Date()) => {
   }));
 };
 
-export function MealPlanList() {
+export function MealPlanList({ searchFilter = '' }: { searchFilter?: string }) {
   const { language } = useLanguage();
   const [plans, setPlans] = useState<MealPlan[]>(getLS(LS_KEYS.MEAL_PLANS, []));
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
