@@ -8,7 +8,6 @@ import WeeklySummary from '@/components/WeeklySummary';
 import MealMoodTracker from '@/components/MealMoodTracker';
 import DashboardGreeting from '@/components/DashboardGreeting';
 import MealRecommendations from '@/components/MealRecommendations';
-import DailyStreak from '@/components/gamification/DailyStreak';
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TabsTrigger } from "@/components/ui/scrollable-tabs";
 import { ScrollableTabsList } from '@/components/ui/scrollable-tabs';
@@ -16,18 +15,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import PointsTransactionsPage from './PointsTransactionsPage';
 import { useScreenSize } from '@/utils/mobile';
 import { LayoutDashboard, Apple, Calendar, Smile, Award } from 'lucide-react';
-import { getLS, setLS, LS_KEYS } from '@/utils/localStorage';
 
 const DashboardPage = () => {
   const { language } = useLanguage();
   const [selectedTab, setSelectedTab] = useState("dashboard");
   const { isMobile } = useScreenSize();
-  const [streak, setStreak] = useState(getLS<number>(LS_KEYS.STREAK, 0));
   const t = language === 'fr'
     ? { tabs: { dashboard: "Tableau de Bord", nutrition: "Nutrition", summary: "Résumé", mood: "Humeur", points: "Historique" } }
     : { tabs: { dashboard: "Dashboard", nutrition: "Nutrition", summary: "Weekly Summary", mood: "Mood Tracker", points: "Points History" } };
-
-  const updateStreak = async () => { setStreak(s => s + 1); };
 
   return (
     <PageLayout activePage="dashboard" showChatbot>
@@ -42,13 +37,9 @@ const DashboardPage = () => {
             <TabsTrigger value="points" className="flex items-center gap-2"><Award className="h-4 w-4 text-indigo-600 fill-indigo-300" />{!isMobile && t.tabs.points}</TabsTrigger>
           </ScrollableTabsList>
           <TabsContent value="dashboard" className="space-y-6">
-            {/* Daily Streak Check-in on Dashboard */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <DailyStreak streak={streak} updateStreak={updateStreak} />
-              <MealPrepTimer />
-            </div>
             <ProgressTracker />
             <MealRecommendations />
+            <MealPrepTimer />
           </TabsContent>
           <TabsContent value="nutrition"><NutritionDashboard /></TabsContent>
           <TabsContent value="summary"><WeeklySummary /></TabsContent>

@@ -62,7 +62,7 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
     : { 
         dashboard: "Dashboard", 
         mealPlanning: "Meal Planning", 
-        progress: "Progress", 
+        progress: "Progress Tracker", 
         signOut: "Sign Out", 
         games: "Nutrition Game", 
         challenges: "Challenges", 
