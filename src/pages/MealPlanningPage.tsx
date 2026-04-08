@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Search, Calendar, ChefHat, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealPlanList } from "@/components/MealPlanList";
 import { CreateMealPlanDialog } from "@/components/CreateMealPlanDialog";
@@ -11,13 +10,14 @@ import MealSearch from "@/components/MealSearch";
 import Favorites from "./Favorites";
 import { useLanguage } from "@/contexts/LanguageContext";
 import PageLayout from "@/components/PageLayout";
+import { getLS, LS_KEYS, MealPlan } from "@/utils/localStorage";
 
 const MealPlanningPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
   const { language } = useLanguage();
   const t = language === 'fr'
-    ? { title: "Planification des Repas", subtitle: "Planifiez vos repas", myMealPlans: "Mes Plans", mealSearch: "Recherche", searchPlaceholder: "Rechercher...", favorites: "Favoris" }
+    ? { title: "Planification des Repas", subtitle: "Planifiez vos repas", myMealPlans: "Mes Plans", mealSearch: "Recherche", searchPlaceholder: "Rechercher des plans...", favorites: "Favoris" }
     : { title: "Meal Planning", subtitle: "Plan your meals for the week ahead", myMealPlans: "My Meal Plans", mealSearch: "Meal Search", searchPlaceholder: "Search meal plans...", favorites: "Favorites" };
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const MealPlanningPage = () => {
                 </div>
                 <CreateMealPlanDialog onMealPlanCreated={() => setRefreshKey(k => k + 1)} />
               </div>
-              <MealPlanList key={refreshKey} />
+              <MealPlanList key={refreshKey} searchFilter={searchTerm} />
             </TabsContent>
 
             <TabsContent value="search">

@@ -7,13 +7,15 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { ChefHat, Clock, CheckCircle, Play, Pause, RotateCcw, Volume2, VolumeX } from "lucide-react"
 import confetti from "canvas-confetti"
+import { playMilestoneSound } from "@/utils/sounds"
+import { isSoundEnabled as checkSoundEnabled } from "@/utils/sounds"
 
 const PREP_STEPS = [
-  { id: "gather", label: "Gather Ingredients", icon: "🥕", sound: "gather.mp3", duration: 3 },
-  { id: "chop", label: "Chop Vegetables", icon: "🔪", sound: "chop.mp3", duration: 5 },
-  { id: "cook", label: "Cook Protein", icon: "🍳", sound: "sizzle.mp3", duration: 8 },
-  { id: "mix", label: "Mix Everything", icon: "🥄", sound: "mix.mp3", duration: 3 },
-  { id: "plate", label: "Plate Your Meal", icon: "🍽️", sound: "plate.mp3", duration: 2 },
+  { id: "gather", label: "Gather Ingredients", icon: "🥕", duration: 3 },
+  { id: "chop", label: "Chop Vegetables", icon: "🔪", duration: 5 },
+  { id: "cook", label: "Cook Protein", icon: "🍳", duration: 8 },
+  { id: "mix", label: "Mix Everything", icon: "🥄", duration: 3 },
+  { id: "plate", label: "Plate Your Meal", icon: "🍽️", duration: 2 },
 ]
 
 const CELEBRATION_MESSAGES = [
@@ -24,82 +26,113 @@ const CELEBRATION_MESSAGES = [
   "Success! Your healthy meal is ready to enjoy!",
 ]
 
+// Web Audio API sounds for meal prep steps
+const playStepSound = (stepId: string) => {
+  if (!checkSoundEnabled()) return;
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const now = ctx.currentTime;
+    
+    const sounds: Record<string, () => void> = {
+      gather: () => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine'; osc.frequency.setValueAtTime(440, now);
+        osc.frequency.setValueAtTime(550, now + 0.1);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now); osc.stop(now + 0.3);
+      },
+      chop: () => {
+        [0, 0.08, 0.16].forEach(d => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'square'; osc.frequency.setValueAtTime(800 + Math.random() * 200, now + d);
+          gain.gain.setValueAtTime(0.06, now + d);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + d + 0.06);
+          osc.start(now + d); osc.stop(now + d + 0.06);
+        });
+      },
+      cook: () => {
+        // Sizzle-like noise
+        const bufferSize = ctx.sampleRate * 0.4;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.03;
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        const gain = ctx.createGain();
+        source.connect(gain); gain.connect(ctx.destination);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+        source.start(now);
+      },
+      mix: () => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.linearRampToValueAtTime(600, now + 0.15);
+        osc.frequency.linearRampToValueAtTime(300, now + 0.3);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+        osc.start(now); osc.stop(now + 0.35);
+      },
+      plate: () => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine'; osc.frequency.setValueAtTime(1200, now);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
+      },
+    };
+    (sounds[stepId] || sounds.gather)();
+  } catch {}
+};
+
+const playCompletionSound = () => {
+  if (!checkSoundEnabled()) return;
+  playMilestoneSound('reward');
+};
+
 const MealPrepFeedback = () => {
   const [currentStep, setCurrentStep] = useState<number | null>(null)
   const [completedSteps, setCompletedSteps] = useState<string[]>([])
-  const [isSoundEnabled, setIsSoundEnabled] = useState(true)
+  const [isSoundEnabled, setIsSoundEnabled] = useState(checkSoundEnabled())
   const [isPlaying, setIsPlaying] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0)
   const [showCelebration, setShowCelebration] = useState(false)
   const [celebrationMessage, setCelebrationMessage] = useState("")
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
   const confettiCanvasRef = useRef<HTMLCanvasElement>(null)
   const { language } = useLanguage()
 
-  // Translations
   const translations = {
-    en: {
-      title: "Meal Prep Assistant",
-      startPrep: "Start Meal Prep",
-      nextStep: "Next Step",
-      resetPrep: "Start Over",
-      toggleSound: "Toggle Sound",
-      soundOn: "Sound On",
-      soundOff: "Sound Off",
-      prepComplete: "Preparation Complete!",
-      continue: "Continue",
-      seconds: "seconds",
-    },
-    fr: {
-      title: "Assistant de Préparation de Repas",
-      startPrep: "Commencer la Préparation",
-      nextStep: "Étape Suivante",
-      resetPrep: "Recommencer",
-      toggleSound: "Activer/Désactiver le Son",
-      soundOn: "Son Activé",
-      soundOff: "Son Désactivé",
-      prepComplete: "Préparation Terminée!",
-      continue: "Continuer",
-      seconds: "secondes",
-    },
+    en: { title: "Meal Prep Assistant", startPrep: "Start Meal Prep", nextStep: "Next Step", resetPrep: "Start Over", soundOn: "Sound On", soundOff: "Sound Off", prepComplete: "Preparation Complete!", continue: "Continue", seconds: "seconds" },
+    fr: { title: "Assistant de Préparation", startPrep: "Commencer", nextStep: "Étape Suivante", resetPrep: "Recommencer", soundOn: "Son Activé", soundOff: "Son Désactivé", prepComplete: "Préparation Terminée!", continue: "Continuer", seconds: "secondes" },
   }
-
   const t = translations[language as keyof typeof translations] || translations.en
 
   useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current)
-      }
-      if (audioRef.current) {
-        audioRef.current.pause()
-      }
-    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); }
   }, [])
 
   const startStep = (stepIndex: number) => {
-    if (stepIndex >= PREP_STEPS.length) {
-      completePrepProcess()
-      return
-    }
-
+    if (stepIndex >= PREP_STEPS.length) { completePrepProcess(); return; }
     const step = PREP_STEPS[stepIndex]
     setCurrentStep(stepIndex)
     setTimeLeft(step.duration)
     setIsPlaying(true)
-
-    if (isSoundEnabled) {
-      playSound(step.sound)
-    }
+    if (isSoundEnabled) playStepSound(step.id)
 
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current!)
-          completeStep(step.id)
-          return 0
-        }
+        if (prev <= 1) { clearInterval(timerRef.current!); completeStep(step.id); return 0; }
         return prev - 1
       })
     }, 1000)
@@ -108,247 +141,104 @@ const MealPrepFeedback = () => {
   const completeStep = (stepId: string) => {
     setCompletedSteps((prev) => [...prev, stepId])
     setIsPlaying(false)
-
-    // Play completion sound
-    if (isSoundEnabled) {
-      playSound("complete.mp3")
-    }
+    if (isSoundEnabled) playStepSound('plate')
   }
 
   const completePrepProcess = () => {
     setCurrentStep(null)
-
-    // Select random celebration message
-    const randomMessage = CELEBRATION_MESSAGES[Math.floor(Math.random() * CELEBRATION_MESSAGES.length)]
-    setCelebrationMessage(randomMessage)
-
-    // Show celebration animation
+    setCelebrationMessage(CELEBRATION_MESSAGES[Math.floor(Math.random() * CELEBRATION_MESSAGES.length)])
     setShowCelebration(true)
-
-    // Play celebration sound
-    if (isSoundEnabled) {
-      playSound("celebration.mp3")
-    }
-
-    // Trigger confetti
+    if (isSoundEnabled) playCompletionSound()
     if (confettiCanvasRef.current) {
-      const myConfetti = confetti.create(confettiCanvasRef.current, {
-        resize: true,
-        useWorker: true,
-      })
-
-      myConfetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      })
+      const myConfetti = confetti.create(confettiCanvasRef.current, { resize: true, useWorker: true })
+      myConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } })
     }
-
-    // Hide celebration after 5 seconds
-    setTimeout(() => {
-      setShowCelebration(false)
-    }, 5000)
+    setTimeout(() => setShowCelebration(false), 5000)
   }
 
-  const playSound = (soundFile: string) => {
-    if (audioRef.current) {
-      audioRef.current.pause()
-    }
-
-    audioRef.current = new Audio(`/sounds/${soundFile}`)
-    audioRef.current.play().catch((e) => console.log("Audio play failed:", e))
-  }
-
-  const handleToggleSound = () => {
-    setIsSoundEnabled(!isSoundEnabled)
-
-    if (audioRef.current && !isSoundEnabled) {
-      audioRef.current.pause()
-    }
-  }
-
-  const handleStartPrep = () => {
-    setCompletedSteps([])
-    startStep(0)
-  }
-
+  const handleToggleSound = () => setIsSoundEnabled(!isSoundEnabled)
+  const handleStartPrep = () => { setCompletedSteps([]); startStep(0); }
   const handleNextStep = () => {
     if (currentStep !== null) {
-      if (timerRef.current) {
-        clearInterval(timerRef.current)
-      }
-
-      if (audioRef.current) {
-        audioRef.current.pause()
-      }
-
-      const nextStepIndex = currentStep + 1
-      startStep(nextStepIndex)
+      if (timerRef.current) clearInterval(timerRef.current)
+      startStep(currentStep + 1)
     }
   }
-
   const handleResetPrep = () => {
-    setCurrentStep(null)
-    setCompletedSteps([])
-    setIsPlaying(false)
-    setShowCelebration(false)
-
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-    }
-
-    if (audioRef.current) {
-      audioRef.current.pause()
-    }
+    setCurrentStep(null); setCompletedSteps([]); setIsPlaying(false); setShowCelebration(false);
+    if (timerRef.current) clearInterval(timerRef.current)
   }
 
   return (
     <Card className="w-full relative overflow-hidden">
-      <canvas
-        ref={confettiCanvasRef}
-        className="absolute inset-0 pointer-events-none z-10"
-        style={{ width: "100%", height: "100%" }}
-      />
-
+      <canvas ref={confettiCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ width: "100%", height: "100%" }} />
       <CardHeader>
         <CardTitle className="flex items-center text-lg font-medium">
           <ChefHat className="mr-2 h-5 w-5 text-orange-500" />
           {t.title}
         </CardTitle>
       </CardHeader>
-
       <CardContent>
         <AnimatePresence mode="wait">
           {showCelebration ? (
-            <motion.div
-              key="celebration"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="flex flex-col items-center justify-center py-8"
-            >
-              <motion.div
-                animate={{
-                  rotate: [0, 10, -10, 10, 0],
-                  scale: [1, 1.2, 1, 1.1, 1],
-                }}
-                transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
-              >
+            <motion.div key="celebration" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} className="flex flex-col items-center justify-center py-8">
+              <motion.div animate={{ rotate: [0, 10, -10, 10, 0], scale: [1, 1.2, 1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
                 <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
               </motion.div>
-
               <h3 className="text-xl font-bold text-center mb-2">{t.prepComplete}</h3>
               <p className="text-center mb-6">{celebrationMessage}</p>
-
               <Button onClick={handleResetPrep}>{t.continue}</Button>
             </motion.div>
           ) : currentStep !== null ? (
-            <motion.div
-              key="prep-steps"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="space-y-6"
-            >
+            <motion.div key="prep-steps" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
                   <span className="text-2xl mr-2">{PREP_STEPS[currentStep].icon}</span>
                   <span className="text-lg font-medium">{PREP_STEPS[currentStep].label}</span>
                 </div>
-
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-1" />
-                  <span>
-                    {timeLeft} {t.seconds}
-                  </span>
-                </div>
+                <div className="flex items-center"><Clock className="h-4 w-4 mr-1" /><span>{timeLeft} {t.seconds}</span></div>
               </div>
-
-              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <motion.div
-                  className="bg-primary h-2.5 rounded-full"
-                  initial={{ width: "100%" }}
-                  animate={{
-                    width: `${(timeLeft / PREP_STEPS[currentStep].duration) * 100}%`,
-                  }}
-                  transition={{ duration: 1 }}
-                ></motion.div>
+              <div className="w-full bg-muted rounded-full h-2.5">
+                <motion.div className="bg-primary h-2.5 rounded-full" initial={{ width: "100%" }} animate={{ width: `${(timeLeft / PREP_STEPS[currentStep].duration) * 100}%` }} transition={{ duration: 1 }} />
               </div>
-
               <div className="flex justify-between items-center pt-4">
                 <div className="flex space-x-1">
                   {PREP_STEPS.map((step, index) => (
-                    <motion.div
-                      key={step.id}
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                        completedSteps.includes(step.id)
-                          ? "bg-green-500 text-white"
-                          : index === currentStep
-                            ? "bg-primary text-white"
-                            : "bg-gray-200 dark:bg-gray-700"
-                      }`}
-                      whileHover={{ scale: 1.1 }}
-                    >
+                    <motion.div key={step.id} className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                      completedSteps.includes(step.id) ? "bg-green-500 text-white" : index === currentStep ? "bg-primary text-primary-foreground" : "bg-muted"
+                    }`} whileHover={{ scale: 1.1 }}>
                       {completedSteps.includes(step.id) ? <CheckCircle className="h-3 w-3" /> : index + 1}
                     </motion.div>
                   ))}
                 </div>
-
                 <div className="flex space-x-2">
-                  <Button size="sm" variant="outline" onClick={handleToggleSound} title={t.toggleSound}>
+                  <Button size="sm" variant="outline" onClick={handleToggleSound}>
                     {isSoundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
                   </Button>
-
                   {isPlaying ? (
-                    <Button size="sm" variant="outline" onClick={() => setIsPlaying(false)}>
-                      <Pause className="h-4 w-4" />
-                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setIsPlaying(false)}><Pause className="h-4 w-4" /></Button>
                   ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setIsPlaying(true)
-                        startStep(currentStep)
-                      }}
-                    >
-                      <Play className="h-4 w-4" />
-                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => { setIsPlaying(true); startStep(currentStep); }}><Play className="h-4 w-4" /></Button>
                   )}
                 </div>
               </div>
-
               <div className="flex justify-between pt-2">
-                <Button variant="outline" onClick={handleResetPrep}>
-                  <RotateCcw className="h-4 w-4 mr-1" />
-                  {t.resetPrep}
-                </Button>
-
+                <Button variant="outline" onClick={handleResetPrep}><RotateCcw className="h-4 w-4 mr-1" />{t.resetPrep}</Button>
                 <Button onClick={handleNextStep}>{t.nextStep}</Button>
               </div>
             </motion.div>
           ) : (
-            <motion.div
-              key="start-prep"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center py-8"
-            >
-              <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}>
+            <motion.div key="start-prep" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center py-8">
+              <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
                 <ChefHat className="h-16 w-16 text-orange-500 mb-4" />
               </motion.div>
-
-              <Button size="lg" onClick={handleStartPrep} className="mt-4">
-                {t.startPrep}
-              </Button>
+              <Button size="lg" onClick={handleStartPrep} className="mt-4">{t.startPrep}</Button>
             </motion.div>
           )}
         </AnimatePresence>
       </CardContent>
-
       <CardFooter className="flex justify-between">
-        <div className="text-xs text-gray-500">{isSoundEnabled ? t.soundOn : t.soundOff}</div>
+        <div className="text-xs text-muted-foreground">{isSoundEnabled ? t.soundOn : t.soundOff}</div>
       </CardFooter>
     </Card>
   )
