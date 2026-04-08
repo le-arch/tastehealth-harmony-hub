@@ -66,7 +66,7 @@ const getWeekDates = (referenceDate: Date = new Date()) => {
   }));
 };
 
-export function MealPlanList() {
+export function MealPlanList({ searchFilter = '' }: { searchFilter?: string }) {
   const { language } = useLanguage();
   const [plans, setPlans] = useState<MealPlan[]>(getLS(LS_KEYS.MEAL_PLANS, []));
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -664,9 +664,22 @@ export function MealPlanList() {
     );
   }
 
+  const filteredPlans = plans.filter(p => 
+    !searchFilter || p.name.toLowerCase().includes(searchFilter.toLowerCase()) || 
+    (p.description || '').toLowerCase().includes(searchFilter.toLowerCase())
+  );
+
+  if (filteredPlans.length === 0 && searchFilter) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">No meal plans matching "{searchFilter}"</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {plans.map((p, idx) => (
+      {filteredPlans.map((p, idx) => (
         <motion.div key={p.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
           <Card className="hover:shadow-lg transition-all hover:border-primary/30 group">
             <CardHeader className="pb-2">

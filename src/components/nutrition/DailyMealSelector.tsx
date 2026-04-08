@@ -75,6 +75,7 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
   // Load meals from localStorage on mount and when date changes
   useEffect(() => {
     loadMealsForDate(viewDate);
+    autoSyncMealPlan(viewDate);
   }, [viewDate]);
 
   const loadMealsForDate = (date: Date) => {
@@ -86,7 +87,8 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
         const parsed = JSON.parse(stored);
         const meals = parsed
           .map((item: any) => {
-            const meal = MEAL_DATABASE.find(m => m.id === item.mealId);
+            const meal = MEAL_DATABASE.find(m => m.id === item.mealId) || 
+              MEAL_DATABASE.find(m => m.name === item.mealName);
             return meal ? { 
               id: item.id, 
               meal, 
@@ -104,6 +106,72 @@ const DailyMealSelector: React.FC<DailyMealSelectorProps> = ({
       }
     } else {
       setSelectedMeals([]);
+    }
+  };
+
+  // Auto-sync meals from active meal plan timetable for the given date
+  const autoSyncMealPlan = (date: Date) => {
+    try {
+      const plans = getLS<any[]>(LS_KEYS.MEAL_PLANS, []);
+      if (plans.length === 0) return;
+      
+      const dayOfWeek = date.getDay();
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const dayName = dayNames[dayOfWeek];
+      const dateKey = format(date, 'yyyy-MM-dd');
+      const syncKey = `th_meal_plan_synced_${dateKey}`;
+      
+      // Skip if already synced for this date
+      if (localStorage.getItem(syncKey)) return;
+      
+      const existingStored = localStorage.getItem(`th_daily_meals_${dateKey}`);
+      const existingMeals = existingStored ? JSON.parse(existingStored) : [];
+      const existingNames = new Set(existingMeals.map((m: any) => m.mealName));
+      
+      let newMeals: any[] = [];
+      const categories = ['breakfast', 'lunch', 'dinner', 'snacks'];
+      const defaultTimes: Record<string, string> = { breakfast: '08:00', lunch: '12:30', dinner: '19:00', snacks: '15:30' };
+      
+      plans.forEach(plan => {
+        const dayData = plan.days?.[dayName];
+        if (!dayData) return;
+        
+        categories.forEach(cat => {
+          const catMeals = dayData[cat] || [];
+          catMeals.forEach((planMeal: any) => {
+            if (existingNames.has(planMeal.name)) return;
+            existingNames.add(planMeal.name);
+            
+            const dbMeal = MEAL_DATABASE.find(m => m.name === planMeal.name);
+            newMeals.push({
+              id: crypto.randomUUID(),
+              mealId: dbMeal?.id || planMeal.name,
+              mealName: planMeal.name,
+              calories: dbMeal?.nutrition.calories || planMeal.calories || 0,
+              protein: dbMeal?.nutrition.protein || 0,
+              carbs: dbMeal?.nutrition.carbs || 0,
+              fats: dbMeal?.nutrition.fats || 0,
+              category: cat,
+              timestamp: date.toISOString(),
+              scheduledTime: planMeal.time || defaultTimes[cat],
+              logged: false,
+              mealPlanId: plan.id,
+            });
+          });
+        });
+      });
+      
+      if (newMeals.length > 0) {
+        const combined = [...existingMeals, ...newMeals];
+        localStorage.setItem(`th_daily_meals_${dateKey}`, JSON.stringify(combined));
+        localStorage.setItem(syncKey, 'true');
+        // Reload meals
+        loadMealsForDate(date);
+      } else {
+        localStorage.setItem(syncKey, 'true');
+      }
+    } catch (err) {
+      console.error('Auto-sync error:', err);
     }
   };
 
