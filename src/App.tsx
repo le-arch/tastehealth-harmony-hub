@@ -28,7 +28,6 @@ import ChallengesPage from "./pages/ChallengesPage";
 import LevelBenefitsPage from "./pages/LevelBenefitsPage";
 import DailyJournalPage from "./pages/DailyJournalPage";
 import HowToUsePage from "./pages/HowToUsePage";
-import CookingVideosPage from "./pages/CookingVideosPage";
 import HealthTipsPage from "./pages/HealthTipsPage";
 
 const queryClient = new QueryClient();
@@ -100,7 +99,6 @@ function RouteTransitionWrapper() {
         <Route path="/benefits" element={wrap(<LevelBenefitsPage />)} />
         <Route path="/journal" element={wrap(<DailyJournalPage />)} />
         <Route path="/how-to-use" element={wrap(<HowToUsePage />)} />
-        <Route path="/cooking-videos" element={wrap(<CookingVideosPage />)} />
         <Route path="/health-tips" element={wrap(<HealthTipsPage />)} />
         <Route path="*" element={wrap(<NotFound />)} />
       </Routes>

@@ -711,7 +711,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
     id: 'l8',
     name: 'Koki Corn',
     description: 'Steamed corn cake in leaves.',
-    image: '/meals/koki.jpg',
+    image: '/meals/kokicorn.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['1 kg fresh corn', '½ cup palm oil', '2 cups spinach', '1 tbsp ginger', '2 tbsp crayfish', '2 bouillon cubes', 'salt', 'banana leaves'],
@@ -747,7 +747,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
     id: 'l11',
     name: 'Koki Beans & Yam',
     description: 'Bean cake with yam.',
-    image: '/meals/Fried Yam Fries.jpeg',
+    image: '/meals/Koki-beans.jpg',
     category: 'lunch',
     recipe: {
       ingredients: ['2 cups beans', '½ cup palm oil', '1 kg yam', '1 onion', 'chili', 'salt'],

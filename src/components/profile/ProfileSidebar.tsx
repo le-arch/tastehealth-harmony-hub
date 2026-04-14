@@ -54,8 +54,7 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
         games: "Jeu Nutrition", 
         challenges: "Défis", 
         level: "Niveau", 
-        journal: "Journal", 
-        cookingVideos: "Vidéos Cuisine", 
+        journal: "Journal",  
         healthTips: "Conseils Santé", 
         howToUse: "Guide d'utilisation",
       }
@@ -68,7 +67,6 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
         challenges: "Challenges", 
         level: "Level", 
         journal: "Daily Journal", 
-        cookingVideos: "Cooking Videos", 
         healthTips: "Health Tips", 
         howToUse: "How to Use",
       };
@@ -79,7 +77,6 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
     { path: "/meal-planning", icon: <Calendar className="h-5 w-5" />, label: t.mealPlanning, color: "from-blue-500 to-indigo-500", iconBg: "bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-950 dark:to-indigo-950" },
     { path: "/journal", icon: <Bookmark className="h-5 w-5" />, label: t.journal, color: "from-red-500 to-pink-500", iconBg: "bg-gradient-to-br from-red-100 to-pink-100 dark:from-red-950 dark:to-pink-950" },
     { path: "/games", icon: <Gamepad className="h-5 w-5" />, label: t.games, color: "from-purple-500 to-violet-500", iconBg: "bg-gradient-to-br from-purple-100 to-violet-100 dark:from-purple-950 dark:to-violet-950" },
-    { path: "/cooking-videos", icon: <Video className="h-5 w-5" />, label: t.cookingVideos, color: "from-orange-500 to-red-500", iconBg: "bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-950 dark:to-red-950" },
     { path: "/health-tips", icon: <Stethoscope className="h-5 w-5" />, label: t.healthTips, color: "from-teal-500 to-cyan-500", iconBg: "bg-gradient-to-br from-teal-100 to-cyan-100 dark:from-teal-950 dark:to-cyan-950" },
     { path: "/how-to-use", icon: <BookOpen className="h-5 w-5" />, label: t.howToUse, color: "from-indigo-500 to-purple-500", iconBg: "bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950" },
   ];
