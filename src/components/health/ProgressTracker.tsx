@@ -1,8 +1,11 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Activity, Flame, Moon, Dumbbell, Droplet } from 'lucide-react';
-import { getLS, LS_KEYS, CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry } from '@/utils/localStorage';
+import { Activity, Flame, Moon, Dumbbell, Droplet, Heart, Thermometer } from 'lucide-react';
+import {
+  getLS, LS_KEYS,
+  CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry,
+  HeartRateEntry, BloodPressureEntry, BodyTempEntry,
+} from '@/utils/localStorage';
 
 const CircularProgress = ({ value, max, color, size = 80, strokeWidth = 8 }: { value: number; max: number; color: string; size?: number; strokeWidth?: number }) => {
   const radius = (size - strokeWidth) / 2;
@@ -25,6 +28,10 @@ const ProgressTracker = () => {
   const exercise = getLS<ExerciseEntry[]>(LS_KEYS.EXERCISE_LOG, []).filter(e => new Date(e.date).toDateString() === today);
   const hydration = getLS<HydrationEntry[]>(LS_KEYS.HYDRATION_LOG, []).find(e => new Date(e.date).toDateString() === today);
 
+  const heartRates = getLS<HeartRateEntry[]>(LS_KEYS.HEART_RATE_LOG, []);
+  const bps = getLS<BloodPressureEntry[]>(LS_KEYS.BLOOD_PRESSURE_LOG, []);
+  const temps = getLS<BodyTempEntry[]>(LS_KEYS.BODY_TEMP_LOG, []);
+
   const totalCal = calories.reduce((s, e) => s + e.calories, 0);
   const totalSleep = sleep.reduce((s, e) => s + e.hours, 0);
   const totalExercise = exercise.reduce((s, e) => s + e.duration, 0);
@@ -37,10 +44,34 @@ const ProgressTracker = () => {
     { label: 'Water', value: cups, target: 8, unit: 'cups', icon: <Droplet className="h-4 w-4 text-blue-500" />, color: '#3b82f6' },
   ];
 
+  const vitals = [
+    {
+      label: 'Heart Rate',
+      icon: <Heart className="h-4 w-4 text-red-500 fill-red-200" />,
+      value: heartRates[0] ? `${heartRates[0].bpm}` : '—',
+      unit: heartRates[0] ? 'bpm' : '',
+      tone: 'border-red-200 bg-red-50/50 dark:bg-red-950/20',
+    },
+    {
+      label: 'Blood Pressure',
+      icon: <Activity className="h-4 w-4 text-rose-500" />,
+      value: bps[0] ? `${bps[0].systolic}/${bps[0].diastolic}` : '—',
+      unit: bps[0] ? 'mmHg' : '',
+      tone: 'border-rose-200 bg-rose-50/50 dark:bg-rose-950/20',
+    },
+    {
+      label: 'Body Temp',
+      icon: <Thermometer className="h-4 w-4 text-orange-500" />,
+      value: temps[0] ? `${temps[0].celsius}` : '—',
+      unit: temps[0] ? '°C' : '',
+      tone: 'border-orange-200 bg-orange-50/50 dark:bg-orange-950/20',
+    },
+  ];
+
   return (
     <Card className="w-full mb-6">
       <CardHeader><CardTitle className="flex items-center"><Activity className="mr-2" />Today's Progress</CardTitle></CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
           {metrics.map(m => (
             <div key={m.label} className="flex flex-col items-center gap-2">
@@ -54,6 +85,20 @@ const ProgressTracker = () => {
               <span className="text-xs text-muted-foreground">{m.value}/{m.target} {m.unit}</span>
             </div>
           ))}
+        </div>
+
+        <div>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Latest vitals</p>
+          <div className="grid grid-cols-3 gap-2">
+            {vitals.map(v => (
+              <div key={v.label} className={`rounded-lg border p-3 ${v.tone}`}>
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">{v.icon}{v.label}</div>
+                <p className="text-lg font-bold mt-1">
+                  {v.value} <span className="text-xs font-normal text-muted-foreground">{v.unit}</span>
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>

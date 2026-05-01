@@ -4,6 +4,7 @@ import { Flame, Star, AlertCircle, Calendar, TrendingUp } from 'lucide-react';
 import { getLS, LS_KEYS, MoodEntry, MealPlan, CalorieEntry } from '@/utils/localStorage';
 import wavingLady from '@/assets/waving-lady.png';
 import { Card } from '@/components/ui/card';
+import WeatherWidget from '@/components/WeatherWidget';
 
 const DashboardGreeting: React.FC = () => {
   const currentUser = JSON.parse(localStorage.getItem('th_current_user') || 'null');
@@ -78,6 +79,8 @@ const DashboardGreeting: React.FC = () => {
           </div>
         </div>
       </motion.div>
+
+      <WeatherWidget />
 
       {reminders.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>

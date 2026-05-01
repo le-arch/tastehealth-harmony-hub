@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import LogoHealth from '@/components/LogoHealth';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
+import LanguageToggle from '@/components/LanguageToggle';
 import { getLS, LS_KEYS } from '@/utils/localStorage';
 import {
   DropdownMenu,
@@ -61,6 +62,8 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ onToggleSidebar }) => {
           <Flame className="h-3.5 w-3.5 text-orange-500" />
           {streak}
         </div>
+
+        <LanguageToggle />
 
         <NotificationDropdown />
 
