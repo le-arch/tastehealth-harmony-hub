@@ -14,6 +14,10 @@ import CalorieTracker from '@/components/health/CalorieTracker';
 import SleepTracker from '@/components/health/SleepTracker';
 import ExerciseTracker from '@/components/health/ExerciseTracker';
 import HydrationInput from '@/components/health/HydrationInput';
+import HeartRateTracker from '@/components/health/HeartRateTracker';
+import BloodPressureTracker from '@/components/health/BloodPressureTracker';
+import BodyTempTracker from '@/components/health/BodyTempTracker';
+import OrientationTracker from '@/components/health/OrientationTracker';
 import GoalWizard from './GoalWizard';
 
 import { 
@@ -36,7 +40,9 @@ import {
   Sun,
   Cloud,
   Leaf,
-  Star
+  Star,
+  Thermometer,
+  Compass
 } from 'lucide-react';
 import { useScreenSize } from '@/utils/mobile';
 import { getLS, setLS, LS_KEYS, CalorieEntry, SleepEntry, ExerciseEntry, HydrationEntry, BMIEntry } from '@/utils/localStorage';
@@ -449,6 +455,22 @@ const ProgressPage = () => {
                       <Scale className="h-4 w-4 text-purple-500" />
                       {isSmallScreen ? "" : t.bmiTracker}
                     </TabsTrigger>
+                    <TabsTrigger value="heart" className="flex-1">
+                      <Heart className="h-4 w-4 text-red-500 fill-red-200" />
+                      {isSmallScreen ? "" : "Heart"}
+                    </TabsTrigger>
+                    <TabsTrigger value="bp" className="flex-1">
+                      <Activity className="h-4 w-4 text-rose-500" />
+                      {isSmallScreen ? "" : "BP"}
+                    </TabsTrigger>
+                    <TabsTrigger value="temp" className="flex-1">
+                      <Thermometer className="h-4 w-4 text-orange-500" />
+                      {isSmallScreen ? "" : "Temp"}
+                    </TabsTrigger>
+                    <TabsTrigger value="orientation" className="flex-1">
+                      <Compass className="h-4 w-4 text-purple-500" />
+                      {isSmallScreen ? "" : "Gyro"}
+                    </TabsTrigger>
                   </ScrollableTabsList>
                   <div className="my-4">
                     <TabsContent value="calories"><CalorieTracker /></TabsContent>
@@ -456,6 +478,10 @@ const ProgressPage = () => {
                     <TabsContent value="exercise"><ExerciseTracker /></TabsContent>
                     <TabsContent value="water"><HydrationInput /></TabsContent>
                     <TabsContent value="bmi"><BMICalculator /></TabsContent>
+                    <TabsContent value="heart"><HeartRateTracker /></TabsContent>
+                    <TabsContent value="bp"><BloodPressureTracker /></TabsContent>
+                    <TabsContent value="temp"><BodyTempTracker /></TabsContent>
+                    <TabsContent value="orientation"><OrientationTracker /></TabsContent>
                   </div>
                 </Tabs>
               </CardContent>
