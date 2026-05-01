@@ -39,7 +39,21 @@ export const LS_KEYS = {
   QUESTS: 'th_quests',
   NOTIFICATIONS: 'th_notifications',
   REWARDS: 'th_rewards',
+  HEART_RATE_LOG: 'th_heart_rate_log',
+  BLOOD_PRESSURE_LOG: 'th_blood_pressure_log',
+  BODY_TEMP_LOG: 'th_body_temp_log',
+  MOTION_SESSIONS: 'th_motion_sessions',
 } as const;
+
+export interface HeartRateEntry { id: string; date: string; bpm: number; source: 'manual' | 'simulated'; }
+export interface BloodPressureEntry { id: string; date: string; systolic: number; diastolic: number; pulse?: number; source: 'manual' | 'simulated'; }
+export interface BodyTempEntry { id: string; date: string; celsius: number; source: 'manual' | 'simulated'; }
+export interface MotionSession {
+  id: string; date: string; type: string; duration: number;
+  steps?: number; distance_m?: number; avg_speed_kmh?: number;
+  start_lat?: number; start_lng?: number; end_lat?: number; end_lng?: number;
+  calories_burned?: number;
+}
 
 export interface ProfileData {
   age: string; height: string; weight: string; gender: string;
@@ -71,6 +85,9 @@ export interface CalorieEntry {
 
 export interface SleepEntry {
   id: string; date: string; hours: number; quality: number;
+  kind?: 'full' | 'nap';
+  start_time?: string; // HH:MM
+  end_time?: string;   // HH:MM
 }
 
 export interface ExerciseEntry {
