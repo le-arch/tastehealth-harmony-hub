@@ -4,6 +4,7 @@ import { Flame, Star, AlertCircle, Calendar, TrendingUp } from 'lucide-react';
 import { getLS, LS_KEYS, MoodEntry, MealPlan, CalorieEntry } from '@/utils/localStorage';
 import wavingLady from '@/assets/waving-lady.png';
 import { Card } from '@/components/ui/card';
+import WeatherWidget from '@/components/WeatherWidget';
 
 const DashboardGreeting: React.FC = () => {
   const currentUser = JSON.parse(localStorage.getItem('th_current_user') || 'null');
