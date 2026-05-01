@@ -1,30 +1,19 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Calendar, ChefHat, Heart } from "lucide-react";
+import { Search, ChefHat, Heart, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MealPlanList } from "@/components/MealPlanList";
-import { CreateMealPlanDialog } from "@/components/CreateMealPlanDialog";
 import MealSearch from "@/components/MealSearch";
 import Favorites from "./Favorites";
 import { useLanguage } from "@/contexts/LanguageContext";
 import PageLayout from "@/components/PageLayout";
-import { getLS, LS_KEYS, MealPlan } from "@/utils/localStorage";
+import { Link } from "react-router-dom";
 
 const MealPlanningPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [refreshKey, setRefreshKey] = useState(0);
   const { language } = useLanguage();
   const t = language === 'fr'
-    ? { title: "Planification des Repas", subtitle: "Planifiez vos repas", myMealPlans: "Mes Plans", mealSearch: "Recherche", searchPlaceholder: "Rechercher des plans...", favorites: "Favoris" }
-    : { title: "Meal Planning", subtitle: "Plan your meals for the week ahead", myMealPlans: "My Meal Plans", mealSearch: "Meal Search", searchPlaceholder: "Search meal plans...", favorites: "Favorites" };
-
-  useEffect(() => {
-    const handler = () => setRefreshKey(k => k + 1);
-    window.addEventListener('storage', handler);
-    return () => window.removeEventListener('storage', handler);
-  }, []);
+    ? { title: "Planification des Repas", subtitle: "Recherchez des repas et gérez vos favoris", mealSearch: "Recherche", favorites: "Favoris", openTimetable: "Ouvrir l'emploi du temps" }
+    : { title: "Meal Planning", subtitle: "Search meals and manage your favorites", mealSearch: "Meal Search", favorites: "Favorites", openTimetable: "Open Meal Timetable" };
 
   return (
     <PageLayout activePage="meal planning">
@@ -36,24 +25,21 @@ const MealPlanningPage = () => {
           <p className="text-muted-foreground text-sm">{t.subtitle}</p>
         </motion.div>
 
-        <div className="max-w-6xl mx-auto">
-          <Tabs defaultValue="plans" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="plans" className="flex items-center gap-2"><Calendar className="h-4 w-4 text-blue-500 fill-blue-200" />{t.myMealPlans}</TabsTrigger>
+        <div className="max-w-6xl mx-auto space-y-4">
+          <div className="flex justify-end">
+            <Link to="/meal-timetable">
+              <Button variant="outline" className="gap-2 border-primary/30 hover:bg-primary/10">
+                <Calendar className="h-4 w-4 text-primary" />
+                {t.openTimetable}
+              </Button>
+            </Link>
+          </div>
+
+          <Tabs defaultValue="search" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="search" className="flex items-center gap-2"><Search className="h-4 w-4 text-green-500" />{t.mealSearch}</TabsTrigger>
               <TabsTrigger value="favorites" className="flex items-center gap-2"><Heart className="h-4 w-4 text-red-500 fill-red-500" />{t.favorites}</TabsTrigger>
             </TabsList>
-
-            <TabsContent value="plans" className="space-y-6">
-              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder={t.searchPlaceholder} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
-                </div>
-                <CreateMealPlanDialog onMealPlanCreated={() => setRefreshKey(k => k + 1)} />
-              </div>
-              <MealPlanList key={refreshKey} searchFilter={searchTerm} />
-            </TabsContent>
 
             <TabsContent value="search">
               <MealSearch onSelectMeal={() => {}} />
