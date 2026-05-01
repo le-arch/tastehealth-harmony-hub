@@ -80,6 +80,8 @@ const DashboardGreeting: React.FC = () => {
         </div>
       </motion.div>
 
+      <WeatherWidget />
+
       {reminders.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Card className="p-3 border-amber-200 dark:border-amber-800/30 bg-amber-50/50 dark:bg-amber-950/20">
