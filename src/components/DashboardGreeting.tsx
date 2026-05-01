@@ -21,7 +21,7 @@ const DashboardGreeting: React.FC = () => {
   let greeting = 'Good Morning';
   let emoji = '🌅';
   if (hour >= 12 && hour < 17) { greeting = 'Good Afternoon'; emoji = '☀️'; }
-  else if (hour >= 17 && hour < 21) { greeting = 'Good Evening'; emoji = '🌿'; }
+  else if (hour >= 17 && hour < 21) { greeting = 'Good Evening'; emoji = '🌃'; }
   else if (hour >= 21 || hour < 5) { greeting = 'Good Night'; emoji = '🌙'; }
 
   const moodEmojis: Record<string, string> = { great: '😄', good: '😊', neutral: '😐', bad: '😔', terrible: '😢', delicious: '😋', satisfied: '😊', unsatisfied: '😞' };

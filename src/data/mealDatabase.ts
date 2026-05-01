@@ -64,7 +64,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
     image: '/meals/omelete.jpg',
     category: 'breakfast',
     recipe: {
-      ingredients: ['4 eggs', '2 tomatoes', '1 onion', '2 cloves garlic', '¼ tsp pebe', '1 bouillon cube', '2 tbsp oil', 'salt to taste'],
+      ingredients: ['4 eggs', '2 tomatoes', '1 onion', '2 cloves garlic', '1 bouillon cube', '2 tbsp oil', 'salt to taste'],
       method: ['Whisk eggs until frothy.', 'Add diced vegetables and spices.', 'Heat oil in pan.', 'Pour egg mixture and cook until set.', 'Fold and serve hot.']
     },
     nutrition: { calories: 280, protein: 18, carbs: 8, fats: 20, fiber: 2, sugar: 4, sodium: 480 }
@@ -112,8 +112,8 @@ export const MEAL_DATABASE: MealDBItem[] = [
     image: '/meals/kokicorn.jpg',
     category: 'breakfast',
     recipe: {
-      ingredients: ['1 kg fresh corn', '½ cup palm oil', '2 cups spinach', '1 tbsp ginger', '2 tbsp crayfish', 'salt', 'banana leaves'],
-      method: ['Grate corn and ginger.', 'Whisk vigorously.', 'Add oil, crayfish, salt, spinach.', 'Wrap in banana leaves.', 'Steam 1½-2 hours.', 'Serve with rice fufu.']
+      ingredients: ['1 kg fresh corn', '½ cup palm oil', '2 cups spinach(optional)', 'shredded cocoyam leaves', '2 tbsp crayfish', 'salt', 'banana leaves'],
+      method: ['Grate corn.', 'Whisk vigorously.', 'Add oil, crayfish, salt, spinach or cocoyam leaves.', 'Wrap in banana leaves.', 'Steam 1½-2 hours.', 'Serve.']
     },
     nutrition: { calories: 350, protein: 9, carbs: 52, fats: 12, fiber: 7, sugar: 6, sodium: 420 }
   },
@@ -263,15 +263,15 @@ export const MEAL_DATABASE: MealDBItem[] = [
   },
   {
     id: 'b21',
-    name: 'Garri & Groundnuts',
-    description: 'Dry garri mixed with roasted peanuts.',
-    image: '/meals/drinking garri.jpeg',
+    name: 'Egg Plantain Frittata',
+    description: 'A tasty twist on a classic.',
+    image: '/meals/plantain frittata.jpeg',
     category: 'breakfast',
     recipe: {
-      ingredients: ['1 cup Garri', '½ cup groundnuts', '¼ cup sugar', '½ cup water (optional)'],
-      method: ['Mix garri with sugar.', 'Add groundnuts.', 'Eat dry or add water.']
+      ingredients: ['Eggs', 'ripe plantains', 'onions', 'bell peppers', 'salt', 'pepper'],
+      method: ['Fry the ripe plantains.', 'Mix with eggs in a bowl.', 'Add veggies.', 'Bake for 12 minutes.']
     },
-    nutrition: { calories: 320, protein: 10, carbs: 55, fats: 10, fiber: 5, sugar: 15, sodium: 85 }
+    nutrition: { calories: 350, protein: 20, carbs: 30, fats: 20, fiber: 3, sugar: 5, sodium: 300 }
   },
   {
     id: 'b22',
@@ -283,7 +283,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
       ingredients: ['1 kg cassava', 'water', 'salt', '¼ cup sugar'],
       method: ['Peel and cut cassava.', 'Boil until tender.', 'Drain.', 'Serve with sugar.']
     },
-    nutrition: { calories: 350, protein: 3, carbs: 82, fats: 2, fiber: 8, sugar: 25, sodium: 15 }
+    nutrition: { calories: 350, protein: 30, carbs: 30, fats: 15, fiber: 8, sugar: 25, sodium: 15 }
   },
   {
     id: 'b23',
@@ -349,7 +349,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
     id: 'b28',
     name: 'Boiled Cocoyam & Egg',
     description: 'Simple tuber breakfast with hard-boiled eggs.',
-    image: '/meals/egg sauce yam.jpeg',
+    image: '/meals/boiled eggs.jpeg',
     category: 'breakfast',
     recipe: {
       ingredients: ['1 kg cocoyam', 'water', 'salt', '4 eggs'],
@@ -714,8 +714,8 @@ export const MEAL_DATABASE: MealDBItem[] = [
     image: '/meals/kokicorn.jpg',
     category: 'lunch',
     recipe: {
-      ingredients: ['1 kg fresh corn', '½ cup palm oil', '2 cups spinach', '1 tbsp ginger', '2 tbsp crayfish', '2 bouillon cubes', 'salt', 'banana leaves'],
-      method: ['Blend corn and ginger.', 'Whisk vigorously.', 'Add oil, crayfish, spinach.', 'Wrap in leaves.', 'Steam 1½-2 hours.']
+      ingredients: ['1 kg fresh corn', '½ cup palm oil', '2 cups spinach(optional)', 'shredded cocoyam leaves' , '1 tbsp ginger', '2 tbsp crayfish', '2 bouillon cubes', 'salt', 'banana leaves'],
+      method: ['Blend corn.', 'Whisk vigorously.', 'Add oil, crayfish, spinach or cocoyam leaves.', 'Wrap in leaves.', 'Steam 1½-2 hours.']
     },
     nutrition: { calories: 550, protein: 15, carbs: 75, fats: 20, fiber: 12, sugar: 8, sodium: 480 }
   },
@@ -727,7 +727,7 @@ export const MEAL_DATABASE: MealDBItem[] = [
     category: 'lunch',
     recipe: {
       ingredients: ['1 kg corn', '½ cup palm oil', '2 cups spinach', '1 tbsp ginger', '2 tbsp crayfish', 'salt', 'banana leaves'],
-      method: ['Grind corn.', 'Mix with oil and spinach.', 'Steam in leaves.']
+      method: ['Grind corn.', 'Mix with oil, salt, crayfish, and spinach.', 'Steam in leaves.']
     },
     nutrition: { calories: 550, protein: 15, carbs: 75, fats: 20, fiber: 12, sugar: 8, sodium: 480 }
   },
@@ -738,8 +738,8 @@ export const MEAL_DATABASE: MealDBItem[] = [
     image: '/meals/Koki-beans.jpg',
     category: 'lunch',
     recipe: {
-      ingredients: ['2 cups black-eyed peas', '1 onion', '½ cup palm oil', '2 tbsp crayfish', '2 bouillon cubes', '1 tsp chili', 'salt', 'banana leaves'],
-      method: ['Soak and peel beans.', 'Blend with onion.', 'Whisk in oil and spices.', 'Wrap in leaves.', 'Steam 1½ hours.']
+      ingredients: ['2 cups black-eyed peas', '1 onion', '½ cup palm oil', '2 tbsp crayfish', '2 bouillon cubes', '1 tsp chili', 'salt', 'shredded cocoyam leaves', 'plantain leaves'],
+      method: ['Soak and peel beans.', 'Blend with onion.', 'Whisk in oil and spices.', 'Add cocoyam leaves and whisk', 'Wrap in leaves.', 'Steam 1½ hours.']
     },
     nutrition: { calories: 410, protein: 24, carbs: 48, fats: 18, fiber: 14, sugar: 4, sodium: 390 }
   },
@@ -906,8 +906,8 @@ export const MEAL_DATABASE: MealDBItem[] = [
     image: '/meals/katikati.jpeg',
     category: 'lunch',
     recipe: {
-      ingredients: ['500g beef', '200g mackerel', '4 bundles huckleberry leaves', '1 cup palm oil', '2 tbsp egusi', '2 onions', 'spices'],
-      method: ['Steam beef.', 'Boil leaves.', 'Fry egusi paste.', 'Mix all together.', 'Simmer 15 minutes.']
+      ingredients: ['500g beef','full chicken', '200g mackerel', '4 bundles huckleberry leaves', '1 cup palm oil', '2 tbsp egusi', '2 onions', 'spices'],
+      method: ['Steam beef.', 'Roast chicken', 'Boil leaves.', 'Fry egusi paste.', 'Mix all together.', 'Simmer 15 minutes.','Serve vegetable with fufu corn and roasted chicken' ]
     },
     nutrition: { calories: 540, protein: 32, carbs: 20, fats: 38, fiber: 9, sugar: 3, sodium: 410 }
   },
@@ -1158,8 +1158,8 @@ export const MEAL_DATABASE: MealDBItem[] = [
     image: '/meals/kwacoco banga soup.jpg',
     category: 'lunch',
     recipe: {
-      ingredients: ['1 kg cocoyam', '2 cups palm nut concentrate', '200g smoked fish', '2 tbsp crayfish', '1 tbsp ginger'],
-      method: ['Steam cocoyam.', 'Extract palm juice.', 'Boil with fish.']
+      ingredients: ['1 kg cocoyam', '2 cups palm nut concentrate', '200g smoked fish', '2 tbsp crayfish', '1 tbsp ginger', 'onions', 'anche leaves', 'black pepper', 'pepper', 'salt', 'banana leaves'],
+      method: ['Steam grated cocoyam in banana leaves.', 'Extract palm juice.', 'Boil with fish, anche leaves and spices.']
     },
     nutrition: { calories: 820, protein: 35, carbs: 90, fats: 40, fiber: 10, sugar: 6, sodium: 620 }
   },
@@ -4047,6 +4047,30 @@ export const MEAL_DATABASE: MealDBItem[] = [
     },
     nutrition: { calories: 300, protein: 2, carbs: 52, fats: 10, fiber: 5, sugar: 22, sodium: 280 }
   },
+   {
+    id: 's101',
+    name: 'Honey Garlic Chicken',
+    description: 'Baked chicken, sweet and savory delight.',
+    image: '/meals/pouletbraise.jpeg',
+    category: 'snacks',
+    recipe: {
+      ingredients: ['full chicken', 'salt', 'garlic', 'honey', 'soy sauce', 'chicken seasoning'],
+      method: ['Mix honey, soy sauce, garlic and chicken seasoning.', 'Marinate chicken.', 'Bake or grill.']
+    },
+    nutrition: { calories: 300, protein: 40, carbs: 25, fats: 15, fiber: 1, sugar: 15, sodium: 400 }
+  },
+   {
+    id: 's102',
+    name: 'Grilled Fish and Chicken',
+    description: 'Grilled delight .',
+    image: '/meals/3ngnam.jpeg',
+    category: 'snacks',
+    recipe: {
+      ingredients: ['chicken', 'fish', 'oil', 'seasoning'],
+      method: ['Grill chicken.', 'Grill fish.', 'Serve with fried ripe plantains.']
+    },
+    nutrition: { calories: 300, protein: 2, carbs: 52, fats: 10, fiber: 5, sugar: 22, sodium: 280 }
+  },
 
   // ==================== DRINKS (dr1 - dr50) ====================
   {
@@ -4648,6 +4672,18 @@ export const MEAL_DATABASE: MealDBItem[] = [
       method: ['Blend watermelon.', 'Add lime juice.', 'Serve over ice with mint.']
     },
     nutrition: { calories: 90, protein: 1, carbs: 22, fats: 0, fiber: 1, sugar: 20, sodium: 2 }
+  },
+   {
+    id: 'dr51',
+    name: 'Tiger Nut Drink',
+    description: 'A sweet, nutty local favorite.',
+    image: '/meals/tiger nut drink.jpeg',
+    category: 'drinks',
+    recipe: {
+      ingredients: ['tiger nuts', 'water', 'sugar(optional)'],
+      method: ['Blend tiger nuts with water.', 'Strain.', 'Sweeten if desired.']
+    },
+    nutrition: { calories: 200, protein: 3, carbs: 40, fats: 10, fiber: 3, sugar: 15, sodium: 50 }
   },
 
   // ==================== FRUITS (fr1 - fr30) ====================
