@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Thermometer, Plus, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getLS, setLS, LS_KEYS, BodyTempEntry } from '@/utils/localStorage';
+import { checkBodyTemp } from './VitalsAlerts';
+import { VitalsHistory } from './VitalsHistory';
 
 const tempStatus = (c: number) => {
   if (c < 35) return { label: 'Hypothermia', color: 'text-blue-600' };
@@ -29,6 +31,7 @@ const BodyTempTracker: React.FC = () => {
     const entry: BodyTempEntry = { id: crypto.randomUUID(), date: new Date().toISOString(), celsius: Math.round(v * 10) / 10, source };
     save([entry, ...entries]);
     toast.success(`Body temp ${entry.celsius} °C logged`);
+    checkBodyTemp(entry.celsius, source);
   };
 
   const simulate = () => {
@@ -66,6 +69,17 @@ const BodyTempTracker: React.FC = () => {
         <Button variant="outline" className="w-full border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-900/40" onClick={simulate} disabled={scanning}>
           {scanning ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Reading…</> : <><Thermometer className="h-4 w-4 mr-2" />Simulated reading</>}
         </Button>
+
+        <VitalsHistory
+          title="History"
+          description="Filter by date range or search"
+          entries={entries}
+          getDate={e => e.date}
+          getValue={e => e.celsius}
+          getLabel={e => `${e.celsius} °C`}
+          unit=""
+          color="#f97316"
+        />
 
         {entries.slice(0, 6).map(e => {
           const s = tempStatus(e.celsius);
