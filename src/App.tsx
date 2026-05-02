@@ -30,6 +30,7 @@ import DailyJournalPage from "./pages/DailyJournalPage";
 import HowToUsePage from "./pages/HowToUsePage";
 import HealthTipsPage from "./pages/HealthTipsPage";
 import MealTimetablePage from "./pages/MealTimetablePage";
+import MealPlansListPage from "./pages/MealPlansListPage";
 
 const queryClient = new QueryClient();
 
@@ -102,6 +103,7 @@ function RouteTransitionWrapper() {
         <Route path="/how-to-use" element={wrap(<HowToUsePage />)} />
         <Route path="/health-tips" element={wrap(<HealthTipsPage />)} />
         <Route path="/meal-timetable" element={wrap(<MealTimetablePage />)} />
+        <Route path="/meal-plans" element={wrap(<MealPlansListPage />)} />
         <Route path="*" element={wrap(<NotFound />)} />
       </Routes>
     </AnimatePresence>
