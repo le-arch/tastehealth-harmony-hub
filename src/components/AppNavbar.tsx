@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import LogoHealth from '@/components/LogoHealth';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
 import { getLS, LS_KEYS } from '@/utils/localStorage';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
