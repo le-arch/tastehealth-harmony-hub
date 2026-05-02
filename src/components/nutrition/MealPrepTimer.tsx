@@ -20,11 +20,13 @@ const QUOTES = [
   "Your body deserves the best fuel possible"
 ];
 
+const DEFAULT_MINUTES = 30;
+
 const MealPrepTimer: React.FC = () => {
-  const [minutes, setMinutes] = useState<number>(15);
+  const [minutes, setMinutes] = useState<number>(DEFAULT_MINUTES);
   const [seconds, setSeconds] = useState<number>(0);
   const [isActive, setIsActive] = useState<boolean>(false);
-  const [timeToSet, setTimeToSet] = useState<number>(15);
+  const [timeToSet, setTimeToSet] = useState<number>(DEFAULT_MINUTES);
   const [quote, setQuote] = useState<string>(QUOTES[0]);
   const [completed, setCompleted] = useState<boolean>(false);
   const { language } = useLanguage();
@@ -132,7 +134,7 @@ const MealPrepTimer: React.FC = () => {
               </div>
               <Slider
                 min={1}
-                max={60}
+                max={120}
                 step={1}
                 value={[timeToSet]}
                 onValueChange={handleSetTime}

@@ -7,6 +7,8 @@ import { Activity, Plus, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getLS, setLS, LS_KEYS, BloodPressureEntry } from '@/utils/localStorage';
 import { motion } from 'framer-motion';
+import { checkBloodPressure } from './VitalsAlerts';
+import { VitalsHistory } from './VitalsHistory';
 
 const categorize = (sys: number, dia: number) => {
   if (sys >= 180 || dia >= 120) return { label: 'Hypertensive crisis', color: 'text-red-700' };
@@ -37,6 +39,7 @@ const BloodPressureTracker: React.FC = () => {
     const entry: BloodPressureEntry = { id: crypto.randomUUID(), date: new Date().toISOString(), systolic: sys, diastolic: dia, pulse: p || undefined, source };
     save([entry, ...entries]);
     toast.success(`BP ${sys}/${dia} logged`);
+    checkBloodPressure(sys, dia, source);
   };
 
   const simulate = () => {
@@ -86,6 +89,17 @@ const BloodPressureTracker: React.FC = () => {
             <motion.div className="h-full bg-rose-500" initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 2.2 }} />
           </motion.div>
         )}
+
+        <VitalsHistory
+          title="History"
+          description="Filter by date range or search"
+          entries={entries}
+          getDate={e => e.date}
+          getValue={e => e.systolic}
+          getLabel={e => `${e.systolic}/${e.diastolic}${e.pulse ? ` · ♥${e.pulse}` : ''}`}
+          unit="mmHg"
+          color="#e11d48"
+        />
 
         {entries.slice(0, 6).map(e => {
           const cat = categorize(e.systolic, e.diastolic);

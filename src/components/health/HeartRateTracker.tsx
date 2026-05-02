@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import { getLS, setLS, LS_KEYS, HeartRateEntry } from '@/utils/localStorage';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { motion } from 'framer-motion';
+import { checkHeartRate } from './VitalsAlerts';
+import { VitalsHistory } from './VitalsHistory';
 
 const zoneFor = (bpm: number) => {
   if (bpm < 60) return { label: 'Resting (low)', color: 'text-blue-500' };
@@ -31,6 +33,7 @@ const HeartRateTracker: React.FC = () => {
     const entry: HeartRateEntry = { id: crypto.randomUUID(), date: new Date().toISOString(), bpm: v, source };
     save([entry, ...entries]);
     toast.success(`Heart rate ${v} bpm logged`);
+    checkHeartRate(v, source);
   };
 
   // Simulated PPG-style "scan" — in browsers we cannot read PPG/ECG, so we
@@ -124,6 +127,17 @@ const HeartRateTracker: React.FC = () => {
             </ResponsiveContainer>
           </div>
         )}
+
+        <VitalsHistory
+          title="History"
+          description="Filter by date range or search"
+          entries={entries}
+          getDate={e => e.date}
+          getValue={e => e.bpm}
+          getLabel={e => `${e.bpm} bpm`}
+          unit=""
+          color="#ef4444"
+        />
 
         {entries.slice(0, 5).map(e => (
           <div key={e.id} className="flex items-center justify-between p-2 border rounded">

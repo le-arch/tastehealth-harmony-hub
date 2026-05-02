@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import LogoHealth from '@/components/LogoHealth';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
 import { getLS, LS_KEYS } from '@/utils/localStorage';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,10 +22,13 @@ interface AppNavbarProps {
 
 const AppNavbar: React.FC<AppNavbarProps> = ({ onToggleSidebar }) => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [points, setPoints] = useState(getLS<number>(LS_KEYS.POINTS, 0));
   const [streak, setStreak] = useState(getLS<number>(LS_KEYS.STREAK, 0));
   const [profileImage, setProfileImage] = useState<string | null>(null);
-
+  const tt = language === 'fr'
+    ? { points: 'Points gagnés grâce aux quêtes, défis et habitudes saines', streak: 'Jours consécutifs avec un check-in — gardez votre série !' }
+    : { points: 'Points earned from quests, challenges & healthy habits', streak: 'Consecutive daily check-in days — keep your streak alive!' };
   const currentUser = JSON.parse(localStorage.getItem('th_current_user') || 'null');
   const displayName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : 'User';
 
@@ -51,16 +56,24 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ onToggleSidebar }) => {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Points Badge */}
-        <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2.5 py-1 rounded-full text-xs font-semibold">
-          <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
-          {points}
-        </div>
-        {/* Streak Badge */}
-        <div className="flex items-center gap-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2.5 py-1 rounded-full text-xs font-semibold">
-          <Flame className="h-3.5 w-3.5 text-orange-500" />
-          {streak}
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2.5 py-1 rounded-full text-xs font-semibold cursor-help">
+              <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
+              {points}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom"><p className="text-xs max-w-[220px]">{tt.points}</p></TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2.5 py-1 rounded-full text-xs font-semibold cursor-help">
+              <Flame className="h-3.5 w-3.5 text-orange-500" />
+              {streak}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom"><p className="text-xs max-w-[220px]">{tt.streak}</p></TooltipContent>
+        </Tooltip>
 
         <NotificationDropdown />
 
