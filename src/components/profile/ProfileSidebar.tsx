@@ -11,6 +11,7 @@ import {
   Sun, Moon, Gamepad, Bookmark, CalendarDays,
   Video, Stethoscope, BookOpen, ChevronRight
 } from "lucide-react";
+import LanguageToggle from "@/components/LanguageToggle"
 import Logo from "@/components/Logo";
 
 interface ProfileSidebarProps { 
@@ -224,17 +225,7 @@ export const ProfileSidebar = ({ activePage, isOpen = false, onClose }: ProfileS
 
             {/* Language Selector - Takes remaining space */}
             <div className="relative flex-1">
-              <select 
-                value={language} 
-                onChange={(e) => setLanguage(e.target.value)} 
-                className="w-full text-sm bg-muted/50 border border-border rounded-lg px-3 py-2 pr-8 focus:ring-2 focus:ring-primary appearance-none cursor-pointer hover:bg-muted/70 transition-colors"
-              >
-                <option value="en">🇬🇧 English</option>
-                <option value="fr">🇫🇷 Français</option>
-              </select>
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
-              </div>
+              <LanguageToggle />
             </div>
           </div>
 
