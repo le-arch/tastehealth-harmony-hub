@@ -6,16 +6,17 @@ import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { ChefHat, Clock, CheckCircle, Play, Pause, RotateCcw, Volume2, VolumeX } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import confetti from "canvas-confetti"
 import { playMilestoneSound } from "@/utils/sounds"
 import { isSoundEnabled as checkSoundEnabled } from "@/utils/sounds"
 
 const PREP_STEPS = [
-  { id: "gather", label: "Gather Ingredients", icon: "🥕", duration: 3 },
-  { id: "chop", label: "Chop Vegetables", icon: "🔪", duration: 5 },
-  { id: "cook", label: "Cook Protein", icon: "🍳", duration: 8 },
-  { id: "mix", label: "Mix Everything", icon: "🥄", duration: 3 },
-  { id: "plate", label: "Plate Your Meal", icon: "🍽️", duration: 2 },
+  { id: "gather", label: "Gather Ingredients", icon: "🥕", duration: 60 },
+  { id: "chop", label: "Chop Vegetables", icon: "🔪", duration: 180 },
+  { id: "cook", label: "Cook Protein", icon: "🍳", duration: 480 },
+  { id: "mix", label: "Mix Everything", icon: "🥄", duration: 120 },
+  { id: "plate", label: "Plate Your Meal", icon: "🍽️", duration: 60 },
 ]
 
 const CELEBRATION_MESSAGES = [
@@ -204,11 +205,18 @@ const MealPrepFeedback = () => {
               <div className="flex justify-between items-center pt-4">
                 <div className="flex space-x-1">
                   {PREP_STEPS.map((step, index) => (
-                    <motion.div key={step.id} className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                      completedSteps.includes(step.id) ? "bg-green-500 text-white" : index === currentStep ? "bg-primary text-primary-foreground" : "bg-muted"
-                    }`} whileHover={{ scale: 1.1 }}>
-                      {completedSteps.includes(step.id) ? <CheckCircle className="h-3 w-3" /> : index + 1}
-                    </motion.div>
+                    <Tooltip key={step.id}>
+                      <TooltipTrigger asChild>
+                        <motion.div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-help ${
+                          completedSteps.includes(step.id) ? "bg-green-500 text-white" : index === currentStep ? "bg-primary text-primary-foreground" : "bg-muted"
+                        }`} whileHover={{ scale: 1.1 }}>
+                          {completedSteps.includes(step.id) ? <CheckCircle className="h-3 w-3" /> : index + 1}
+                        </motion.div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs"><span className="mr-1">{step.icon}</span>{step.label} · {step.duration}s</p>
+                      </TooltipContent>
+                    </Tooltip>
                   ))}
                 </div>
                 <div className="flex space-x-2">
