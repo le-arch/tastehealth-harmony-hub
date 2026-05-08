@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, ChefHat, Heart, Calendar, ListChecks } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, ChefHat, Heart, Calendar } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MealSearch from "@/components/MealSearch";
 import Favorites from "./Favorites";
 import { useLanguage } from "@/contexts/LanguageContext";
 import PageLayout from "@/components/PageLayout";
-import { Link } from "react-router-dom";
 import { CreateMealPlanDialog } from "@/components/CreateMealPlanDialog";
 import { MealPlanList } from "@/components/MealPlanList";
 
@@ -15,8 +13,8 @@ const MealPlanningPage = () => {
   const { language } = useLanguage();
   const [refreshKey, setRefreshKey] = useState(0);
   const t = language === 'fr'
-    ? { title: "Planification des Repas", subtitle: "Recherchez des repas, gérez vos favoris et planifiez votre semaine", mealSearch: "Recherche", favorites: "Favoris", timetable: "Emploi du Temps", openPlans: "Voir mes plans" }
-    : { title: "Meal Planning", subtitle: "Search meals, manage favorites and plan your week", mealSearch: "Meal Search", favorites: "Favorites", timetable: "Meal Timetable", openPlans: "View my plans" };
+    ? { title: "Planification des Repas", subtitle: "Recherchez des repas, gérez vos favoris et planifiez votre semaine", mealSearch: "Recherche", favorites: "Favoris", timetable: "Emploi du Temps" }
+    : { title: "Meal Planning", subtitle: "Search meals, manage favorites and plan your week", mealSearch: "Meal Search", favorites: "Favorites", timetable: "Meal Timetable" };
 
   return (
     <PageLayout activePage="meal planning">
