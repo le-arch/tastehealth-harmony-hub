@@ -43,21 +43,15 @@ export const NutritionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const saveNutritionGoal = async (goal: NutritionGoal) => {
     setNutritionGoal(goal);
     setLS('th_nutrition_goal', goal);
-    // Also save as a goal entry in saved_goals
-    const savedGoals = getLS<any[]>('th_saved_goals', []);
-    const getWeekLabel = (d: Date) => {
-      const start = new Date(d); start.setDate(d.getDate() - d.getDay());
-      return `Week of ${start.toLocaleDateString()}`;
-    };
-    const goalEntry = {
-      id: crypto.randomUUID(),
-      text: `Nutrition Goal: ${goal.dailyCalories} kcal/day (P:${goal.proteinPercentage}% C:${goal.carbsPercentage}% F:${goal.fatsPercentage}%)`,
-      week: getWeekLabel(new Date()),
-      date: new Date().toISOString(),
-      completed: false,
-    };
-    savedGoals.unshift(goalEntry);
-    setLS('th_saved_goals', savedGoals);
+    // Mirror calorie target into nutrition_prefs so Settings + recommendations stay in sync
+    try {
+      const prefs = getLS<any>('th_nutrition_prefs', { dietType: 'balanced', allergies: '', calorieGoal: '2000', proteinGoal: '50', carbsGoal: '250', fatsGoal: '65', mealFrequency: '3' });
+      const calG = Math.round((goal.dailyCalories * goal.carbsPercentage) / 400);
+      const proG = Math.round((goal.dailyCalories * goal.proteinPercentage) / 400);
+      const fatG = Math.round((goal.dailyCalories * goal.fatsPercentage) / 900);
+      setLS('th_nutrition_prefs', { ...prefs, calorieGoal: String(goal.dailyCalories), proteinGoal: String(proG), carbsGoal: String(calG), fatsGoal: String(fatG) });
+      window.dispatchEvent(new Event('nutrition-prefs-updated'));
+    } catch {}
   };
 
   const createMeal = async (meal: Omit<Meal, 'id'>) => {
