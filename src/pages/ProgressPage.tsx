@@ -493,93 +493,128 @@ const ProgressPage = () => {
           </TabsContent>
 
           <TabsContent value="goals" className="space-y-4 mt-4">
-            <Card className="border-primary/20">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-red-500" />
-                  {t.goals}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex gap-2">
-                  <input 
-                    value={goalText} 
-                    onChange={e => setGoalText(e.target.value)} 
-                    placeholder="Add a new goal..." 
-                    className="flex-1 px-3 py-2 border border-input rounded-md text-sm bg-background focus:ring-2 focus:ring-primary/20 outline-none" 
-                    onKeyDown={e => e.key === 'Enter' && saveGoal()} 
-                  />
-                  <Button onClick={saveGoal} size="sm" className="bg-gradient-to-r from-primary to-primary/80">
-                    <Target className="h-4 w-4 mr-1" />
-                    Add
-                  </Button>
-                </div>
-                {Object.keys(goalsByWeek).length === 0 ? (
-                  <motion.div 
-                    initial={{ opacity: 0 }} 
-                    animate={{ opacity: 1 }} 
-                    className="text-center py-8"
-                  >
-                    <motion.div 
-                      animate={{ 
-                        y: [0, -10, 0],
-                        rotate: [0, 5, -5, 0]
-                      }} 
-                      transition={{ duration: 4, repeat: Infinity }}
-                    >
-                      <Target className="h-16 w-16 mx-auto text-primary/30" />
-                    </motion.div>
-                    <p className="text-muted-foreground text-sm mt-4">No goals saved yet. Start by adding one above!</p>
-                  </motion.div>
-                ) : (
-                  Object.entries(goalsByWeek).map(([week, goals]) => (
-                    <motion.div 
-                      key={week} 
-                      initial={{ opacity: 0, y: 10 }} 
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <h4 className="font-semibold text-sm text-muted-foreground mb-2 flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-primary" />
-                        {week}
-                      </h4>
-                      <div className="space-y-2">
-                        {goals.map((g, index) => (
-                          <motion.div 
-                            key={g.id} 
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05 }}
-                            whileHover={{ scale: 1.01, x: 2 }} 
-                            className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
-                              g.completed 
-                                ? 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800/30' 
-                                : 'bg-muted/50 hover:bg-muted'
-                            }`}
-                          >
-                            <input 
-                              type="checkbox" 
-                              checked={g.completed} 
-                              onChange={() => toggleGoal(g.id)} 
-                              className="h-4 w-4 rounded accent-primary cursor-pointer" 
-                            />
-                            <span className={`flex-1 text-sm ${g.completed ? 'line-through text-muted-foreground' : ''}`}>
-                              {g.text}
-                            </span>
-                            <button 
-                              onClick={() => deleteGoal(g.id)} 
-                              className="text-destructive hover:text-destructive/80 text-xs px-2 py-1 rounded hover:bg-destructive/10 transition-colors"
-                            >
-                              ✕
-                            </button>
-                          </motion.div>
-                        ))}
+            {(() => {
+              const total = savedGoals.length;
+              const done = savedGoals.filter(g => g.completed).length;
+              const pct = total ? Math.round((done / total) * 100) : 0;
+              const iconFor = (text: string) => {
+                const t = text.toLowerCase();
+                if (t.includes('calorie')) return <Flame className="h-4 w-4 text-orange-500" />;
+                if (t.startsWith('protein')) return <Dumbbell className="h-4 w-4 text-rose-500" />;
+                if (t.startsWith('carbs')) return <Leaf className="h-4 w-4 text-emerald-500" />;
+                if (t.startsWith('fats')) return <Droplet className="h-4 w-4 text-amber-500" />;
+                if (t.includes('water') || t.startsWith('drink')) return <Droplet className="h-4 w-4 text-blue-500" />;
+                if (t.startsWith('sleep')) return <Moon className="h-4 w-4 text-indigo-500" />;
+                if (t.startsWith('walk') || t.includes('step')) return <Footprints className="h-4 w-4 text-cyan-500" />;
+                if (t.startsWith('workout')) return <Activity className="h-4 w-4 text-green-500" />;
+                if (t.startsWith('meditate')) return <Sparkles className="h-4 w-4 text-purple-500" />;
+                if (t.includes('weight') || t.includes('body fat')) return <Scale className="h-4 w-4 text-fuchsia-500" />;
+                return <Target className="h-4 w-4 text-primary" />;
+              };
+              return (
+                <>
+                  <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 via-background to-emerald-500/5">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <CardTitle className="flex items-center gap-2">
+                          <motion.span animate={{ rotate: [0, 8, -8, 0] }} transition={{ duration: 4, repeat: Infinity }}>
+                            <Target className="h-5 w-5 text-rose-500" />
+                          </motion.span>
+                          {t.goals}
+                        </CardTitle>
+                        <Badge variant="secondary" className="text-xs">{done}/{total} done</Badge>
                       </div>
-                    </motion.div>
-                  ))
-                )}
-              </CardContent>
-            </Card>
+                      {total > 0 && (
+                        <div className="mt-2">
+                          <div className="h-2 rounded-full bg-muted overflow-hidden">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${pct}%` }}
+                              transition={{ duration: 0.6 }}
+                              className="h-full bg-gradient-to-r from-emerald-500 via-primary to-violet-500"
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">{pct}% of weekly goals complete</p>
+                        </div>
+                      )}
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex gap-2">
+                        <input
+                          value={goalText}
+                          onChange={e => setGoalText(e.target.value)}
+                          placeholder="Add a new goal..."
+                          className="flex-1 px-3 py-2 border border-input rounded-md text-sm bg-background focus:ring-2 focus:ring-primary/20 outline-none"
+                          onKeyDown={e => e.key === 'Enter' && saveGoal()}
+                        />
+                        <Button onClick={saveGoal} size="sm" className="bg-gradient-to-r from-primary to-emerald-500">
+                          <Target className="h-4 w-4 mr-1" />Add
+                        </Button>
+                      </div>
+                      {Object.keys(goalsByWeek).length === 0 ? (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-10">
+                          <motion.div animate={{ y: [0, -10, 0], rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity }}>
+                            <Target className="h-16 w-16 mx-auto text-primary/30" />
+                          </motion.div>
+                          <p className="text-muted-foreground text-sm mt-4">No goals saved yet — add one or run the Goal Wizard!</p>
+                        </motion.div>
+                      ) : (
+                        Object.entries(goalsByWeek).map(([week, goals]) => {
+                          const wDone = goals.filter(g => g.completed).length;
+                          return (
+                            <motion.div key={week} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2">
+                                  <span className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-emerald-500" />
+                                  {week}
+                                </h4>
+                                <span className="text-[11px] text-muted-foreground">{wDone}/{goals.length}</span>
+                              </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                {goals.map((g, index) => (
+                                  <motion.div
+                                    key={g.id}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.03 }}
+                                    whileHover={{ scale: 1.01, y: -1 }}
+                                    className={`group relative flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                                      g.completed
+                                        ? 'bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/30 border-emerald-200/60 dark:border-emerald-800/40'
+                                        : 'bg-gradient-to-br from-card to-muted/30 border-border hover:border-primary/40'
+                                    }`}
+                                  >
+                                    <div className={`shrink-0 h-8 w-8 rounded-lg flex items-center justify-center ${g.completed ? 'bg-emerald-500/15' : 'bg-primary/10'}`}>
+                                      {iconFor(g.text)}
+                                    </div>
+                                    <input
+                                      type="checkbox"
+                                      checked={g.completed}
+                                      onChange={() => toggleGoal(g.id)}
+                                      className="h-4 w-4 rounded accent-primary cursor-pointer"
+                                    />
+                                    <span className={`flex-1 text-sm leading-snug ${g.completed ? 'line-through text-muted-foreground' : ''}`}>
+                                      {g.text}
+                                    </span>
+                                    <button
+                                      onClick={() => deleteGoal(g.id)}
+                                      className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 text-xs px-2 py-1 rounded hover:bg-destructive/10 transition"
+                                      aria-label="Delete goal"
+                                    >
+                                      ✕
+                                    </button>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          );
+                        })
+                      )}
+                    </CardContent>
+                  </Card>
+                </>
+              );
+            })()}
           </TabsContent>
 
           <TabsContent value="history" className="mt-4">
