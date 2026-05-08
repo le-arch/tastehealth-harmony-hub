@@ -43,10 +43,7 @@ const MealPlanningPage = () => {
             </TabsContent>
 
             <TabsContent value="timetable" className="space-y-4">
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <Link to="/meal-plans">
-                  <Button variant="outline" className="gap-2"><ListChecks className="h-4 w-4" />{t.openPlans}</Button>
-                </Link>
+              <div className="flex items-center justify-end gap-2 flex-wrap">
                 <CreateMealPlanDialog onMealPlanCreated={() => setRefreshKey(k => k + 1)} />
               </div>
               <MealPlanList key={refreshKey} />
