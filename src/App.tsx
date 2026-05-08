@@ -30,7 +30,6 @@ import DailyJournalPage from "./pages/DailyJournalPage";
 import HowToUsePage from "./pages/HowToUsePage";
 import HealthTipsPage from "./pages/HealthTipsPage";
 import MealTimetablePage from "./pages/MealTimetablePage";
-import MealPlansListPage from "./pages/MealPlansListPage";
 
 const queryClient = new QueryClient();
 
