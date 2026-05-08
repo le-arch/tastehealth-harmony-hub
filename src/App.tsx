@@ -102,7 +102,6 @@ function RouteTransitionWrapper() {
         <Route path="/how-to-use" element={wrap(<HowToUsePage />)} />
         <Route path="/health-tips" element={wrap(<HealthTipsPage />)} />
         <Route path="/meal-timetable" element={wrap(<MealTimetablePage />)} />
-        <Route path="/meal-plans" element={wrap(<MealPlansListPage />)} />
         <Route path="*" element={wrap(<NotFound />)} />
       </Routes>
     </AnimatePresence>
