@@ -384,17 +384,24 @@ const ExerciseTracker: React.FC = () => {
             {sessions.length > 0 && (
               <div className="space-y-1 pt-2 border-t">
                 <p className="text-xs font-semibold text-muted-foreground">Recent live sessions</p>
-                {sessions.slice(0, 4).map(s => (
-                  <div key={s.id} className="flex items-center justify-between text-xs p-2 border rounded">
-                    <div>
-                      <span className="font-medium">{s.type}</span>
-                      <span className="text-muted-foreground ml-2">{s.duration} min</span>
-                      {s.distance_m !== undefined && <span className="text-muted-foreground ml-2">{(s.distance_m / 1000).toFixed(2)} km</span>}
-                      {s.steps && <span className="text-muted-foreground ml-2">· {s.steps} steps</span>}
+                {sessions.slice(0, 4).map(s => {
+                  const km = (s.distance_m || 0) / 1000;
+                  const paceSec = km > 0.02 ? Math.round((s.duration * 60) / km) : 0;
+                  const pace = paceSec > 0 ? `${Math.floor(paceSec / 60)}:${String(paceSec % 60).padStart(2, '0')}/km` : '';
+                  return (
+                    <div key={s.id} className="flex items-center justify-between text-xs p-2 border rounded">
+                      <div className="flex flex-wrap items-center gap-x-2">
+                        <span className="font-medium">{s.type}</span>
+                        <span className="text-muted-foreground">{s.duration} min</span>
+                        {s.distance_m !== undefined && <span className="text-muted-foreground">· {km.toFixed(2)} km</span>}
+                        {pace && <span className="text-muted-foreground">· {pace}</span>}
+                        {s.avg_speed_kmh !== undefined && s.avg_speed_kmh > 0 && <span className="text-muted-foreground">· {s.avg_speed_kmh} km/h</span>}
+                        {s.steps && <span className="text-muted-foreground">· {s.steps} steps</span>}
+                      </div>
+                      <span className="text-muted-foreground">{new Date(s.date).toLocaleDateString()}</span>
                     </div>
-                    <span className="text-muted-foreground">{new Date(s.date).toLocaleDateString()}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </TabsContent>
