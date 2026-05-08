@@ -338,98 +338,106 @@ const GoalWizard = () => {
   };
 
   const handleSubmit = async () => {
-    // Save nutrition goals
-    await saveNutritionGoal({
-      dailyCalories: formData.dailyCalories,
-      proteinPercentage: formData.proteinPercentage,
-      carbsPercentage: formData.carbsPercentage,
-      fatsPercentage: formData.fatsPercentage,
-    });
-
-    // Comprehensive goal saving
-    const goalTexts = [
-      // Nutrition Goals
-      `Daily calorie target: ${formData.dailyCalories} kcal`,
-      `Protein: ${formData.proteinPercentage}% (${Math.round(formData.dailyCalories * formData.proteinPercentage / 400)}g)`,
-      `Carbs: ${formData.carbsPercentage}% (${Math.round(formData.dailyCalories * formData.carbsPercentage / 400)}g)`,
-      `Fats: ${formData.fatsPercentage}% (${Math.round(formData.dailyCalories * formData.fatsPercentage / 900)}g)`,
-      
-      // Wellness Goals
-      `Drink ${formData.waterIntakeGoal}L water daily`,
-      `Sleep ${formData.sleepHoursGoal} hours per night`,
-      `Walk ${formData.stepsGoal.toLocaleString()} steps daily`,
-      `Workout ${formData.workoutDaysGoal} days per week`,
-      `Meditate ${formData.meditationMinutesGoal} minutes daily`,
-      `Meal prep ${formData.mealPrepDaysGoal} days per week`,
-      `Screen time limit: ${formData.screenTimeLimit} hours/day`,
-      
-      // Health Metrics (if set)
-      ...(formData.targetWeight ? [`Target weight: ${formData.targetWeight} kg`] : []),
-      ...(formData.targetBodyFat ? [`Target body fat: ${formData.targetBodyFat}%`] : []),
-      
-      // Timeline
-      `Goal timeline: ${formData.timeline}`,
-      `Primary goal: ${formData.goal === 'lose' ? 'Lose weight' : formData.goal === 'gain' ? 'Gain weight' : 'Maintain weight'}`,
-      `Activity level: ${formData.activityLevel}`,
-      ...(formData.includeRecoveryDays ? ["Include recovery days"] : []),
-      ...(formData.includeCheatMeals ? ["Allow planned cheat meals"] : []),
-    ];
-
-    const getWeekLabel = (d: Date) => {
-      const start = new Date(d);
-      start.setDate(d.getDate() - d.getDay());
-      return `Week of ${start.toLocaleDateString()}`;
-    };
+    // Validate macro split
+    const macroSum = formData.proteinPercentage + formData.carbsPercentage + formData.fatsPercentage;
+    if (Math.abs(macroSum - 100) > 1) {
+      toast.error("Macros must add up to 100%", { description: `Current total: ${macroSum}%` });
+      setCurrentStep(3);
+      return;
+    }
+    if (!formData.dailyCalories || formData.dailyCalories < 800) {
+      toast.error("Calorie target looks too low", { description: "Set at least 800 kcal/day before saving." });
+      setCurrentStep(2);
+      return;
+    }
 
     try {
+      // Save nutrition goals (also mirrors into nutrition_prefs via context)
+      await saveNutritionGoal({
+        dailyCalories: formData.dailyCalories,
+        proteinPercentage: formData.proteinPercentage,
+        carbsPercentage: formData.carbsPercentage,
+        fatsPercentage: formData.fatsPercentage,
+      });
+
+      // Mirror profile-relevant data back to profile so recommendations stay in sync
+      try {
+        const profile = JSON.parse(localStorage.getItem('th_profile') || '{}');
+        const updatedProfile = {
+          ...profile,
+          age: String(formData.age),
+          height: String(formData.height),
+          weight: String(formData.weight),
+          gender: formData.gender,
+          activityLevel: formData.activityLevel,
+          calorieGoal: String(formData.dailyCalories),
+        };
+        localStorage.setItem('th_profile', JSON.stringify(updatedProfile));
+      } catch {}
+
+      // Comprehensive goal saving
+      const goalTexts = [
+        `Daily calorie target: ${formData.dailyCalories} kcal`,
+        `Protein: ${formData.proteinPercentage}% (${Math.round(formData.dailyCalories * formData.proteinPercentage / 400)}g)`,
+        `Carbs: ${formData.carbsPercentage}% (${Math.round(formData.dailyCalories * formData.carbsPercentage / 400)}g)`,
+        `Fats: ${formData.fatsPercentage}% (${Math.round(formData.dailyCalories * formData.fatsPercentage / 900)}g)`,
+        `Drink ${formData.waterIntakeGoal}L water daily`,
+        `Sleep ${formData.sleepHoursGoal} hours per night`,
+        `Walk ${formData.stepsGoal.toLocaleString()} steps daily`,
+        `Workout ${formData.workoutDaysGoal} days per week`,
+        `Meditate ${formData.meditationMinutesGoal} minutes daily`,
+        `Meal prep ${formData.mealPrepDaysGoal} days per week`,
+        `Screen time limit: ${formData.screenTimeLimit} hours/day`,
+        ...(formData.targetWeight ? [`Target weight: ${formData.targetWeight} kg`] : []),
+        ...(formData.targetBodyFat ? [`Target body fat: ${formData.targetBodyFat}%`] : []),
+        `Goal timeline: ${formData.timeline}`,
+        `Primary goal: ${formData.goal === 'lose' ? 'Lose weight' : formData.goal === 'gain' ? 'Gain weight' : 'Maintain weight'}`,
+        `Activity level: ${formData.activityLevel}`,
+        ...(formData.includeRecoveryDays ? ["Include recovery days"] : []),
+        ...(formData.includeCheatMeals ? ["Allow planned cheat meals"] : []),
+      ];
+
+      const getWeekLabel = (d: Date) => {
+        const start = new Date(d);
+        start.setDate(d.getDate() - d.getDay());
+        return `Week of ${start.toLocaleDateString()}`;
+      };
+
       const existing = JSON.parse(localStorage.getItem('th_saved_goals') || '[]');
-      // Remove old wizard goals
-      const filtered = existing.filter((g: any) => 
-        !g.text.startsWith('Daily calorie target') && 
-        !g.text.startsWith('Protein:') && 
-        !g.text.startsWith('Carbs:') && 
-        !g.text.startsWith('Fats:') &&
-        !g.text.startsWith('Drink') &&
-        !g.text.startsWith('Sleep') &&
-        !g.text.startsWith('Walk') &&
-        !g.text.startsWith('Workout') &&
-        !g.text.startsWith('Meditate')
-      );
-      
+      // Remove old wizard-generated goals to prevent duplicates
+      const wizardPrefixes = ['Daily calorie target', 'Protein:', 'Carbs:', 'Fats:', 'Drink ', 'Sleep ', 'Walk ', 'Workout ', 'Meditate ', 'Meal prep ', 'Screen time limit', 'Target weight', 'Target body fat', 'Goal timeline', 'Primary goal', 'Activity level', 'Include recovery days', 'Allow planned cheat meals', 'Nutrition Goal:'];
+      const filtered = existing.filter((g: any) => !wizardPrefixes.some(p => (g.text || '').startsWith(p)));
+
       const newGoals = goalTexts.map(text => ({
         id: crypto.randomUUID(),
         text,
         week: getWeekLabel(new Date()),
         date: new Date().toISOString(),
         completed: false,
-        category: text.includes('calorie') || text.includes('Protein') || text.includes('Carbs') || text.includes('Fats') 
-          ? 'nutrition' 
-          : text.includes('water') || text.includes('Sleep') || text.includes('Walk') || text.includes('Workout')
-          ? 'wellness'
-          : 'general'
+        category:
+          text.includes('calorie') || text.startsWith('Protein') || text.startsWith('Carbs') || text.startsWith('Fats')
+            ? 'nutrition'
+            : text.includes('water') || text.startsWith('Sleep') || text.startsWith('Walk') || text.startsWith('Workout') || text.startsWith('Meditate')
+            ? 'wellness'
+            : 'general',
       }));
-      
+
       const updated = [...newGoals, ...filtered];
       localStorage.setItem('th_saved_goals', JSON.stringify(updated));
-      
-      // Save goal wizard completion
       localStorage.setItem('th_goal_wizard_completed', new Date().toISOString());
       localStorage.setItem('th_goal_wizard_data', JSON.stringify(formData));
-      
       window.dispatchEvent(new Event('goals-updated'));
+
+      setShowConfetti(true);
+      toast.success("All goals saved successfully!", { description: "View and track your progress in the Goals tab." });
+      setTimeout(() => {
+        setShowConfetti(false);
+        navigate('/progress');
+      }, 2500);
     } catch (e) {
       console.error('Error saving goals', e);
+      toast.error('Could not save goals', { description: 'Please try again.' });
     }
-
-    setShowConfetti(true);
-    toast.success("All goals saved successfully!", {
-      description: "View and track your progress in the Goals tab."
-    });
-    
-    setTimeout(() => {
-      setShowConfetti(false);
-      navigate('/progress');
-    }, 3500);
   };
 
   const handleNext = () => {

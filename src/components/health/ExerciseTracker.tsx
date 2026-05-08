@@ -311,20 +311,42 @@ const ExerciseTracker: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-lg bg-muted/50 p-3">
-                <p className="text-xs text-muted-foreground">Time</p>
-                <p className="text-xl font-bold font-mono">{fmtTime(elapsed)}</p>
-              </div>
-              <div className="rounded-lg bg-muted/50 p-3">
-                <p className="text-xs text-muted-foreground flex items-center justify-center gap-1"><MapPin className="h-3 w-3" />Distance</p>
-                <p className="text-xl font-bold">{(distance / 1000).toFixed(2)} <span className="text-xs">km</span></p>
-              </div>
-              <div className="rounded-lg bg-muted/50 p-3">
-                <p className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Footprints className="h-3 w-3" />Steps</p>
-                <p className="text-xl font-bold">{steps}</p>
-              </div>
-            </div>
+            {(() => {
+              const distKm = distance / 1000;
+              const speedKmh = elapsed > 0 ? (distKm / (elapsed / 3600)) : 0;
+              const paceSecPerKm = distKm > 0.02 ? Math.round(elapsed / distKm) : 0;
+              const paceLabel = paceSecPerKm > 0 ? `${Math.floor(paceSecPerKm / 60)}:${String(paceSecPerKm % 60).padStart(2, '0')}` : '—';
+              return (
+                <>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-lg bg-muted/50 p-3">
+                      <p className="text-xs text-muted-foreground">Time</p>
+                      <p className="text-xl font-bold font-mono">{fmtTime(elapsed)}</p>
+                    </div>
+                    <div className="rounded-lg bg-muted/50 p-3">
+                      <p className="text-xs text-muted-foreground flex items-center justify-center gap-1"><MapPin className="h-3 w-3" />Distance</p>
+                      <p className="text-xl font-bold">{distKm.toFixed(2)} <span className="text-xs">km</span></p>
+                    </div>
+                    <div className="rounded-lg bg-muted/50 p-3">
+                      <p className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Footprints className="h-3 w-3" />Steps</p>
+                      <p className="text-xl font-bold">{steps}</p>
+                    </div>
+                  </div>
+                  {tracking && (
+                    <div className="grid grid-cols-2 gap-2 text-center">
+                      <div className="rounded-lg border bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/30 p-3">
+                        <p className="text-xs text-muted-foreground">Pace</p>
+                        <p className="text-lg font-bold">{paceLabel} <span className="text-xs font-normal">min/km</span></p>
+                      </div>
+                      <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/40 dark:to-cyan-950/30 p-3">
+                        <p className="text-xs text-muted-foreground">Avg speed</p>
+                        <p className="text-lg font-bold">{speedKmh.toFixed(1)} <span className="text-xs font-normal">km/h</span></p>
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
 
             {tracking && (
               <div className="flex items-center justify-between text-xs p-2 rounded border bg-muted/30">
@@ -362,17 +384,24 @@ const ExerciseTracker: React.FC = () => {
             {sessions.length > 0 && (
               <div className="space-y-1 pt-2 border-t">
                 <p className="text-xs font-semibold text-muted-foreground">Recent live sessions</p>
-                {sessions.slice(0, 4).map(s => (
-                  <div key={s.id} className="flex items-center justify-between text-xs p-2 border rounded">
-                    <div>
-                      <span className="font-medium">{s.type}</span>
-                      <span className="text-muted-foreground ml-2">{s.duration} min</span>
-                      {s.distance_m !== undefined && <span className="text-muted-foreground ml-2">{(s.distance_m / 1000).toFixed(2)} km</span>}
-                      {s.steps && <span className="text-muted-foreground ml-2">· {s.steps} steps</span>}
+                {sessions.slice(0, 4).map(s => {
+                  const km = (s.distance_m || 0) / 1000;
+                  const paceSec = km > 0.02 ? Math.round((s.duration * 60) / km) : 0;
+                  const pace = paceSec > 0 ? `${Math.floor(paceSec / 60)}:${String(paceSec % 60).padStart(2, '0')}/km` : '';
+                  return (
+                    <div key={s.id} className="flex items-center justify-between text-xs p-2 border rounded">
+                      <div className="flex flex-wrap items-center gap-x-2">
+                        <span className="font-medium">{s.type}</span>
+                        <span className="text-muted-foreground">{s.duration} min</span>
+                        {s.distance_m !== undefined && <span className="text-muted-foreground">· {km.toFixed(2)} km</span>}
+                        {pace && <span className="text-muted-foreground">· {pace}</span>}
+                        {s.avg_speed_kmh !== undefined && s.avg_speed_kmh > 0 && <span className="text-muted-foreground">· {s.avg_speed_kmh} km/h</span>}
+                        {s.steps && <span className="text-muted-foreground">· {s.steps} steps</span>}
+                      </div>
+                      <span className="text-muted-foreground">{new Date(s.date).toLocaleDateString()}</span>
                     </div>
-                    <span className="text-muted-foreground">{new Date(s.date).toLocaleDateString()}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </TabsContent>

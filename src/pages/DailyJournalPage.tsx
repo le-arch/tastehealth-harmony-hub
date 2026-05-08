@@ -457,8 +457,11 @@ const DailyJournalPage = () => {
                                 <div className="flex items-center gap-2"><span className="text-xl">{moodOptions.find(m => m.value === entry.mood)?.emoji}</span><h3 className="font-semibold">{entry.title}</h3></div>
                                 <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); deleteEntry(entry.id); }} className="text-destructive hover:bg-destructive/10"><Trash2 className="h-3 w-3" /></Button>
                               </div>
-                              <p className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(entry.date).toLocaleDateString()}</p>
-                              <div className="text-sm text-muted-foreground line-clamp-2 mt-1">{renderMarkdownPreview(entry.content)}</div>
+                              <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2"><Calendar className="h-3 w-3" />{new Date(entry.date).toLocaleDateString()}</p>
+                              <div className="rounded-md border bg-muted/30 p-3 max-h-64 overflow-hidden relative">
+                                <div className="space-y-1 prose-sm">{renderMarkdownPreview(entry.content)}</div>
+                                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-muted/60 to-transparent" />
+                              </div>
                             </CardContent>
                           </Card>
                         </motion.div>

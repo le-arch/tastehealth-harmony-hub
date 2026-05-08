@@ -40,7 +40,27 @@ const SettingsPage: React.FC = () => {
   const [feedbackHistory, setFeedbackHistory] = useState<FeedbackItem[]>(getLS('th_feedback', []));
 
   useEffect(() => { setLS(LS_KEYS.SETTINGS, { notifications, emailNotifications, useMetric }); }, [notifications, emailNotifications, useMetric]);
-  const saveNutritionPrefs = () => { setLS('th_nutrition_prefs', nutritionPrefs); toast.success("Nutrition preferences saved!"); };
+  const saveNutritionPrefs = () => {
+    setLS('th_nutrition_prefs', nutritionPrefs);
+    // Sync calorie/macros into the nutrition goal context so recommendations + dashboards update
+    try {
+      const cal = parseInt(nutritionPrefs.calorieGoal) || 2000;
+      const p = parseInt(nutritionPrefs.proteinGoal) || 0;
+      const c = parseInt(nutritionPrefs.carbsGoal) || 0;
+      const f = parseInt(nutritionPrefs.fatsGoal) || 0;
+      const totalKcal = p * 4 + c * 4 + f * 9;
+      const goal = totalKcal > 0
+        ? { dailyCalories: cal, proteinPercentage: Math.round((p * 4 / totalKcal) * 100), carbsPercentage: Math.round((c * 4 / totalKcal) * 100), fatsPercentage: Math.round((f * 9 / totalKcal) * 100) }
+        : { dailyCalories: cal, proteinPercentage: 30, carbsPercentage: 40, fatsPercentage: 30 };
+      // Normalize macro % to 100
+      const sum = goal.proteinPercentage + goal.carbsPercentage + goal.fatsPercentage;
+      if (sum !== 100) goal.carbsPercentage += 100 - sum;
+      setLS('th_nutrition_goal', goal);
+      window.dispatchEvent(new Event('nutrition-prefs-updated'));
+      window.dispatchEvent(new Event('goals-updated'));
+    } catch {}
+    toast.success("Nutrition preferences saved!", { description: "Recommendations will now use these targets." });
+  };
   const submitFeedback = () => {
     if (!feedbackMessage.trim()) { toast.error("Please enter your feedback"); return; }
     const item: FeedbackItem = { id: crypto.randomUUID(), date: new Date().toISOString(), rating: feedbackRating, category: feedbackCategory, message: feedbackMessage };
