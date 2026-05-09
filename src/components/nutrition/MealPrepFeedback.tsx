@@ -111,13 +111,17 @@ const MealPrepFeedback = () => {
   const [celebrationMessage, setCelebrationMessage] = useState("")
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const confettiCanvasRef = useRef<HTMLCanvasElement>(null)
-  const { language } = useLanguage()
-
-  const translations = {
-    en: { title: "Meal Prep Assistant", startPrep: "Start Meal Prep", nextStep: "Next Step", resetPrep: "Start Over", soundOn: "Sound On", soundOff: "Sound Off", prepComplete: "Preparation Complete!", continue: "Continue", seconds: "seconds" },
-    fr: { title: "Assistant de Préparation", startPrep: "Commencer", nextStep: "Étape Suivante", resetPrep: "Recommencer", soundOn: "Son Activé", soundOff: "Son Désactivé", prepComplete: "Préparation Terminée!", continue: "Continuer", seconds: "secondes" },
+  const t = {
+    title: useT("Meal Prep Assistant"),
+    startPrep: useT("Start Meal Prep"),
+    nextStep: useT("Next Step"),
+    resetPrep: useT("Start Over"),
+    soundOn: useT("Sound On"),
+    soundOff: useT("Sound Off"),
+    prepComplete: useT("Preparation Complete!"),
+    continue: useT("Continue"),
+    seconds: useT("seconds"),
   }
-  const t = translations[language as keyof typeof translations] || translations.en
 
   useEffect(() => {
     return () => { if (timerRef.current) clearInterval(timerRef.current); }
