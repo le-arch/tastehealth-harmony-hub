@@ -1,21 +1,16 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { translations } from '@/lib/translations';
+import { T } from '@/components/T';
 
 export const AccountTab: React.FC = () => {
-  const { language } = useLanguage();
-  const t = translations[language as keyof typeof translations] || translations.en;
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Account Settings</CardTitle>
-        <CardDescription>Manage your account settings</CardDescription>
+        <CardTitle><T>Account Settings</T></CardTitle>
+        <CardDescription><T>Manage your account settings</T></CardDescription>
       </CardHeader>
       <CardContent>
-        <p>Account settings coming soon</p>
+        <p><T>Account settings coming soon</T></p>
       </CardContent>
     </Card>
   );

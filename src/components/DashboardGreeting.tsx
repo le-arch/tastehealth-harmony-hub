@@ -5,6 +5,7 @@ import { getLS, LS_KEYS, MoodEntry, MealPlan, CalorieEntry } from '@/utils/local
 import wavingLady from '@/assets/waving-lady.png';
 import { Card } from '@/components/ui/card';
 import WeatherWidget from '@/components/WeatherWidget';
+import HelpTooltip from '@/components/HelpTooltip';
 
 const DashboardGreeting: React.FC = () => {
   const currentUser = JSON.parse(localStorage.getItem('th_current_user') || 'null');
@@ -64,11 +65,13 @@ const DashboardGreeting: React.FC = () => {
               <Flame className="h-5 w-5 text-orange-600 fill-yellow-600" />
               <span className="text-xl font-bold">{streak}</span>
               <span className="text-xs opacity-80 hidden sm:block">Day Streak</span>
+              <HelpTooltip text="Your daily check-in streak. Log a meal or check in every day to keep it growing." className="text-primary-foreground/80 hover:text-white" />
             </div>
             <div className="flex items-center gap-1.5 text-center">
               <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
               <span className="text-xl font-bold">{points}</span>
               <span className="text-xs opacity-80 hidden sm:block">Points</span>
+              <HelpTooltip text="XP earned from quests, quizzes, challenges and meal logging. Powers your level progression." className="text-primary-foreground/80 hover:text-white" />
             </div>
             {lastMoodEmoji && (
               <div className="flex items-center gap-1.5 text-center">

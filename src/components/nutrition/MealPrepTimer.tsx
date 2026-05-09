@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { Timer, Play, Pause, RotateCcw, Clock, CheckCircle } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useT } from '@/hooks/useTranslate';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -29,34 +29,20 @@ const MealPrepTimer: React.FC = () => {
   const [timeToSet, setTimeToSet] = useState<number>(DEFAULT_MINUTES);
   const [quote, setQuote] = useState<string>(QUOTES[0]);
   const [completed, setCompleted] = useState<boolean>(false);
-  const { language } = useLanguage();
 
   const totalSeconds = minutes * 60 + seconds;
   const initialTotalSeconds = timeToSet * 60;
   const progress = (totalSeconds / initialTotalSeconds) * 100;
 
-  const translations = {
-    en: {
-      title: "Meal Prep Timer",
-      minutesLabel: "Minutes",
-      startTimer: "Start Timer",
-      pauseTimer: "Pause",
-      resetTimer: "Reset",
-      completed: "Completed!",
-      startNew: "Start New Timer"
-    },
-    fr: {
-      title: "Minuteur de Préparation de Repas",
-      minutesLabel: "Minutes",
-      startTimer: "Démarrer",
-      pauseTimer: "Pause",
-      resetTimer: "Réinitialiser",
-      completed: "Terminé !",
-      startNew: "Nouveau Minuteur"
-    }
+  const t = {
+    title: useT("Meal Prep Timer"),
+    minutesLabel: useT("Minutes"),
+    startTimer: useT("Start Timer"),
+    pauseTimer: useT("Pause"),
+    resetTimer: useT("Reset"),
+    completed: useT("Completed!"),
+    startNew: useT("Start New Timer"),
   };
-
-  const t = translations[language as keyof typeof translations] || translations.en;
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;

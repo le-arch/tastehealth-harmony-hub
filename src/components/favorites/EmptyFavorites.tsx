@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
-import { useLanguage } from "@/contexts/LanguageContext"
+import { useT } from "@/hooks/useTranslate"
 
 interface EmptyFavoritesProps {
   message: string
@@ -12,20 +12,10 @@ interface EmptyFavoritesProps {
 
 const EmptyFavorites = ({ message }: EmptyFavoritesProps) => {
   const navigate = useNavigate()
-  const { language } = useLanguage()
-
-  const translations = {
-    en: {
-      browse: "Browse Meals",
-      description: "Save your favorite meals and recipes to access them quickly.",
-    },
-    fr: {
-      browse: "Parcourir les Repas",
-      description: "Enregistrez vos repas et recettes préférés pour y accéder rapidement.",
-    },
+  const t = {
+    browse: useT("Browse Meals"),
+    description: useT("Save your favorite meals and recipes to access them quickly."),
   }
-
-  const t = translations[language as keyof typeof translations] || translations.en
 
   return (
     <motion.div

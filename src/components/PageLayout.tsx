@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AppNavbar from '@/components/AppNavbar';
 import { ProfileSidebar } from '@/components/profile/ProfileSidebar';
 import NutritionistChatbot from '@/components/NutritionistChatbot';
+import OnboardingTour from '@/components/OnboardingTour';
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -20,6 +21,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, activePage, showChatb
         {children}
       </main>
       {showChatbot && <NutritionistChatbot />}
+      <OnboardingTour />
     </div>
   );
 };
