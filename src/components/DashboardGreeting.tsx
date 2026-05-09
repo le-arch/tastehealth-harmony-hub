@@ -5,6 +5,7 @@ import { getLS, LS_KEYS, MoodEntry, MealPlan, CalorieEntry } from '@/utils/local
 import wavingLady from '@/assets/waving-lady.png';
 import { Card } from '@/components/ui/card';
 import WeatherWidget from '@/components/WeatherWidget';
+import HelpTooltip from '@/components/HelpTooltip';
 
 const DashboardGreeting: React.FC = () => {
   const currentUser = JSON.parse(localStorage.getItem('th_current_user') || 'null');
