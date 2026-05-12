@@ -204,10 +204,10 @@ const HowToUsePage = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className={`font-semibold text-sm ${isCompleted ? 'line-through text-muted-foreground' : ''}`}>{step.title}</h3>
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">{step.priority}</Badge>
+                        <h3 className={`font-semibold text-sm ${isCompleted ? 'line-through text-muted-foreground' : ''}`}><T>{step.title}</T></h3>
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0"><T>{step.priority}</T></Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground truncate">{step.description}</p>
+                      <p className="text-xs text-muted-foreground truncate"><T>{step.description}</T></p>
                     </div>
                     <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.2 }}>
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -219,21 +219,21 @@ const HowToUsePage = () => {
                         <div className="px-4 pb-4 pt-0 border-t border-border/50">
                           <div className="grid gap-3 sm:grid-cols-2 mt-3">
                             <div>
-                              <h4 className="text-xs font-semibold mb-2 text-muted-foreground uppercase tracking-wider">What you'll do</h4>
+                              <h4 className="text-xs font-semibold mb-2 text-muted-foreground uppercase tracking-wider"><T>What you'll do</T></h4>
                               <ul className="space-y-1.5">
                                 {step.details.map((d, i) => (
                                   <li key={i} className="text-xs flex items-start gap-2">
-                                    <span className="text-primary mt-0.5">•</span> {d}
+                                    <span className="text-primary mt-0.5">•</span> <T>{d}</T>
                                   </li>
                                 ))}
                               </ul>
                             </div>
                             <div>
                               <div className="bg-primary/5 p-3 rounded-lg mb-3">
-                                <p className="text-xs font-medium text-primary">💡 {step.tips}</p>
+                                <p className="text-xs font-medium text-primary">💡 <T>{step.tips}</T></p>
                               </div>
                               <Button onClick={() => navigate(step.path)} className={`w-full text-xs bg-gradient-to-r ${step.color} text-white border-0`} size="sm">
-                                Go to {step.title} <ArrowRight className="ml-1 h-3 w-3" />
+                                <T>Go to</T> <T>{step.title}</T> <ArrowRight className="ml-1 h-3 w-3" />
                               </Button>
                             </div>
                           </div>
