@@ -153,13 +153,21 @@ const MealPrepTimer: React.FC = () => {
               className="flex flex-col items-center"
             >
               <Clock className="h-12 w-12 mb-2" />
-              <span className="text-4xl font-bold">
+              <span className="text-4xl font-bold" title={t.countdownTip} aria-label={t.countdownTip}>
                 {minutes}:{seconds < 10 ? '0' : ''}{seconds}
               </span>
             </motion.div>
           )}
 
-          <div className="mt-4">
+          <div
+            className="mt-4"
+            title={t.progressTip}
+            role="progressbar"
+            aria-label={t.progressTip}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={completed ? 100 : Math.round(100 - progress)}
+          >
             <Progress value={completed ? 100 : 100 - progress} className="h-2" />
           </div>
 
