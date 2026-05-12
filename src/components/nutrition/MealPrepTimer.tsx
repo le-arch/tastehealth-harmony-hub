@@ -119,9 +119,16 @@ const MealPrepTimer: React.FC = () => {
           <div className="space-y-4">
             <div className="space-y-1">
               <div className="flex justify-between">
-                <span className="text-sm font-medium">{t.minutesLabel}: {timeToSet}</span>
+                <span className="text-sm font-medium" title={t.sliderTip}>{t.minutesLabel}: {timeToSet}</span>
               </div>
               <Slider
+                aria-label={t.sliderTip}
+                min={1}
+                max={120}
+                step={1}
+                value={[timeToSet]}
+                onValueChange={handleSetTime}
+              />
                 min={1}
                 max={120}
                 step={1}
