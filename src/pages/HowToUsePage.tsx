@@ -133,22 +133,22 @@ const HowToUsePage = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Rocket className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Onboarding Progress</h3>
+                  <h3 className="font-semibold"><T>Onboarding Progress</T></h3>
                 </div>
                 <Badge variant={progressPercent === 100 ? "default" : "secondary"}>
-                  {completedSteps.length}/{tutorialSteps.length} completed
+                  {completedSteps.length}/{tutorialSteps.length} <T>completed</T>
                 </Badge>
               </div>
               <Progress value={progressPercent} className="h-3 mb-3" />
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{progressPercent}% complete</span>
+                <span className="text-muted-foreground">{progressPercent}% <T>complete</T></span>
                 {progressPercent === 100 ? (
                   <span className="text-primary font-medium flex items-center gap-1">
-                    <Sparkles className="h-4 w-4" /> All done! You're a TasteHealth pro! 🎉
+                    <Sparkles className="h-4 w-4" /> <T>All done! You're a TasteHealth pro!</T> 🎉
                   </span>
                 ) : nextStep ? (
                   <Button variant="link" size="sm" className="p-0 h-auto text-primary" onClick={() => setExpandedStep(nextStep.id)}>
-                    Next: {nextStep.title} <ArrowRight className="h-3 w-3 ml-1" />
+                    <T>Next:</T> <T>{nextStep.title}</T> <ArrowRight className="h-3 w-3 ml-1" />
                   </Button>
                 ) : null}
               </div>
