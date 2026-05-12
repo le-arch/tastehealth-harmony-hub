@@ -6,11 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  LayoutDashboard, User, Calendar, LineChart, Heart, Gamepad, Mountain, 
-  Settings, ChevronRight, BookOpen, Target, Video, Stethoscope, 
+import { T } from "@/components/T";
+import { toast } from "sonner";
+import {
+  LayoutDashboard, User, Calendar, LineChart, Heart, Gamepad, Mountain,
+  Settings, ChevronRight, BookOpen, Target, Video, Stethoscope,
   BookOpenCheck, ArrowRight, CheckCircle2, Sparkles, Rocket, Star,
-  ChefHat, Flame, Trophy, Smile, Droplet, Dumbbell
+  ChefHat, Flame, Trophy, Smile, Droplet, Dumbbell, PlayCircle, RotateCcw
 } from "lucide-react";
 
 const HowToUsePage = () => {
