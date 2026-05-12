@@ -163,18 +163,18 @@ const HowToUsePage = () => {
               <CardContent className="p-4 relative">
                 <div className="flex items-center gap-1 mb-2">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-primary">Recommended Next</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-primary"><T>Recommended Next</T></span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-background rounded-xl shadow-sm">{nextStep.icon}</div>
                     <div>
-                      <h3 className="font-bold text-base">{nextStep.title}</h3>
-                      <p className="text-xs text-muted-foreground">{nextStep.description}</p>
+                      <h3 className="font-bold text-base"><T>{nextStep.title}</T></h3>
+                      <p className="text-xs text-muted-foreground"><T>{nextStep.description}</T></p>
                     </div>
                   </div>
                   <Button size="sm" onClick={() => navigate(nextStep.path)} className="shrink-0">
-                    Go <ChevronRight className="h-4 w-4 ml-1" />
+                    <T>Go</T> <ChevronRight className="h-4 w-4 ml-1" />
                   </Button>
                 </div>
               </CardContent>
