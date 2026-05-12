@@ -42,6 +42,9 @@ const MealPrepTimer: React.FC = () => {
     resetTimer: useT("Reset"),
     completed: useT("Completed!"),
     startNew: useT("Start New Timer"),
+    progressTip: useT("Time remaining in this meal-prep session"),
+    sliderTip: useT("Drag to set how long your meal prep should take"),
+    countdownTip: useT("Live countdown — pause anytime to step away"),
   };
 
   useEffect(() => {
@@ -116,9 +119,10 @@ const MealPrepTimer: React.FC = () => {
           <div className="space-y-4">
             <div className="space-y-1">
               <div className="flex justify-between">
-                <span className="text-sm font-medium">{t.minutesLabel}: {timeToSet}</span>
+                <span className="text-sm font-medium" title={t.sliderTip}>{t.minutesLabel}: {timeToSet}</span>
               </div>
               <Slider
+                aria-label={t.sliderTip}
                 min={1}
                 max={120}
                 step={1}
@@ -149,13 +153,21 @@ const MealPrepTimer: React.FC = () => {
               className="flex flex-col items-center"
             >
               <Clock className="h-12 w-12 mb-2" />
-              <span className="text-4xl font-bold">
+              <span className="text-4xl font-bold" title={t.countdownTip} aria-label={t.countdownTip}>
                 {minutes}:{seconds < 10 ? '0' : ''}{seconds}
               </span>
             </motion.div>
           )}
 
-          <div className="mt-4">
+          <div
+            className="mt-4"
+            title={t.progressTip}
+            role="progressbar"
+            aria-label={t.progressTip}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={completed ? 100 : Math.round(100 - progress)}
+          >
             <Progress value={completed ? 100 : 100 - progress} className="h-2" />
           </div>
 

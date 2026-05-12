@@ -6,11 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  LayoutDashboard, User, Calendar, LineChart, Heart, Gamepad, Mountain, 
-  Settings, ChevronRight, BookOpen, Target, Video, Stethoscope, 
+import { T } from "@/components/T";
+import { toast } from "sonner";
+import {
+  LayoutDashboard, User, Calendar, LineChart, Heart, Gamepad, Mountain,
+  Settings, ChevronRight, BookOpen, Target, Video, Stethoscope,
   BookOpenCheck, ArrowRight, CheckCircle2, Sparkles, Rocket, Star,
-  ChefHat, Flame, Trophy, Smile, Droplet, Dumbbell
+  ChefHat, Flame, Trophy, Smile, Droplet, Dumbbell, PlayCircle, RotateCcw
 } from "lucide-react";
 
 const HowToUsePage = () => {
@@ -70,6 +72,21 @@ const HowToUsePage = () => {
   const progressPercent = Math.round((completedSteps.length / tutorialSteps.length) * 100);
   const nextStep = tutorialSteps.find(s => !completedSteps.includes(s.id));
 
+  const restartTour = () => {
+    localStorage.removeItem('th_tour_seen_v1');
+    window.dispatchEvent(new Event('th:restart-tour'));
+    toast.success('Tour restarted');
+  };
+
+  const keyFeatures = [
+    { icon: <LayoutDashboard className="h-4 w-4" />, label: "Personalized dashboard with weather & streak" },
+    { icon: <Calendar className="h-4 w-4" />, label: "Weekly meal timetable that auto-syncs to logging" },
+    { icon: <Heart className="h-4 w-4" />, label: "Vitals tracking with HR, BP, temperature alerts" },
+    { icon: <Dumbbell className="h-4 w-4" />, label: "Live GPS exercise tracking with route stats" },
+    { icon: <Trophy className="h-4 w-4" />, label: "15-level gamification with quests & quizzes" },
+    { icon: <Sparkles className="h-4 w-4" />, label: "Bilingual UI (English / French) with auto-translate" },
+  ];
+
   return (
     <PageLayout activePage="how to use">
       <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
@@ -78,9 +95,36 @@ const HowToUsePage = () => {
             <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 3, repeat: Infinity }}>
               <BookOpen className="h-7 w-7 text-primary fill-primary/20" />
             </motion.div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Getting Started Guide</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground"><T>Getting Started Guide</T></h1>
           </div>
-          <p className="text-sm text-muted-foreground max-w-xl mx-auto">Follow these steps to master TasteHealth. Complete each step and track your onboarding progress.</p>
+          <p className="text-sm text-muted-foreground max-w-xl mx-auto"><T>Follow these steps to master TasteHealth. Complete each step and track your onboarding progress.</T></p>
+          <div className="flex items-center justify-center gap-2 pt-1">
+            <Button size="sm" variant="default" onClick={restartTour} className="gap-1.5">
+              <PlayCircle className="h-4 w-4" /> <T>Restart Onboarding Tour</T>
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => { localStorage.removeItem('th_onboarding_steps'); setCompletedSteps([]); toast.success('Progress reset'); }} className="gap-1.5">
+              <RotateCcw className="h-4 w-4" /> <T>Reset Progress</T>
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Key Features overview */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" /> <T>Key Features at a Glance</T>
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {keyFeatures.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 rounded-md px-2.5 py-2">
+                    <span className="text-primary">{f.icon}</span>
+                    <T>{f.label}</T>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
@@ -89,22 +133,22 @@ const HowToUsePage = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Rocket className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Onboarding Progress</h3>
+                  <h3 className="font-semibold"><T>Onboarding Progress</T></h3>
                 </div>
                 <Badge variant={progressPercent === 100 ? "default" : "secondary"}>
-                  {completedSteps.length}/{tutorialSteps.length} completed
+                  {completedSteps.length}/{tutorialSteps.length} <T>completed</T>
                 </Badge>
               </div>
               <Progress value={progressPercent} className="h-3 mb-3" />
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{progressPercent}% complete</span>
+                <span className="text-muted-foreground">{progressPercent}% <T>complete</T></span>
                 {progressPercent === 100 ? (
                   <span className="text-primary font-medium flex items-center gap-1">
-                    <Sparkles className="h-4 w-4" /> All done! You're a TasteHealth pro! 🎉
+                    <Sparkles className="h-4 w-4" /> <T>All done! You're a TasteHealth pro!</T> 🎉
                   </span>
                 ) : nextStep ? (
                   <Button variant="link" size="sm" className="p-0 h-auto text-primary" onClick={() => setExpandedStep(nextStep.id)}>
-                    Next: {nextStep.title} <ArrowRight className="h-3 w-3 ml-1" />
+                    <T>Next:</T> <T>{nextStep.title}</T> <ArrowRight className="h-3 w-3 ml-1" />
                   </Button>
                 ) : null}
               </div>
@@ -119,18 +163,18 @@ const HowToUsePage = () => {
               <CardContent className="p-4 relative">
                 <div className="flex items-center gap-1 mb-2">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-primary">Recommended Next</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-primary"><T>Recommended Next</T></span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-background rounded-xl shadow-sm">{nextStep.icon}</div>
                     <div>
-                      <h3 className="font-bold text-base">{nextStep.title}</h3>
-                      <p className="text-xs text-muted-foreground">{nextStep.description}</p>
+                      <h3 className="font-bold text-base"><T>{nextStep.title}</T></h3>
+                      <p className="text-xs text-muted-foreground"><T>{nextStep.description}</T></p>
                     </div>
                   </div>
                   <Button size="sm" onClick={() => navigate(nextStep.path)} className="shrink-0">
-                    Go <ChevronRight className="h-4 w-4 ml-1" />
+                    <T>Go</T> <ChevronRight className="h-4 w-4 ml-1" />
                   </Button>
                 </div>
               </CardContent>
@@ -160,10 +204,10 @@ const HowToUsePage = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className={`font-semibold text-sm ${isCompleted ? 'line-through text-muted-foreground' : ''}`}>{step.title}</h3>
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">{step.priority}</Badge>
+                        <h3 className={`font-semibold text-sm ${isCompleted ? 'line-through text-muted-foreground' : ''}`}><T>{step.title}</T></h3>
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0"><T>{step.priority}</T></Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground truncate">{step.description}</p>
+                      <p className="text-xs text-muted-foreground truncate"><T>{step.description}</T></p>
                     </div>
                     <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.2 }}>
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -175,21 +219,21 @@ const HowToUsePage = () => {
                         <div className="px-4 pb-4 pt-0 border-t border-border/50">
                           <div className="grid gap-3 sm:grid-cols-2 mt-3">
                             <div>
-                              <h4 className="text-xs font-semibold mb-2 text-muted-foreground uppercase tracking-wider">What you'll do</h4>
+                              <h4 className="text-xs font-semibold mb-2 text-muted-foreground uppercase tracking-wider"><T>What you'll do</T></h4>
                               <ul className="space-y-1.5">
                                 {step.details.map((d, i) => (
                                   <li key={i} className="text-xs flex items-start gap-2">
-                                    <span className="text-primary mt-0.5">•</span> {d}
+                                    <span className="text-primary mt-0.5">•</span> <T>{d}</T>
                                   </li>
                                 ))}
                               </ul>
                             </div>
                             <div>
                               <div className="bg-primary/5 p-3 rounded-lg mb-3">
-                                <p className="text-xs font-medium text-primary">💡 {step.tips}</p>
+                                <p className="text-xs font-medium text-primary">💡 <T>{step.tips}</T></p>
                               </div>
                               <Button onClick={() => navigate(step.path)} className={`w-full text-xs bg-gradient-to-r ${step.color} text-white border-0`} size="sm">
-                                Go to {step.title} <ArrowRight className="ml-1 h-3 w-3" />
+                                <T>Go to</T> <T>{step.title}</T> <ArrowRight className="ml-1 h-3 w-3" />
                               </Button>
                             </div>
                           </div>

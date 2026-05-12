@@ -39,7 +39,13 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are a UI string translator. Translate each numbered English string to ${langName}. Keep product names (TasteHealth) untranslated. Preserve placeholders, emojis, and punctuation. Return ONLY a JSON object: {"items":["translation1","translation2",...]} in the same order. No commentary.`,
+            content: `You are a UI string translator. Translate each numbered English string to ${langName}.
+RULES (must follow exactly):
+- Keep product names (TasteHealth) untranslated.
+- Preserve emojis, punctuation, capitalization style, line breaks.
+- Preserve ALL placeholder tokens EXACTLY as written, including spelling, casing, underscores, and braces. Examples of tokens you must NOT translate or alter: __PH0__, __PH1__, {count}, {{name}}, %s, %d, %1$s, <0>...</0>, URLs.
+- Do not add or remove placeholders. Do not insert spaces inside __PH#__ tokens.
+- Return ONLY a JSON object: {"items":["translation1","translation2",...]} in the same order. No commentary.`,
           },
           { role: "user", content: numbered },
         ],
