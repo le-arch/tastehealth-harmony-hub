@@ -129,12 +129,6 @@ const MealPrepTimer: React.FC = () => {
                 value={[timeToSet]}
                 onValueChange={handleSetTime}
               />
-                min={1}
-                max={120}
-                step={1}
-                value={[timeToSet]}
-                onValueChange={handleSetTime}
-              />
             </div>
           </div>
         ) : null}
