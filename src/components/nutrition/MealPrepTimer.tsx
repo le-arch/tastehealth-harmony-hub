@@ -42,6 +42,9 @@ const MealPrepTimer: React.FC = () => {
     resetTimer: useT("Reset"),
     completed: useT("Completed!"),
     startNew: useT("Start New Timer"),
+    progressTip: useT("Time remaining in this meal-prep session"),
+    sliderTip: useT("Drag to set how long your meal prep should take"),
+    countdownTip: useT("Live countdown — pause anytime to step away"),
   };
 
   useEffect(() => {
