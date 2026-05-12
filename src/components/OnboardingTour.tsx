@@ -57,6 +57,12 @@ const OnboardingTour: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const restart = () => { setStep(0); setOpen(true); };
+    window.addEventListener("th:restart-tour", restart);
+    return () => window.removeEventListener("th:restart-tour", restart);
+  }, []);
+
   const dismiss = () => {
     localStorage.setItem(STORAGE_KEY, "1");
     setOpen(false);
