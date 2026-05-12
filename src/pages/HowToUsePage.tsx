@@ -72,6 +72,21 @@ const HowToUsePage = () => {
   const progressPercent = Math.round((completedSteps.length / tutorialSteps.length) * 100);
   const nextStep = tutorialSteps.find(s => !completedSteps.includes(s.id));
 
+  const restartTour = () => {
+    localStorage.removeItem('th_tour_seen_v1');
+    window.dispatchEvent(new Event('th:restart-tour'));
+    toast.success('Tour restarted');
+  };
+
+  const keyFeatures = [
+    { icon: <LayoutDashboard className="h-4 w-4" />, label: "Personalized dashboard with weather & streak" },
+    { icon: <Calendar className="h-4 w-4" />, label: "Weekly meal timetable that auto-syncs to logging" },
+    { icon: <Heart className="h-4 w-4" />, label: "Vitals tracking with HR, BP, temperature alerts" },
+    { icon: <Dumbbell className="h-4 w-4" />, label: "Live GPS exercise tracking with route stats" },
+    { icon: <Trophy className="h-4 w-4" />, label: "15-level gamification with quests & quizzes" },
+    { icon: <Sparkles className="h-4 w-4" />, label: "Bilingual UI (English / French) with auto-translate" },
+  ];
+
   return (
     <PageLayout activePage="how to use">
       <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
@@ -80,9 +95,36 @@ const HowToUsePage = () => {
             <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 3, repeat: Infinity }}>
               <BookOpen className="h-7 w-7 text-primary fill-primary/20" />
             </motion.div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Getting Started Guide</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground"><T>Getting Started Guide</T></h1>
           </div>
-          <p className="text-sm text-muted-foreground max-w-xl mx-auto">Follow these steps to master TasteHealth. Complete each step and track your onboarding progress.</p>
+          <p className="text-sm text-muted-foreground max-w-xl mx-auto"><T>Follow these steps to master TasteHealth. Complete each step and track your onboarding progress.</T></p>
+          <div className="flex items-center justify-center gap-2 pt-1">
+            <Button size="sm" variant="default" onClick={restartTour} className="gap-1.5">
+              <PlayCircle className="h-4 w-4" /> <T>Restart Onboarding Tour</T>
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => { localStorage.removeItem('th_onboarding_steps'); setCompletedSteps([]); toast.success('Progress reset'); }} className="gap-1.5">
+              <RotateCcw className="h-4 w-4" /> <T>Reset Progress</T>
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Key Features overview */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" /> <T>Key Features at a Glance</T>
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {keyFeatures.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 rounded-md px-2.5 py-2">
+                    <span className="text-primary">{f.icon}</span>
+                    <T>{f.label}</T>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
